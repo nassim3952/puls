@@ -1,4 +1,4 @@
-import '../../features/framents.dart';
+import '../../features/fragment.dart';
 
 GoRoute(){
   path: '/';

@@ -13,7 +13,7 @@ class DefaultView extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          appBuildHeader(),
+          DashboardHeader(),
           Padding(
             padding: const EdgeInsets.all(32),
             child: customWidget ?? const SizedBox(),

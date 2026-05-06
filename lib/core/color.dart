@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Vert Menthe principal
-  static const Color primaryMenthe = Color(0xFF4FCD81);
+  static const Color primaryMenthe = Color(0XFF10B982);
 
   // Couleurs de fond et surfaces
   static const Color background = Color(0XFFF8FAFF);
   static const Color surface = Colors.white;
   static const Color shadow = Colors.black;
-  static const Color TextPrimary = Color(0xFF2D3142);
-  static const Color TextSecondary = Color(0xFF919699);
+
 
 
   // Couleurs de statut (KPIs & Alertes)
