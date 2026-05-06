@@ -15,7 +15,7 @@ class DefaultView extends ConsumerWidget {
         children: [
           DashboardHeader(),
           Padding(
-            padding: const EdgeInsets.all(32),
+            padding: const EdgeInsets.all(24),
             child: customWidget ?? const SizedBox(),
           ),
         ],

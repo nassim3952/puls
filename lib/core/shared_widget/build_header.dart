@@ -5,6 +5,7 @@ import 'package:puls/core/shared_widget/widgets.dart';
 
 import '../../features/dashboard/presentation/provider/filter_controller.dart';
 import '../color.dart';
+import '../provider/spline_selection_provider.dart';
 
 class DashboardHeader extends ConsumerWidget {
   const DashboardHeader({super.key});
@@ -65,6 +66,7 @@ class DashboardHeader extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               ref.read(filterProvider.notifier).applyFilters();
+              ref.read(splineSelectionProvider.notifier).toggleSpline("Oui totalement");
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF10B981), // Vert propre

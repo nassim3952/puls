@@ -36,7 +36,7 @@ class MainDashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       
-      appBar: AppAppbar(),
+      appBar: AppAppbar(context),
       body: Row(
         children: [
           // La Sidebar reste fixe à gauche
