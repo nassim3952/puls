@@ -20,7 +20,7 @@ class SideBar extends ConsumerWidget {
 
         return AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          width: isCollapsed ? 55 : 310,
+          width: isCollapsed ? 55 : 235,
           decoration: const BoxDecoration(
             color: AppColors.surface,
             border: Border(right: BorderSide(color: Color(0xFFEEEEEE))),
@@ -110,7 +110,7 @@ class SideBar extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryMenthe.withOpacity(0.1),
+                      color: AppColors.primaryMenthe.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(

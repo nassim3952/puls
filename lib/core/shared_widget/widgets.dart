@@ -72,7 +72,5 @@ Color getColor(StatusType status) {
       return AppColors.warning;
     case StatusType.error:
       return AppColors.error;
-    default:
-      return AppColors.textPrimary;
-  }
+    }
 }

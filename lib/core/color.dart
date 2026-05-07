@@ -4,6 +4,12 @@ class AppColors {
   // Vert Menthe principal
   static const Color primaryMenthe = Color(0XFF10B982);
 
+  //variant du menthe
+  static const Color primaryMentheVariantDeepMenthe = Color(0XFF0D8F65);
+  static const Color primaryMentheVariantMenthe = Color(0XFF14D999);
+  static const Color primaryMentheVariantLightMenthe = Color(0XFFA7E9D3);
+
+
   // Couleurs de fond et surfaces
   static const Color background = Color(0XFFF8FAFF);
   static const Color surface = Colors.white;

@@ -6,8 +6,26 @@ import 'package:puls/core/shared_widget/app_chart.dart';
 import '../../../../core/data/fake_data.dart';
 import '../../../../core/provider/iar_selection_provider.dart';
 import '../model/dashboard_item.dart';
+import '../widgets/alert_card.dart';
 
 final dashboardItems = [
+  DashboardItem(
+    title: "Réponses",
+    fullName: "Taux de réponses",
+    crossAxis: 4,
+    mainAxis: 2,
+    icon: Icons.speed,
+    child: Row(
+      children: [
+        Align(
+          alignment: AlignmentGeometry.topCenter,
+
+          child: AppCharts.gauge(87, AppColors.primaryMenthe),
+        ),
+        Expanded(child: AppCharts.spline(kpi1Spline)),
+      ],
+    ),
+  ),
   DashboardItem(
     title: "ISGPP",
     fullName: "Indice de Satisfaction Globale du Parcours Patient",
@@ -24,10 +42,11 @@ final dashboardItems = [
     ),
   ),
   DashboardItem(
+    headerWidget: Container(width: 60,height: 60,color: Colors.red,),
     title: "EMP",
     fullName: "Efficacité Médicale Perçue",
     icon: Icons.graphic_eq,
-    crossAxis: 6,
+    crossAxis: 4,
     mainAxis: 2,
     child: Consumer(
       // On met le Consumer plus haut pour englober le Pie et la Spline
@@ -51,7 +70,7 @@ final dashboardItems = [
           mainAxisSize: MainAxisSize.min,
           children: [
             // Maintenant le Pie est dynamique !
-            AppCharts.pie(activePieData),
+            AppCharts.pie(activePieData, false),
             Expanded(child: AppCharts.spline(activeSplines)),
           ],
         );
@@ -64,21 +83,27 @@ final dashboardItems = [
     icon: Icons.graphic_eq,
     crossAxis: 6,
     mainAxis: 3,
-    child: Expanded(
-      child: Consumer(
-        builder: (context, ref, child) {
-          // 2. On écoute le NOUVEAU cerveau (IAR) et non plus splineSelectionProvider
-          final selectedNames = ref.watch(iarSelectionProvider);
+    child: Consumer(
+      builder: (context, ref, child) {
+        // 2. On écoute le NOUVEAU cerveau (IAR) et non plus splineSelectionProvider
+        final selectedNames = ref.watch(iarSelectionProvider);
 
-          // 3. On filtre les données avec les bons noms (Accueil, Médecin, etc.)
-          final activeBarData = dataIAR
-              .where((d) => selectedNames.contains(d.label))
-              .toList();
+        // 3. On filtre les données avec les bons noms (Accueil, Médecin, etc.)
+        final activeBarData = dataVPQS
+            .where((d) => selectedNames.contains(d.label))
+            .toList();
 
-          return AppCharts.bar(activeBarData, isHorizontal: true);
-        },
-      ),
+        return AppCharts.bar(activeBarData, isHorizontal: true);
+      },
     ),
+  ),
+  DashboardItem(
+    title: "MCR",
+    fullName: "Vécu Qualitatif du Parcours de Soins",
+    icon: Icons.graphic_eq,
+    crossAxis: 6,
+    mainAxis: 3,
+    child: Expanded(child: AppCharts.bar(dataMCR,isHorizontal: true)),
   ),
   DashboardItem(
     title: "IAR",
@@ -87,24 +112,49 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 3,
     // Augmenté à 4 pour laisser de la place aux boutons de filtre
-    child: Expanded(
-          child: Consumer(
-            builder: (context, ref, child) {
-              // 2. On écoute le NOUVEAU cerveau (IAR) et non plus splineSelectionProvider
-              final selectedNames = ref.watch(iarSelectionProvider);
+    child: Consumer(
+      builder: (context, ref, child) {
+        // 2. On écoute le NOUVEAU cerveau (IAR) et non plus splineSelectionProvider
+        final selectedNames = ref.watch(iarSelectionProvider);
 
-              // 3. On filtre les données avec les bons noms (Accueil, Médecin, etc.)
-              final activeBarData = dataIAR
-                  .where((d) => selectedNames.contains(d.label))
-                  .toList();
+        // 3. On filtre les données avec les bons noms (Accueil, Médecin, etc.)
+        final activeBarData = dataIAR
+            .where((d) => selectedNames.contains(d.label))
+            .toList();
 
-              return AppCharts.bar(activeBarData, isHorizontal: true);
-            },
-          ),
-        ),
-
+        return AppCharts.bar(activeBarData, isHorizontal: true);
+      },
     ),
+  ),
+  DashboardItem(
+    title: "TCRQ",
+    fullName: "Indice d'Amélioration & de Réputation",
+    icon: Icons.bar_chart,
+    crossAxis: 6,
+    mainAxis: 3,
+    // Augmenté à 4 pour laisser de la place aux boutons de filtre
+    child: Consumer(
+      builder: (context, ref, child) {
+        // 2. On écoute le NOUVEAU cerveau (IAR) et non plus splineSelectionProvider
+        final selectedNames = ref.watch(iarSelectionProvider);
 
+        // 3. On filtre les données avec les bons noms (Accueil, Médecin, etc.)
+        final activeBarData = dataIAR
+            .where((d) => selectedNames.contains(d.label))
+            .toList();
+
+        return AppCharts.bar(activeBarData, isHorizontal: true);
+      },
+    ),
+  ),
+  DashboardItem(
+    title: "Alert",
+    fullName: "Alert",
+    icon: Icons.warning_amber_outlined,
+    crossAxis: 12,
+    mainAxis: 3,
+    child: alertCard(),
+  ),
 ];
 
 // class IarFilter extends ConsumerWidget {

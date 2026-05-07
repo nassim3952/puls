@@ -42,7 +42,7 @@ class ChartDataPie {
 
 class BarData {
   final String label;
-  final double value;
+  final int value;
   final Valence valence;
 
   BarData({required this.label, required this.value, this.valence = Valence.neutre});
@@ -53,4 +53,11 @@ enum Valence {
   neutre,
   mauvaise,
   critique
+}
+
+class PyramidData {
+  PyramidData(this.ageRange, this.male, this.female);
+  final String ageRange;
+  final double male;
+  final double female;
 }

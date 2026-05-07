@@ -776,6 +776,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.6.1"
+  xtal_dataview:
+    dependency: "direct main"
+    description:
+      name: xtal_dataview
+      sha256: "5527d6feadfc2810080459f85e23162e03dc368bcf1af9a7680a5f71f45359ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.0"
   yaml:
     dependency: transitive
     description:

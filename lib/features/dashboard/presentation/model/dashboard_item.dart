@@ -3,9 +3,10 @@ import 'package:flutter/cupertino.dart';
 class DashboardItem {
   final String title;
   final String fullName;
-  final IconData icon;
+  final IconData? icon;
   final int crossAxis;
   final int mainAxis;
+  final Widget? headerWidget;
 
   final Widget? child;
   final Widget Function()? builder;
@@ -16,6 +17,7 @@ class DashboardItem {
     required this.icon,
     required this.crossAxis,
     required this.mainAxis,
+    this.headerWidget,
     this.child,
     this.builder,
   });

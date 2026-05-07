@@ -3,12 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/shared_widget/app_bar.dart';
 
 // Importe tes nouvelles vues ici
-import '../core/color.dart';
 import '../core/provider/navigation_provider.dart';
 import '../core/provider/side_bar_provider.dart';
-import '../core/shared_widget/build_header.dart';
 import '../core/shared_widget/side_bar.dart';
-import 'alertsView/presentation/alertsView.dart';
+import 'alertsView/presentation/alerts_view.dart';
 import 'dashboard/presentation/dash_board_view.dart';
 
 class MainDashboardScreen extends ConsumerWidget {
@@ -36,7 +34,7 @@ class MainDashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       
-      appBar: AppAppbar(context),
+      appBar: appAppBar(context),
       body: Row(
         children: [
           // La Sidebar reste fixe à gauche
@@ -51,11 +49,20 @@ class MainDashboardScreen extends ConsumerWidget {
                   child: Container(
                     color: const Color(0xFFF8FAFB),
                     // Fond gris très léger pour faire ressortir les cartes
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      child:
-                          currentView, // Le contenu change ici avec un effet de fondu
-                    ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        // AJOUTE CECI :
+                        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                          return Stack(
+                            alignment: Alignment.topLeft, // Force l'alignement en haut à gauche
+                            children: [
+                              ...previousChildren,
+                              ?currentChild,
+                            ],
+                          );
+                        },
+                        child: currentView,
+                      ),
                   ),
                 ),
               ],

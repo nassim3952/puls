@@ -1,0 +1,38 @@
+{
+  "id": "1752526737016",
+  "canal": "Whatsapp",
+  "survey": "1",
+  "patient": {
+    "first_name": "Islam",
+    "last_name": "abd-alatif",
+    "sex": "M",
+    "age": "34",
+    "email": "davidcontreras2@outlook.com",
+    "phone": "50372074395",
+    "country": "AlG",
+    "hospital": "CHU al azhar",
+    "service": "Cardiologie",
+    "doctor_assigned": "Dr. benali nahiba",
+    "visit_type": "Consultation",
+    "exploration": "Imagerie",
+    "aftercare": "Instruction de sortie",
+    "ipp": "9BD281FKERYE87584",
+    "date": "2025-07-11T00:00:00.000Z"
+  },
+  "answers": {
+    "q0": "5",
+    "q1": "oui_totalement",
+    "q2": "L'infirmier était très gentil, mais j'ai attendu 3 heures avant de voir le médecin. La salle était propre.",
+    "q3": "Le soulagement immédiat après la piqûre.",
+    "q4": "Améliorer le temps d'attente à l'accueil.",
+    "q5": "Oui",
+    "q6": "",
+    "q7": ""
+  },
+  "sent_date": "2025-07-15T22:22:52.599Z",
+  "whatsapp_account_phone": "50370926537",
+  "post_date": "2025-07-16T01:25:57.300Z",
+  "has_alert": false
+}
+
+

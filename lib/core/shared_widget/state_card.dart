@@ -5,9 +5,11 @@ import '../text.dart';
 class StatCard extends StatelessWidget {
   final String title;
   final Widget child;
+  final Widget? headerWidget;
   final VoidCallback? onMorePressed;
   final IconData? icon;
   final String fullName;
+  final bool isTitleCentred;
 
   const StatCard({
     super.key,
@@ -16,6 +18,8 @@ class StatCard extends StatelessWidget {
     required this.child,
     this.onMorePressed,
     this.icon,
+    this.isTitleCentred = false,
+    this.headerWidget,
   });
 
   @override
@@ -28,7 +32,7 @@ class StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -47,7 +51,7 @@ class StatCard extends StatelessWidget {
               ],
               Expanded(
                 child: Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: isTitleCentred ? Alignment.center : Alignment.centerLeft,
                   child: Tooltip(
 
                     message: fullName,
@@ -61,13 +65,14 @@ class StatCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (onMorePressed != null)
-                IconButton(
-                  icon: const Icon(Icons.more_horiz, size: 20),
-                  onPressed: onMorePressed,
-                  constraints: const BoxConstraints(),
-                  padding: EdgeInsets.zero,
-                ),
+              headerWidget ?? const SizedBox.shrink(),
+              // if (onMorePressed != null)
+              //   IconButton(
+              //     icon: const Icon(Icons.more_horiz, size: 20),
+              //     onPressed: onMorePressed,
+              //     constraints: const BoxConstraints(),
+              //     padding: EdgeInsets.zero,
+              //   ),
             ],
           ),
 

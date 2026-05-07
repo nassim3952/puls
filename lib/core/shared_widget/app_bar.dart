@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:puls/core/color.dart';
 
 Widget _buildUserSection({bool showName = true}) {
@@ -31,7 +30,7 @@ Widget _buildUserSection({bool showName = true}) {
   );
 }
 
-AppBar AppAppbar(BuildContext context) {
+AppBar appAppBar(BuildContext context) {
   // On utilise MediaQuery pour avoir la largeur totale de l'écran
   final double width = MediaQuery.of(context).size.width;
   final bool isMobile = width < 600;
@@ -48,7 +47,7 @@ AppBar AppAppbar(BuildContext context) {
         color: AppColors.surface,
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.1),
+            color: AppColors.shadow.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
