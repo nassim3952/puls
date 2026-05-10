@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../color.dart';
 import '../text.dart';
 import '../provider/card_expansion_provider.dart';
+import '../provider/card_view_provider.dart';
 
 class StatCard extends ConsumerWidget {
   final String title;
   final Widget child;
+  final Widget? secondaryChild;
   final Widget? headerWidget;
   final VoidCallback? onMorePressed;
   final IconData? icon;
@@ -19,6 +21,7 @@ class StatCard extends ConsumerWidget {
     required this.fullName,
     required this.title,
     required this.child,
+    this.secondaryChild,
     this.onMorePressed,
     this.icon,
     this.isTitleCentred = false,
@@ -28,8 +31,8 @@ class StatCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // OPTIMISATION CRITIQUE : Ne rebuild que si CETTE carte change d'état
     final isExpanded = ref.watch(cardExpansionProvider.select((s) => s.contains(title)));
+    final viewIndex = ref.watch(cardViewProvider.select((s) => s[title] ?? 0));
 
     return Material(
       color: Colors.transparent,
@@ -49,6 +52,7 @@ class StatCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -80,6 +84,23 @@ class StatCard extends ConsumerWidget {
                       headerWidget!,
                       const SizedBox(width: 8),
                     ],
+                    // Bouton pour switcher de vue
+                    if (secondaryChild != null) ...[
+                      IconButton(
+                        icon: Icon(
+                          viewIndex == 0 ? Icons.swap_horiz : Icons.restore,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
+                        onPressed: () {
+                          ref.read(cardViewProvider.notifier).toggleView(title);
+                        },
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        tooltip: "Changer de vue",
+                      ),
+                      const SizedBox(width: 8),
+                    ],
                     if (isExpandable)
                       IconButton(
                         icon: Icon(
@@ -98,7 +119,12 @@ class StatCard extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Expanded(child: child),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: viewIndex == 0 ? child : (secondaryChild ?? child),
+              ),
+            ),
           ],
         ),
       ),

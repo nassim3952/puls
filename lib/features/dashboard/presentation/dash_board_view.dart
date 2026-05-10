@@ -14,7 +14,7 @@ class DashboardView extends ConsumerWidget {
       customWidget: LayoutBuilder(
         builder: (context, constraints) {
           // Calcul dynamique des colonnes
-          int crossAxisCount = constraints.maxWidth > 900 ? 12 : (constraints.maxWidth > 600 ? 6 : 4);
+          int crossAxisCount = constraints.maxWidth > 900 ? 24 : (constraints.maxWidth > 600 ? 12 : 8);
 
           return StaggeredGrid.count(
             crossAxisCount: crossAxisCount,

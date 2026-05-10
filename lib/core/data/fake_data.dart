@@ -80,6 +80,11 @@ final pie6data = [
   ChartDataPie('Non', 65, AppColors.warning),
 ];
 
+final consentementPie = [
+  ChartDataPie('Oui', 192, AppColors.primaryMenthe),
+  ChartDataPie('Non', 65, AppColors.primaryMentheVariantLightMenthe),
+];
+
 
 final List<BarData> dataIAR = [
   BarData(label: "Douleur", value: Random().nextInt(100), valence: Valence.bonne),

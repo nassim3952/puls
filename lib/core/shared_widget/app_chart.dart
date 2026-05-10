@@ -197,4 +197,66 @@ class AppCharts {
       ),
     );
   }
-}
+  static Widget doughnut(List<ChartDataPie> data) {
+    if (data.length < 2) {
+      return const SizedBox.square(dimension: 100, child: Center(child: Text("Pas assez de data")));
+    }
+
+    final value1 = data[0].value ?? 0;
+    final value2 = data[1].value ?? 0;
+    final total = value1 + value2;
+    final percentage = total > 0 ? (value1 / total) * 100 : 0.0;
+
+    return RepaintBoundary(
+      child: FittedBox(
+        fit: BoxFit.contain,
+        child: Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 18),
+            child: SfCircularChart(
+              margin: EdgeInsets.zero,
+              // Activation du tooltip (le "hint")
+              tooltipBehavior: TooltipBehavior(enable: true,textStyle: const TextStyle(fontSize: 7),),
+              annotations: [
+                CircularChartAnnotation(
+                  widget: Center(
+                    child: Text(
+                      "${percentage.toStringAsFixed(1)}%",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 36,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              series: <CircularSeries>[
+                DoughnutSeries<ChartDataPie, String>(
+                  dataSource: data,
+                  xValueMapper: (d, _) => d.label,
+                  yValueMapper: (d, _) => d.value,
+                  pointColorMapper: (d, _) => d.color,
+                  radius: '100%',
+                  innerRadius: '60%',
+                  strokeColor: Colors.white,
+                  strokeWidth: 3,
+                  animationDuration: 600,
+                  // Configuration des labels (les numéros en blanc)
+                  dataLabelSettings: const DataLabelSettings(
+                    isVisible: true,
+                    labelPosition: ChartDataLabelPosition.inside,
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }}

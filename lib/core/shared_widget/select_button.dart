@@ -28,8 +28,8 @@ class FilterSelectButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: AppColors.neutral, ),
-          borderRadius: BorderRadius.circular(4),
+          border: Border.all(color: AppColors.neutral.withValues(alpha: 0.3), ),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

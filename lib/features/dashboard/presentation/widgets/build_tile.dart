@@ -39,6 +39,7 @@ class DashboardTile extends ConsumerWidget {
         fullName: item.fullName,
         icon: item.icon,
         isExpandable: item.isExpandable,
+        secondaryChild: item.secondaryChild, // Transmission de la vue alternative
         onMorePressed: () {},
         child: item.builder != null
             ? item.builder!()

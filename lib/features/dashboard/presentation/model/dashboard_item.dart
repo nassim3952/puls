@@ -8,8 +8,8 @@ class DashboardItem {
   final int mainAxis;
   final Widget? headerWidget;
   final bool isExpandable;
-
   final Widget? child;
+  final Widget? secondaryChild; // Ajout d'une vue alternative
   final Widget Function()? builder;
 
   DashboardItem({
@@ -21,6 +21,7 @@ class DashboardItem {
     this.headerWidget,
     this.isExpandable = false,
     this.child,
+    this.secondaryChild,
     this.builder,
   });
 }
