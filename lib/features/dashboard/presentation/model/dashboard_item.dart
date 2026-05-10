@@ -7,6 +7,7 @@ class DashboardItem {
   final int crossAxis;
   final int mainAxis;
   final Widget? headerWidget;
+  final bool isExpandable;
 
   final Widget? child;
   final Widget Function()? builder;
@@ -14,10 +15,11 @@ class DashboardItem {
   DashboardItem({
     required this.title,
     required this.fullName,
-    required this.icon,
+    this.icon,
     required this.crossAxis,
     required this.mainAxis,
     this.headerWidget,
+    this.isExpandable = false,
     this.child,
     this.builder,
   });

@@ -20,8 +20,8 @@ class DashboardView extends ConsumerWidget {
             crossAxisCount: crossAxisCount,
             crossAxisSpacing: 24,
             mainAxisSpacing: 24,
-            // Utilisation d'une fonction anonyme pour passer les 2 arguments
-            children: dashboardItems.map((item) => buildTile(item, crossAxisCount, null)).toList(),
+            // On passe item.headerWidget pour que les chips s'affichent
+            children: dashboardItems.map((item) => buildTile(item, crossAxisCount, item.headerWidget)).toList(),
           );
         },
       ),

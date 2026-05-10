@@ -134,23 +134,27 @@ class SideBar extends ConsumerWidget {
               alignment: collapsed ? Alignment.center : Alignment.centerRight,
               child: IconButton(
                 onPressed: () => ref.read(sidebarProvider.notifier).toggle(),
-                icon: collapsed? const Icon(Icons.menu) : const Icon(Icons.menu_open),
+                icon: collapsed
+                    ? const Icon(Icons.menu)
+                    : const Icon(Icons.menu_open),
               ),
             ),
           ],
         ),
       ),
     );
-  }  Widget _navItem(
-      WidgetRef ref,
-      IconData icon,
-      String label,
-      int index,
-      int currentIndex,
-      bool collapsed, {
-        bool hasBadge = false,
-        bool isDestructive = false,
-      }) {
+  }
+
+  Widget _navItem(
+    WidgetRef ref,
+    IconData icon,
+    String label,
+    int index,
+    int currentIndex,
+    bool collapsed, {
+    bool hasBadge = false,
+    bool isDestructive = false,
+  }) {
     final isActive = currentIndex == index;
 
     final color = isActive
@@ -189,7 +193,9 @@ class SideBar extends ConsumerWidget {
                         label,
                         style: TextStyle(
                           color: color,
-                          fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isActive
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -211,4 +217,5 @@ class SideBar extends ConsumerWidget {
         ),
       ),
     );
-  }}
+  }
+}

@@ -1,6 +1,8 @@
 
 import 'dart:math';
 
+import 'package:xtal_dataview/xtal_dataview.dart';
+
 import '../../features/dashboard/presentation/model/domain/verbatim_node.dart';
 import '../color.dart';
 import '../models/chart_model.dart';
@@ -8,7 +10,7 @@ import '../models/chart_model.dart';
 final splineData1 = [
   SplineGroup(
     name: "Oui totalement",
-    color: AppColors.success,
+    color: AppColors.primaryMenthe,
     data: [
       ChartDataSpline('Jan', 60),
       ChartDataSpline('Feb', 45),
@@ -19,7 +21,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "En partie",
-    color: AppColors.warning,
+    color: AppColors.primaryMentheVariantDeepMenthe,
     data: [
       ChartDataSpline('Jan', 30),
       ChartDataSpline('Feb', 55),
@@ -30,7 +32,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "Non",
-    color: AppColors.error,
+    color: AppColors.primaryMentheVariantLightMenthe,
     data: [
       ChartDataSpline('Jan', 38),
       ChartDataSpline('Feb', 58),
@@ -41,7 +43,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "En attente",
-    color: AppColors.neutral,
+    color: AppColors.primaryMentheVariantMenthe,
     data: [
       ChartDataSpline('Jan', 20),
       ChartDataSpline('Feb', 25),
@@ -67,10 +69,10 @@ final splineData2 = [
 
 
 final pie2data = [
-  ChartDataPie('Oui totalement', 45, AppColors.success),
-  ChartDataPie('En partie', 35, AppColors.warning),
-  ChartDataPie('Non', 30, AppColors.error),
-  ChartDataPie('En attente', 38, AppColors.neutral),
+  ChartDataPie('Oui totalement', 45, AppColors.primaryMenthe),
+  ChartDataPie('En partie', 35, AppColors.primaryMentheVariantDeepMenthe),
+  ChartDataPie('Non', 30, AppColors.primaryMentheVariantLightMenthe),
+  ChartDataPie('En attente', 38, AppColors.primaryMentheVariantMenthe),
 ];
 
 final pie6data = [
@@ -142,117 +144,120 @@ final kpi2Spline = splineData1;
 final kpi6Pie = pie6data;
 
 
-final data = [
-  // --- RELATIONNEL ---
-  VerbatimNode(
-    label: 'Relationnel',
-    children: [
-      VerbatimNode(
-        label: 'Communication',
-        children: [
-          VerbatimNode(label: 'Écoute', value: 52),
-          VerbatimNode(label: 'Empathie', value: 41),
-          VerbatimNode(label: 'Explication', value: 63),
-          VerbatimNode(label: 'Indifférence', value: 14),
-          VerbatimNode(label: 'Sourire', value: 39),
-          VerbatimNode(label: 'Gentillesse', value: 58),
-          VerbatimNode(label: 'Politesse', value: 47),
-        ],
-      ),
-      VerbatimNode(
-        label: 'Accueil',
-        children: [
-          VerbatimNode(label: 'Accueil physique', value: 44),
-          VerbatimNode(label: 'Orientation', value: 31),
-          VerbatimNode(label: 'Interaction humaine', value: 25),
-          VerbatimNode(label: 'Disponibilité', value: 36),
-          VerbatimNode(label: 'Standard téléphonique', value: 22),
-        ],
-      ),
-    ],
-  ),
+final ChartTreeNode sunBurstData = ChartTreeNode(
+  name: 'Expérience Patient',
+  children: [
+    // --- RELATIONNEL ---
+    ChartTreeNode(
+      name: 'Relationnel',
+      children: [
+        ChartTreeNode(
+          name: 'Communication',
+          children: [
+            ChartTreeNode(name: 'Écoute', value: 52),
+            ChartTreeNode(name: 'Empathie', value: 41),
+            ChartTreeNode(name: 'Explication', value: 63),
+            ChartTreeNode(name: 'Indifférence', value: 14),
+            ChartTreeNode(name: 'Sourire', value: 39),
+            ChartTreeNode(name: 'Gentillesse', value: 58),
+            ChartTreeNode(name: 'Politesse', value: 47),
+          ],
+        ),
+        ChartTreeNode(
+          name: 'Accueil',
+          children: [
+            ChartTreeNode(name: 'Accueil physique', value: 44),
+            ChartTreeNode(name: 'Orientation', value: 31),
+            ChartTreeNode(name: 'Interaction humaine', value: 25),
+            ChartTreeNode(name: 'Disponibilité', value: 36),
+            ChartTreeNode(name: 'Standard téléphonique', value: 22),
+          ],
+        ),
+      ],
+    ),
 
-  // --- SOIN & TECHNIQUE ---
-  VerbatimNode(
-    label: 'Soin & Technique',
-    children: [
-      VerbatimNode(
-        label: 'Qualité Médicale',
-        children: [
-          VerbatimNode(label: 'Médecin', value: 85),
-          VerbatimNode(label: 'Geste soignant', value: 74),
-          VerbatimNode(label: 'Compétence', value: 92),
-          VerbatimNode(label: 'Confiance', value: 81),
-          VerbatimNode(label: 'Douceur', value: 56),
-          VerbatimNode(label: 'Professionnalisme', value: 69),
-        ],
-      ),
-      VerbatimNode(
-        label: 'Confort Physique',
-        children: [
-          VerbatimNode(label: 'Douleur', value: 42),
-          VerbatimNode(label: 'Soulagement', value: 38),
-          VerbatimNode(label: 'Réconfort', value: 29),
-          VerbatimNode(label: 'Stress', value: 54),
-          VerbatimNode(label: 'Sommeil', value: 41),
-          VerbatimNode(label: 'Aide aux gestes', value: 27),
-        ],
-      ),
-    ],
-  ),
+    // --- SOIN & TECHNIQUE ---
+    ChartTreeNode(
+      name: 'Soin & Technique',
+      children: [
+        ChartTreeNode(
+          name: 'Qualité Médicale',
+          children: [
+            ChartTreeNode(name: 'Médecin', value: 85),
+            ChartTreeNode(name: 'Geste soignant', value: 74),
+            ChartTreeNode(name: 'Compétence', value: 92),
+            ChartTreeNode(name: 'Confiance', value: 81),
+            ChartTreeNode(name: 'Douceur', value: 56),
+            ChartTreeNode(name: 'Professionnalisme', value: 69),
+          ],
+        ),
+        ChartTreeNode(
+          name: 'Confort Physique',
+          children: [
+            ChartTreeNode(name: 'Douleur', value: 42),
+            ChartTreeNode(name: 'Soulagement', value: 38),
+            ChartTreeNode(name: 'Réconfort', value: 29),
+            ChartTreeNode(name: 'Stress', value: 54),
+            ChartTreeNode(name: 'Sommeil', value: 41),
+            ChartTreeNode(name: 'Aide aux gestes', value: 27),
+          ],
+        ),
+      ],
+    ),
 
-  // --- ORGANISATION ---
-  VerbatimNode(
-    label: 'Organisation',
-    children: [
-      VerbatimNode(
-        label: 'Gestion du Temps',
-        children: [
-          VerbatimNode(label: 'Attente', value: 124),
-          VerbatimNode(label: 'Longue attente', value: 89),
-          VerbatimNode(label: 'Flexibilité', value: 15),
-          VerbatimNode(label: 'Ponctualité', value: 21),
-          VerbatimNode(label: 'Rapidité', value: 43),
-        ],
-      ),
-      VerbatimNode(
-        label: 'Logistique',
-        children: [
-          VerbatimNode(label: 'Coordination', value: 37),
-          VerbatimNode(label: 'Disponibilité du matériel', value: 24),
-          VerbatimNode(label: 'Facturation', value: 19),
-          VerbatimNode(label: 'Sortie de l\'hôpital', value: 45),
-          VerbatimNode(label: 'Dossier médical', value: 32),
-        ],
-      ),
-    ],
-  ),
+    // --- ORGANISATION ---
+    ChartTreeNode(
+      name: 'Organisation',
+      children: [
+        ChartTreeNode(
+          name: 'Gestion du Temps',
+          children: [
+            ChartTreeNode(name: 'Attente', value: 124),
+            ChartTreeNode(name: 'Longue attente', value: 89),
+            ChartTreeNode(name: 'Flexibilité', value: 15),
+            ChartTreeNode(name: 'Ponctualité', value: 21),
+            ChartTreeNode(name: 'Rapidité', value: 43),
+          ],
+        ),
+        ChartTreeNode(
+          name: 'Logistique',
+          children: [
+            ChartTreeNode(name: 'Coordination', value: 37),
+            ChartTreeNode(name: 'Disponibilité du matériel', value: 24),
+            ChartTreeNode(name: 'Facturation', value: 19),
+            ChartTreeNode(name: 'Sortie de l\'hôpital', value: 45),
+            ChartTreeNode(name: 'Dossier médical', value: 32),
+          ],
+        ),
+      ],
+    ),
 
-  // --- ENVIRONNEMENT ---
-  VerbatimNode(
-    label: 'Environnement',
-    children: [
-      VerbatimNode(
-        label: 'Hygiène',
-        children: [
-          VerbatimNode(label: 'Propreté', value: 98),
-          VerbatimNode(label: 'Manque d\'hygiène', value: 12),
-          VerbatimNode(label: 'Odeurs', value: 18),
-          VerbatimNode(label: 'Entretien', value: 54),
-        ],
-      ),
-      VerbatimNode(
-        label: 'Infrastructure',
-        children: [
-          VerbatimNode(label: 'Structure', value: 42),
-          VerbatimNode(label: 'Chambre', value: 67),
-          VerbatimNode(label: 'Repas / Nourriture', value: 88),
-          VerbatimNode(label: 'Bruit', value: 73),
-          VerbatimNode(label: 'Signalisation', value: 26),
-          VerbatimNode(label: 'Température', value: 19),
-          VerbatimNode(label: 'Équipement TV/Wifi', value: 34),
-        ],
-      ),
-    ],
-  ),
-];
+    // --- ENVIRONNEMENT ---
+    ChartTreeNode(
+      name: 'Environnement',
+      children: [
+        ChartTreeNode(
+          name: 'Hygiène',
+          children: [
+            ChartTreeNode(name: 'Propreté', value: 98),
+            ChartTreeNode(name: 'Manque d\'hygiène', value: 12),
+            ChartTreeNode(name: 'Odeurs', value: 18),
+            ChartTreeNode(name: 'Entretien', value: 54),
+          ],
+        ),
+        ChartTreeNode(
+          name: 'Infrastructure',
+          children: [
+            ChartTreeNode(name: 'Structure', value: 42,),
+            ChartTreeNode(name: 'Chambre', value: 67),
+            ChartTreeNode(name: 'Repas / Nourriture', value: 88),
+            ChartTreeNode(name: 'Bruit', value: 73),
+            ChartTreeNode(name: 'Signalisation', value: 26),
+            ChartTreeNode(name: 'Température', value: 19),
+            ChartTreeNode(name: 'Équipement TV/Wifi', value: 34),
+          ],
+        ),
+      ],
+    ),
+  ],
+);

@@ -45,6 +45,7 @@ dependencies:
   riverpod_annotation: ^4.0.2
   syncfusion_flutter_gauges: ^33.2.5
   xtal_dataview: ^0.5.0
+  mocktail: ^1.0.5
 
 dev_dependencies:
   flutter_test:

@@ -33,7 +33,7 @@ class MainDashboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-      
+
       appBar: appAppBar(context),
       body: Row(
         children: [
