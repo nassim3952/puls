@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
+import 'package:syncfusion_flutter_treemap/treemap.dart';
 import 'package:xtal_dataview/xtal_dataview.dart' hide LegendPosition;
 
 import '../color.dart';
 import '../data/fake_data.dart';
+import '../data/fake_data.dart';
 import '../models/chart_model.dart';
+import '../models/patient.dart';
 
 class AppCharts {
   // --- 1. GRAPHIQUE JAUGE (KPS) ---
@@ -67,55 +70,56 @@ class AppCharts {
   // --- 2. GRAPHIQUE EN CAMEMBERT (Pie) ---
   static Widget pie(List<ChartDataPie> data, bool legend) {
     return RepaintBoundary(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: SizedBox(
-          // Attention : 80px c'est très petit pour afficher des chiffres.
-          // Si les chiffres ne s'affichent pas, augmente cette taille.
-          width: 80,
-          height: 80,
-          child: SfCircularChart(
-            margin: EdgeInsets.zero,
-            // 1. Activation du Tooltip (le hint)
-            tooltipBehavior: TooltipBehavior(
-              enable: true,
-              format: 'point.x : point.y%', // Affiche "Label : Valeur%"
-              activationMode: ActivationMode.singleTap,
-            ),
-            series: <CircularSeries<ChartDataPie, String>>[
-              PieSeries<ChartDataPie, String>(
-                dataSource: data,
-                xValueMapper: (ChartDataPie d, _) => d.label,
-                yValueMapper: (ChartDataPie d, _) => d.value,
-                pointColorMapper: (ChartDataPie d, _) => d.color,
-                radius: '100%',
-                strokeColor: Colors.white,
-                strokeWidth: 1.5,
-                animationDuration: 500,
-                enableTooltip: true,
-                // 2. Activation et configuration des chiffres (Data Labels)
-                dataLabelSettings: const DataLabelSettings(
-                  isVisible: true,
-                  labelPosition: ChartDataLabelPosition.inside, // Chiffres à l'intérieur des parts
-                  textStyle: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                  // Permet de ne pas masquer les labels s'ils se chevauchent un peu
-                  labelIntersectAction: LabelIntersectAction.none,
+      child: SizedBox(
+        width: 80,
+        height: 80,
+        child: SfCircularChart(
+          margin: EdgeInsets.zero,
+          // Utilisation d'un builder pour un contrôle total sur la taille du hint
+          tooltipBehavior: TooltipBehavior(
+            enable: true,
+            activationMode: ActivationMode.singleTap,
+            builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(4),
                 ),
-              ),
-            ],
+                child: Text(
+                  '${data.label}: ${data.value}%',
+                  style: const TextStyle(color: Colors.white, fontSize: 12), // Texte très petit
+                ),
+              );
+            },
           ),
+          series: <CircularSeries<ChartDataPie, String>>[
+            PieSeries<ChartDataPie, String>(
+              dataSource: data,
+              xValueMapper: (ChartDataPie d, _) => d.label,
+              yValueMapper: (ChartDataPie d, _) => d.value,
+              pointColorMapper: (ChartDataPie d, _) => d.color,
+              radius: '100%', // Remplit tout l'espace 80x80
+              strokeColor: Colors.white,
+              strokeWidth: 1,
+              enableTooltip: true,
+              dataLabelSettings: const DataLabelSettings(
+                isVisible: true,
+                labelPosition: ChartDataLabelPosition.inside,
+                // Désactiver les labels si le segment est trop petit pour éviter le bruit visuel
+                overflowMode: OverflowMode.hide,
+                textStyle: TextStyle(fontSize: 10, color: Colors.white),
+              ),
+            ),
+          ],
         ),
       ),
     );
-  }
-  // --- 3. SPLINE ---
+  }  // --- 3. SPLINE ---
   static Widget spline(List<SplineGroup> activeGroups) {
     return RepaintBoundary(
       child: SfCartesianChart(
+        // 1. On active le Tooltip (le hint)
         // 1. On active le Tooltip (le hint)
         tooltipBehavior: TooltipBehavior(
           enable: true,
@@ -145,12 +149,14 @@ class AppCharts {
             enableTooltip: true, // 2. On autorise le tooltip pour cette série
             animationDuration: 800,
             // 3. On agrandit les points ici (height et width)
+            // 3. On agrandit les points ici (height et width)
             markerSettings: const MarkerSettings(
               isVisible: true,
               height: 6, // Augmenté de 4 à 8
               width: 6,  // Augmenté de 4 à 8
               shape: DataMarkerType.circle,
               borderWidth: 2,
+               // Ajoute un petit contour blanc pour le style
                // Ajoute un petit contour blanc pour le style
             ),
           );
@@ -216,7 +222,7 @@ class AppCharts {
             child: SfCircularChart(
               margin: EdgeInsets.zero,
               // Activation du tooltip (le "hint")
-              tooltipBehavior: TooltipBehavior(enable: true,textStyle: const TextStyle(fontSize: 7),),
+              tooltipBehavior: TooltipBehavior(enable: true,textStyle: const TextStyle(fontSize: 22),),
               annotations: [
                 CircularChartAnnotation(
                   widget: Center(
@@ -259,4 +265,47 @@ class AppCharts {
         ),
       ),
     );
-  }}
+  }
+  static Widget Treemap(List<PatientModel> patients) {
+    return RepaintBoundary(
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: SfTreemap(
+          dataCount: patients.length,
+          weightValueMapper: (int index) {
+            // On s'assure de retourner un double
+            return 1.0;
+          },
+          levels: <TreemapLevel>[
+            TreemapLevel(
+              groupMapper: (int index) {
+                // Vérifie que 'service' est bien une String non nulle
+                return patients[index].service;
+              },
+              labelBuilder: (BuildContext context, TreemapTile tile) {
+                return Center(
+                  child: Text(
+                    tile.group,
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
+                  ),
+                );
+              },
+              tooltipBuilder: (BuildContext context, TreemapTile tile) {
+                return Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    'Service : ${tile.group}\nTotal : ${tile.weight.toInt()}',
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+}
+
+
+

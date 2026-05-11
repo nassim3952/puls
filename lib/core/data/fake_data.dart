@@ -6,6 +6,8 @@ import 'package:xtal_dataview/xtal_dataview.dart';
 import '../../features/dashboard/presentation/model/domain/verbatim_node.dart';
 import '../color.dart';
 import '../models/chart_model.dart';
+import '../models/patient.dart';
+import '../models/patient_response.dart';
 
 final splineData1 = [
   SplineGroup(
@@ -147,6 +149,72 @@ final kpi2Spline = splineData1;
 
 
 final kpi6Pie = pie6data;
+
+final List<PatientModel> mockPatients = [
+  PatientModel(
+    id: "1752526737001",
+    ipp: "7AC112BKXYZ00001",
+    sex: "F",
+    firstName: "Amira",
+    lastName: "Benaissa",
+    service: "Gynécologie-Obstétrique",
+    visitType: "Consultation",
+    exploration: "Imagerie",
+    afterCare: "Consultation de suivi",
+    date: DateTime.parse("2025-07-03T00:00:00.000Z"),
+    hasAlert: false,
+    patientResponse: PatientResponse(
+      q0: "5",
+      q1: "oui_totalement",
+      q2: Verbatim(classe: "soins_&_technique", sousClasse: "confort_physique", message: "Personnel attentionné."),
+      q3: Verbatim(classe: "soins_&_technique", sousClasse: "confort_physique", message: "Médecin à l'écoute."),
+      q4: Verbatim(classe: "organisation", sousClasse: "gestion_de_temps", message: "Réduire l'attente."),
+      q5: true,
+    ),
+  ),
+  PatientModel(
+    id: "1752526737002",
+    ipp: "8BD223CLYAB00002",
+    sex: "M",
+    firstName: "Karim",
+    lastName: "Ziani",
+    service: "Cardiologie",
+    visitType: "Urgence",
+    exploration: "ECG",
+    afterCare: "Hospitalisation",
+    date: DateTime.now(),
+    hasAlert: true,
+    patientResponse: PatientResponse(
+      q0: "3",
+      q1: "moyennement",
+      q2: Verbatim(classe: "accueil", sousClasse: "orientation", message: "Difficile de trouver le service."),
+      q3: Verbatim(classe: "soins", sousClasse: "infirmier", message: "Soin rapide."),
+      q4: Verbatim(classe: "logistique", sousClasse: "propreté", message: "Chambre propre."),
+      q5: false,
+    ),
+  ),
+  PatientModel(
+    id: "1752526737003",
+    ipp: "9EF334DMZBC00003",
+    sex: "F",
+    firstName: "Selma",
+    lastName: "Madi",
+    service: "Gynécologie-Obstétrique",
+    visitType: "Suivi",
+    exploration: "Échographie",
+    afterCare: "Rien",
+    date: DateTime.now(),
+    hasAlert: false,
+    patientResponse: PatientResponse(
+      q0: "5",
+      q1: "oui_totalement",
+      q2: Verbatim(classe: "soins", sousClasse: "empathie", message: "Très bien."),
+      q3: Verbatim(classe: "soins", sousClasse: "empathie", message: "Rien à dire."),
+      q4: Verbatim(classe: "organisation", sousClasse: "accueil", message: "Parfait."),
+      q5: true,
+    ),
+  ),
+];
 
 
 final ChartTreeNode sunBurstData = ChartTreeNode(

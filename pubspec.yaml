@@ -46,6 +46,8 @@ dependencies:
   syncfusion_flutter_gauges: ^33.2.5
   xtal_dataview: ^0.5.0
   mocktail: ^1.0.5
+  syncfusion_flutter_treemap: ^33.2.5
+  dio: ^5.9.2
 
 dev_dependencies:
   flutter_test:

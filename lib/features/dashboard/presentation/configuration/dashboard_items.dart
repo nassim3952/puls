@@ -60,7 +60,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: AppCharts.doughnut(consentementPie),
+    secondaryChild: AppCharts.Treemap(mockPatients),
     child: AppCharts.SunChart(sunBurstData),
   ),
   DashboardItem(
@@ -69,6 +69,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
+    secondaryChild: AppCharts.Treemap(mockPatients),
     child: AppCharts.SunChart(sunBurstData),
   ),
   DashboardItem(
@@ -77,6 +78,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
+    secondaryChild: AppCharts.Treemap(mockPatients),
     child: AppCharts.SunChart(sunBurstData),
   ),
   DashboardItem(
@@ -99,7 +101,7 @@ final dashboardItems = [
   DashboardItem(
     title: "Réponse",
     fullName: "Indice d'Amélioration & de Réputation",
-    crossAxis: 6,
+    crossAxis: 12,
     mainAxis: 4,
     child: Row(
       children: [
