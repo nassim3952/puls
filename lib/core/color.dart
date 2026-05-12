@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Vert Menthe principal
   static const Color primaryMenthe = Color(0XFF10B982);
+  static const Color primaryMentheWarning = Color(0xFFF59E0B);
+  static const Color primaryMentheError = Color(0xFFEF4444);
+  static const Color primaryMentheNeutral = Color(0xFF64748B);
 
   //variant du menthe
   static const Color primaryMentheVariantDeepMenthe = Color(0XFF637AB9);

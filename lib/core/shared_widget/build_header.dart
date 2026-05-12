@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:puls/core/shared_widget/select_button.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../features/dashboard/presentation/provider/filter_controller.dart';
 import '../provider/patient_provider.dart';
@@ -36,7 +38,7 @@ class DashboardHeader extends ConsumerWidget {
               Wrap(
                 spacing: 10,
                 runSpacing: 10, // Espace entre les lignes de filtres
-                children: _buildFilterButtons(filters, notifier),
+                children: _buildFilterButtons(filters, notifier,ref,context),
               ),
               const SizedBox(height: 16),
               _buildActionButton(ref),
@@ -50,7 +52,7 @@ class DashboardHeader extends ConsumerWidget {
                   spacing: 14,
                   runSpacing: 10,
                   crossAxisAlignment: WrapCrossAlignment.center,
-                  children: _buildFilterButtons(filters, notifier),
+                  children: _buildFilterButtons(filters, notifier,ref,context),
                 ),
               ),
               const SizedBox(width: 20),
@@ -63,13 +65,37 @@ class DashboardHeader extends ConsumerWidget {
   }
 
 // Pour garder le code propre, on sépare les widgets
-  List<Widget> _buildFilterButtons(filters, notifier) {
+  List<Widget> _buildFilterButtons(PatientFilters filters, StateController<PatientFilters> notifier, WidgetRef ref, BuildContext context) {
     return [
-      // ... Bouton Période (on le laisse vide pour l'instant) ...
+      FilterSelectButton(
+        label: "Durée",
+        currentValue: filters.dateRange == DateRange.custom && filters.customRange != null
+            ? "${filters.customRange!.start.day}/${filters.customRange!.start.month} - ${filters.customRange!.end.day}/${filters.customRange!.end.month}"
+            : (filters.dateRange == DateRange.week ? '7 jours' :
+        filters.dateRange == DateRange.month ? '1 mois' :
+        filters.dateRange == DateRange.year ? '1 an' : 'Tout'),
+        options: const ['7 jours', '1 mois', '1 an', 'Personnalisé', 'Tout'],
+        onSelected: (val) {
+          if (val == 'Personnalisé') {
+            _showCustomDatePicker(context, notifier);
+          } else {
+            DateRange selectedRange;
+            switch (val) {
+              case '7 jours': selectedRange = DateRange.week; break;
+              case '1 mois':  selectedRange = DateRange.month; break;
+              case '1 an':    selectedRange = DateRange.year; break;
+              default:        selectedRange = DateRange.all;
+            }
+            notifier.update((state) => state.copyWith(dateRange: selectedRange));
+          }
+        },
+      ),
 
       FilterSelectButton(
         label: "Type",
-        currentValue: filters.typePriseEncharge, // Attention au nom dans ta classe !
+      currentValue: (filters.typePriseEncharge == null || filters.typePriseEncharge!.isEmpty)
+      ? "Type"
+          : filters.typePriseEncharge, // Attention au nom dans ta classe !
         options: ['Consultation', 'Hospitalisation', 'Urgences', 'Exploration'],
         onSelected: (val) => notifier.state = notifier.state.copyWith(typePriseEncharge: val),
       ),
@@ -103,8 +129,42 @@ class DashboardHeader extends ConsumerWidget {
         backgroundColor: const Color(0xFF10B981),
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       ),
-      child: const Text('Actualiser', style: TextStyle(fontWeight: FontWeight.bold)),
+      child: const Text('Réinitialiser', style: TextStyle(fontWeight: FontWeight.bold)),
     );
   }}
+
+void _showCustomDatePicker(BuildContext context, StateController<PatientFilters> notifier) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text("Sélectionner une période"),
+      content: SizedBox(
+        height: 350,
+        width: 300,
+        child: SfDateRangePicker(
+          selectionMode: DateRangePickerSelectionMode.range,
+          headerStyle: const DateRangePickerHeaderStyle(backgroundColor: Colors.white),
+          onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
+            if (args.value is PickerDateRange) {
+              final range = args.value as PickerDateRange;
+              if (range.startDate != null && range.endDate != null) {
+                notifier.update((state) => state.copyWith(
+                  dateRange: DateRange.custom,
+                  customRange: DateTimeRange(start: range.startDate!, end: range.endDate!),
+                ));
+              }
+            }
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Valider"),
+        )
+      ],
+    ),
+  );
+}

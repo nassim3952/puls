@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 
+import '../../../../core/color.dart';
 import '../provider/q0_average_provider.dart';
 
 class Q0ScoreGauge extends ConsumerWidget {
@@ -13,7 +14,7 @@ class Q0ScoreGauge extends ConsumerWidget {
     final score = ref.watch(q0AverageProvider);
 
     // On peut même changer la couleur selon le score !
-    Color gaugeColor = score > 70 ? Colors.green : (score > 40 ? Colors.orange : Colors.red);
+    Color gaugeColor = score > 70 ? AppColors.primaryMenthe : (score > 40 ? Colors.orange : Colors.red);
 
     return RepaintBoundary(
       child: SizedBox(

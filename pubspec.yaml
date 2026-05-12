@@ -48,6 +48,7 @@ dependencies:
   mocktail: ^1.0.5
   syncfusion_flutter_treemap: ^33.2.5
   dio: ^5.9.2
+  syncfusion_flutter_datepicker: ^33.2.5
 
 dev_dependencies:
   flutter_test:

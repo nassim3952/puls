@@ -40,7 +40,7 @@ class StatCard extends ConsumerWidget {
         padding: const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 0),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),

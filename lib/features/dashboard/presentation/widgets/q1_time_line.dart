@@ -34,7 +34,7 @@ class Q1MultiSplineChart extends ConsumerWidget {
             axisLine: AxisLine(width: 0),
             majorGridLines: MajorGridLines(width: 0.5, dashArray: [5, 5]),
             minimum: 0,
-            maximum: 100,
+            maximum: 109,
           ),
 // Dans ton widget Q1MultiSplineChart
             series: <SplineSeries<ChartDataSpline, String>>[
@@ -50,12 +50,12 @@ class Q1MultiSplineChart extends ConsumerWidget {
                   enableTooltip: true,
                   animationDuration: 800,
                   markerSettings: const MarkerSettings(
-                    isVisible: true,
-                    height: 6,
-                    width: 6,
+                    isVisible: false,
+                    height: 4,
+                    width: 4,
                     shape: DataMarkerType.circle,
                     borderWidth: 2,
-                    borderColor: Colors.white,
+                    borderColor: AppColors.primaryMenthe,
                   ),
                 );
               }).toList(),

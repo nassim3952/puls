@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:puls/core/color.dart';
 
+// Aucun changement majeur ici, il reste générique et propre !
 class FilterSelectButton extends StatelessWidget {
   final String label;
   final String? currentValue;
@@ -19,17 +20,16 @@ class FilterSelectButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopupMenuButton<String>(
       onSelected: onSelected,
-      offset: const Offset(0, 45), // Affiche le menu juste en dessous
+      offset: const Offset(0, 45),
       itemBuilder: (context) => options
           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
           .toList(),
-      // On réutilise ton style visuel ici
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: AppColors.neutral.withValues(alpha: 0.3), ),
-          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.neutral.withValues(alpha: 0.3)),
+          borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

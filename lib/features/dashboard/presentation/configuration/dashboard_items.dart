@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/spline_selection_provider.dart';
 import 'package:puls/core/shared_widget/app_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/alert_section.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q2_sunburst_chart.dart';
@@ -25,6 +26,7 @@ final dashboardItems = [
     fullName: "Indice de Satisfaction Globale du Parcours Patient",
     crossAxis: 12,
     mainAxis: 5,
+    isExpandable: true,
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -39,6 +41,7 @@ final dashboardItems = [
   DashboardItem(
     headerWidget: const SplineLegendHeader(),
     title: "EMP",
+    isExpandable: true,
     fullName: "Efficacité Médicale Perçue",
     crossAxis: 12,
     mainAxis: 5,
@@ -68,7 +71,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: Q3TreemapSection(),
+    secondaryChild: Expanded(child: Q3TreemapSection()),
     child: Q3SunburstSection(),
   ),
   DashboardItem(
@@ -95,7 +98,7 @@ final dashboardItems = [
     fullName: "Alert",
     crossAxis: 12,
     mainAxis: 8,
-    child: alertCard(),
+    child: AlertSection(),
   ),
   DashboardItem(
     title: "Réponse",

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/color.dart';
 import 'package:puls/core/models/chart_model.dart';
 
 import '../../../../core/models/patient.dart';
@@ -19,11 +20,11 @@ final q1TimelineGroupsProvider = Provider<AsyncValue<List<SplineGroup>>>((ref) {
 
     // 3. Définition des catégories (clés du JSON) et leurs couleurs
     final Map<String, Color> categories = {
-      'oui_totalement': const Color(0xFF10B981),
-      'oui_plutot': const Color(0xFF3B82F6),
+      'oui_totalement': AppColors.primaryMenthe,
+      'oui_plutot': AppColors.primaryMentheWarning,
       'en_partie': const Color(0xFFF59E0B),
-      'non_pas_vraiment': const Color(0xFFEF4444),
-      'en_attente': const Color(0xFF94A3B8),
+      'non_pas_vraiment': AppColors.primaryMentheError,
+      'en_attente':  AppColors.primaryMentheNeutral,
     };
 
     // 4. On trie les patients par date pour le calcul cumulatif

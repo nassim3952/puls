@@ -75,21 +75,21 @@ AppBar appAppBar(BuildContext context) {
             child: Container(
               height: 36,
               decoration: BoxDecoration(
-                color: Colors.grey[100], // Un fond léger pour la visibilité
+                color: Colors.transparent, // Un fond léger pour la visibilité
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const TextField(
-                decoration: InputDecoration(
-                  hintText: 'Recherche...',
-                  border: InputBorder.none,
-                  prefixIcon: Icon(
-                    Icons.search,
-                    size: 20,
-                    color: AppColors.primaryMenthe,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(vertical: 8),
-                ),
-              ),
+              // child: const TextField(
+              //   decoration: InputDecoration(
+              //     hintText: 'Recherche...',
+              //     border: InputBorder.none,
+              //     prefixIcon: Icon(
+              //       Icons.search,
+              //       size: 20,
+              //       color: AppColors.primaryMenthe,
+              //     ),
+              //     contentPadding: EdgeInsets.symmetric(vertical: 8),
+              //   ),
+              // ),
             ),
           ),
 

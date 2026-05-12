@@ -32,7 +32,7 @@ class Q0SplineChart extends ConsumerWidget {
             axisLine: AxisLine(width: 0),
             majorGridLines: MajorGridLines(width: 0.5, dashArray: [5, 5]),
             minimum: 0,
-            maximum: 100,
+            maximum: 109,
           ),
           series: <SplineSeries<ChartDataSpline, String>>[
             SplineSeries<ChartDataSpline, String>(
@@ -44,8 +44,8 @@ class Q0SplineChart extends ConsumerWidget {
               width: 3,
               markerSettings: const MarkerSettings(
                 isVisible: true,
-                height: 6,
-                width: 6,
+                height: 4,
+                width: 4,
                 shape: DataMarkerType.circle,
                 borderWidth: 2,
                 borderColor: AppColors.primaryMenthe,

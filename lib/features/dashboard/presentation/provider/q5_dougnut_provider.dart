@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/patient_provider.dart';
 
 import '../../../../core/models/chart_model.dart';
@@ -16,8 +17,8 @@ final q5DoughnutProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
     final nonCount = list.where((p) => p.patientResponse.q5 == false).length;
 
     return [
-      ChartDataPie("OUI", ouiCount.toDouble(), const Color(0xFF10B981)), // Vert
-      ChartDataPie("NON", nonCount.toDouble(), const Color(0xFFEF4444)), // Rouge
+      ChartDataPie("OUI", ouiCount.toDouble(), AppColors.primaryMenthe), // Vert
+      ChartDataPie("NON", nonCount.toDouble(), AppColors.primaryMenthe.withValues(alpha: 0.6)), // Rouge
     ];
   });
 });

@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/patient_provider.dart';
 import 'package:puls/core/provider/spline_selection_provider.dart';
 
@@ -14,11 +15,11 @@ final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
     if (list.isEmpty) return [];
 
     final Map<String, Color> categories = {
-      'oui_totalement': const Color(0xFF10B981),
-      'oui_plutot': const Color(0xFF3B82F6),
+      'oui_totalement': AppColors.primaryMenthe,
+      'oui_plutot': AppColors.primaryMenthe.withValues(alpha: 0.8),
       'en_partie': const Color(0xFFF59E0B),
-      'non_pas_vraiment': const Color(0xFFEF4444),
-      'en_attente': const Color(0xFF94A3B8),
+      'non_pas_vraiment': AppColors.primaryMenthe.withValues(alpha: 0.4),
+      'en_attente': AppColors.primaryMenthe.withValues(alpha: 0.6),
     };
 
     return categories.entries.map((entry) {

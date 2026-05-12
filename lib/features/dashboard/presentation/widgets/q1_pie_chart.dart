@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/color.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../provider/q1_pie_chart_provider.dart';
@@ -30,7 +31,7 @@ class Q1PieChart extends ConsumerWidget {
                   ),
                   child: Text(
                     '${data.label}: ${data.value}%',
-                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                    style: TextStyle(color: AppColors.white, fontSize: 10),
                   ),
                 );
               },
@@ -42,13 +43,13 @@ class Q1PieChart extends ConsumerWidget {
                 yValueMapper: (ChartDataPie d, _) => d.value,
                 pointColorMapper: (ChartDataPie d, _) => d.color,
                 radius: '100%',
-                strokeColor: Colors.white,
+                strokeColor: AppColors.white,
                 strokeWidth: 1,
                 dataLabelSettings: const DataLabelSettings(
                   isVisible: true,
                   labelPosition: ChartDataLabelPosition.inside,
                   overflowMode: OverflowMode.hide,
-                  textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.white),
+                  textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.white),
                 ),
               ),
             ],
