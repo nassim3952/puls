@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:puls/features/dashboard/presentation/provider/Q3FlatNode.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 import 'package:syncfusion_flutter_treemap/treemap.dart';
@@ -267,46 +268,54 @@ class AppCharts {
       ),
     );
   }
-  static Widget Treemap(List<PatientModel> patients) {
+  static Widget treemapChart(List<Q3FlatNode> data) {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: SfTreemap(
-          dataCount: patients.length,
-          weightValueMapper: (int index) {
-            // On s'assure de retourner un double
-            return 1.0;
-          },
-          levels: <TreemapLevel>[
-            TreemapLevel(
-              groupMapper: (int index) {
-                // Vérifie que 'service' est bien une String non nulle
-                return patients[index].service;
-              },
-              labelBuilder: (BuildContext context, TreemapTile tile) {
-                return Center(
-                  child: Text(
-                    tile.group,
-                    style: const TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                );
-              },
-              tooltipBuilder: (BuildContext context, TreemapTile tile) {
-                return Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    'Service : ${tile.group}\nTotal : ${tile.weight.toInt()}',
-                  ),
-                );
-              },
+          dataCount: data.length,
+          weightValueMapper: (int index) => 1.0,
+            selectionSettings: const TreemapSelectionSettings(
+              color: Colors.orange
             ),
-          ],
+            levels: <TreemapLevel>[
+              // NIVEAU 1 : CLASSE
+              TreemapLevel(
+                groupMapper: (int index) => data[index].classe,
+                color: Colors.blueAccent,
+                labelBuilder: (context, tile) => Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Text(tile.group, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              // NIVEAU 2 : SOUS-CLASSE
+              TreemapLevel(
+                groupMapper: (int index) => data[index].sousClasse,
+                color: Colors.blue.withOpacity(0.5),
+                // On ne met pas de label ici pour éviter de surcharger
+              ),
+              // NIVEAU 3 : MESSAGE
+              TreemapLevel(
+                groupMapper: (int index) => data[index].message,
+                padding: const EdgeInsets.all(0.5), // Crée une fine séparation entre les carrés
+                // ✅ C'EST ICI QU'ON MET LE TOOLTIP POUR QU'IL SOIT CLIQUABLE/SURVOLABLE
+                tooltipBuilder: (BuildContext context, TreemapTile tile) {
+                  final int index = tile.indices.first;
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    color: Colors.black,
+                    child: Text(
+                      data[index].message,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  );
+                },
+              ),
+            ],
         ),
       ),
     );
-  }
-
-}
+  }}
 
 
 

@@ -6,6 +6,7 @@ import 'package:puls/core/shared_widget/app_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q2_sunburst_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/q3_treemap.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q4_sunburst_chart.dart';
 import '../../../../core/data/fake_data.dart';
 import '../../../../core/provider/iar_selection_provider.dart';
@@ -58,7 +59,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: AppCharts.Treemap(mockPatients),
+    secondaryChild: Q3TreemapSection(),
     child: Q2SunburstSection(),
   ),
   DashboardItem(
@@ -67,7 +68,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: AppCharts.Treemap(mockPatients),
+    secondaryChild: Q3TreemapSection(),
     child: Q3SunburstSection(),
   ),
   DashboardItem(
@@ -76,7 +77,7 @@ final dashboardItems = [
     crossAxis: 6,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: AppCharts.Treemap(mockPatients),
+    secondaryChild: Q3TreemapSection(),
     child: Q4SunburstSection(),
   ),
   DashboardItem(
