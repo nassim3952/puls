@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/shared_widget/select_button.dart';
 
 import '../../features/dashboard/presentation/provider/filter_controller.dart';
+import '../provider/patient_provider.dart';
 import '../provider/spline_selection_provider.dart';
 
 class DashboardHeader extends ConsumerWidget {
@@ -10,8 +11,8 @@ class DashboardHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final filters = ref.watch(filterProvider);
-    final notifier = ref.read(filterProvider.notifier);
+    final filters = ref.watch(allFiltersProvider);
+    final notifier = ref.read(allFiltersProvider.notifier);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -64,44 +65,38 @@ class DashboardHeader extends ConsumerWidget {
 // Pour garder le code propre, on sépare les widgets
   List<Widget> _buildFilterButtons(filters, notifier) {
     return [
-      FilterSelectButton(
-        label: 'Période',
-        currentValue: filters.periode?.toString(),
-        options: ['Aujourd\'hui', '7 derniers jours', 'Ce mois'],
-        onSelected: (val) => {},
-      ),
+      // ... Bouton Période (on le laisse vide pour l'instant) ...
+
       FilterSelectButton(
         label: "Type",
-        currentValue: filters.type,
+        currentValue: filters.typePriseEncharge, // Attention au nom dans ta classe !
         options: ['Consultation', 'Hospitalisation', 'Urgences', 'Exploration'],
-        onSelected: notifier.updateType,
+        onSelected: (val) => notifier.state = notifier.state.copyWith(typePriseEncharge: val),
       ),
       FilterSelectButton(
         label: "Service",
         currentValue: filters.service,
-        options: ['Cardiologie', 'Pédiatrie', 'Neurologie', 'Chirurgie'],
-        onSelected: notifier.updateService,
+        options: ['Cardiologie', 'Gynécologie-Obstétrique', 'Pédiatrie', 'Neurologie'],
+        onSelected: (val) => notifier.state = notifier.state.copyWith(service: val),
       ),
       FilterSelectButton(
         label: "Exploration",
         currentValue: filters.exploration,
-        options: ['Imagerie', 'Biologie', 'Fonctionnelle'],
+        options: ['Imagerie', 'Biologie / Laboratoire', 'Explorations Fonctionnelles'],
         onSelected: (val) => notifier.state = notifier.state.copyWith(exploration: val),
       ),
       FilterSelectButton(
         label: 'Sortie',
         currentValue: filters.sortie,
-        options: ['Post-hospitalisation', 'Suivi', 'Instructions'],
+        options: ['Post-hospitalisation', 'Consultation de suivi', 'Instructions de sortie'],
         onSelected: (val) => notifier.state = notifier.state.copyWith(sortie: val),
       ),
     ];
   }
-
   Widget _buildActionButton(WidgetRef ref) {
     return ElevatedButton(
       onPressed: () {
-        ref.read(filterProvider.notifier).applyFilters();
-        ref.read(splineSelectionProvider.notifier).toggleSpline("Oui totalement");
+        ref.invalidate(patientsListProvider);
 
       },
       style: ElevatedButton.styleFrom(

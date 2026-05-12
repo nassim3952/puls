@@ -5,20 +5,31 @@ import 'package:puls/core/data/fake_data.dart';
 class SplineSelectionNotifier extends Notifier<Set<String>> {
   @override
   Set<String> build() {
-    // État initial : on sélectionne tout par défaut
-    return splineData1.map((e) => e.name).toSet();
+    // On définit manuellement les clés de référence pour éviter les surprises du fake_data
+    return {
+      'OUI TOTALEMENT',
+      'OUI PLUTOT',
+      'EN PARTIE',
+      'NON PAS VRAIMENT',
+      'EN ATTENTE',
+    };
   }
 
   void toggleSpline(String name) {
-    // En Riverpod, on crée une nouvelle copie du state pour notifier l'UI
-    if (state.contains(name)) {
-      state = {...state}..remove(name);
-    } else {
-      state = {...state, name};
-    }
-  }
-}
+    final upperName = name.toUpperCase();
 
+    // On crée une copie locale pour manipuler le Set tranquillement
+    final newState = {...state};
+
+    if (newState.contains(upperName)) {
+      newState.remove(upperName);
+    } else {
+      newState.add(upperName);
+    }
+
+    // On réassigne l'état pour notifier les widgets
+    state = newState;
+  }}
 // Le provider global
 final splineSelectionProvider = NotifierProvider<SplineSelectionNotifier, Set<String>>(() {
   return SplineSelectionNotifier();

@@ -3,6 +3,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 import 'package:syncfusion_flutter_treemap/treemap.dart';
 import 'package:xtal_dataview/xtal_dataview.dart' hide LegendPosition;
+import 'package:xtal_dataview/xtal_dataview.dart' as xtal;
 
 import '../color.dart';
 import '../data/fake_data.dart';
@@ -191,7 +192,7 @@ class AppCharts {
   }
 
   // --- 5. SUNBURST ---
-  static Widget SunChart(ChartTreeNode data) {
+  static Widget SunChart(xtal.ChartTreeNode data) {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12),

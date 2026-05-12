@@ -238,7 +238,7 @@
     },
     "answers": {
       "q0": "4",
-      "q1": "oui_plutot",
+      "q1": "en_attente",
       "q2": {"class": "soins_&_technique", "sub_class": "qualite_des_soins", "message": "Prise en charge rapide aux urgences pédiatriques, personnel doux avec mon enfant."},
       "q3": {"class": "soins_&_technique", "sub_class": "confort_physique", "message": "La gentillesse de l'infirmière qui a calmé mon enfant lors de la prise de sang."},
       "q4": {"class": "organisation", "sub_class": "gestion_de_temps", "message": "Résultats du laboratoire un peu longs à obtenir."},
@@ -490,7 +490,7 @@
     },
     "answers": {
       "q0": "5",
-      "q1": "oui_totalement",
+      "q1": "en_attente",
       "q2": {"class": "soins_&_technique", "sub_class": "qualite_des_soins", "message": "Intervention chirurgicale d'urgence très bien gérée, je me sens en sécurité dans cet hôpital."},
       "q3": {"class": "soins_&_technique", "sub_class": "qualite_des_soins", "message": "La rapidité d'intervention de l'équipe chirurgicale et leur professionnalisme exemplaire."},
       "q4": {"class": "organisation", "sub_class": "conditions_d_accueil", "message": "Améliorer la signalisation pour trouver facilement les services aux urgences."},
@@ -706,7 +706,7 @@
     },
     "answers": {
       "q0": "4",
-      "q1": "oui_plutot",
+      "q1": "en_attente",
       "q2": {"class": "soins_&_technique", "sub_class": "qualite_des_soins", "message": "Traitement oncologique bien suivi, bonne coordination entre les différents spécialistes."},
       "q3": {"class": "soins_&_technique", "sub_class": "qualite_des_soins", "message": "La coordination entre l'oncologue et les autres services qui a permis un traitement intégré."},
       "q4": {"class": "organisation", "sub_class": "conditions_d_accueil", "message": "Améliorer les espaces de repos pour les patients fatigués après la chimio."},

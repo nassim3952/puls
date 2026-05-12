@@ -30,20 +30,24 @@ class PatientModel {
   });
 
   factory PatientModel.fromJson(Map<String, dynamic> json) {
-    final patientData = json['patient'] as Map<String, dynamic>;
-    final answersData = json['answers'] as Map<String, dynamic>;
+    // On extrait les sous-objets pour y accéder plus facilement
+    final patientData = json['patient'] as Map<String, dynamic>? ?? {};
+    final answersData = json['answers'] as Map<String, dynamic>? ?? {};
 
     return PatientModel(
-      id: json['id'],
-      firstName: patientData['first_name'],
-      lastName: patientData['last_name'],
-      sex: patientData['sex'],
-      ipp: patientData['ipp'],
-      service: patientData['service'],
-      visitType: patientData['visit_type'],
-      exploration: patientData['exploration'],
-      afterCare: patientData['aftercare'],
-      date: DateTime.parse(patientData['date']),
+      id: json['id']?.toString() ?? '',
+      firstName: patientData['first_name'] ?? 'Inconnu',
+      lastName: patientData['last_name'] ?? 'Inconnu',
+      sex: patientData['sex'] ?? 'N/A',
+      ipp: patientData['ipp'] ?? '',
+      service: patientData['service'] ?? '',
+      visitType: patientData['visit_type'] ?? '',
+      exploration: patientData['exploration'] ?? '',
+      afterCare: patientData['aftercare'] ?? '',
+      // Sécurité sur la date
+      date: patientData['date'] != null
+          ? DateTime.parse(patientData['date'])
+          : DateTime.now(),
       hasAlert: json['has_alert'] ?? false,
       patientResponse: PatientResponse.fromJson(answersData),
     );

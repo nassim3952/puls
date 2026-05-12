@@ -15,32 +15,33 @@ class LegendChip extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isVisible = ref.watch(splineSelectionProvider).contains(label);
+    // On compare toujours en majuscules pour être raccord avec ton provider
+    final isVisible = ref.watch(splineSelectionProvider).contains(label.toUpperCase());
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 2),
       child: InkWell(
-        // On supprime l'effet de splash au clic pour que ce soit 100% propre
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
         onTap: () {
           ref.read(splineSelectionProvider.notifier).toggleSpline(label);
         },
         child: Padding(
-          // On garde exactement ton labelPadding du FilterChip
-          padding: const EdgeInsets.symmetric(horizontal: 6),
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
           child: Text(
             label,
             style: TextStyle(
               fontSize: 10,
-              color: isVisible ? color : Colors.grey[600],
-              fontWeight: isVisible ? FontWeight.bold : FontWeight.normal,
+              // Texte coloré si actif, gris discret si masqué
+              color: isVisible ? color : Colors.grey.withOpacity(0.5),
+              // On joue sur l'épaisseur pour marquer la sélection
+              fontWeight: isVisible ? FontWeight.w900 : FontWeight.normal,
             ),
           ),
         ),
       ),
-    );  }
-}
+    );
+  }}
 class SplineLegendHeader extends StatelessWidget {
   const SplineLegendHeader({super.key});
 

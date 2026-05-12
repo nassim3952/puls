@@ -3,27 +3,35 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/spline_selection_provider.dart';
 import 'package:puls/core/shared_widget/app_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
+import 'package:puls/features/dashboard/presentation/widgets/q2_sunburst_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/q4_sunburst_chart.dart';
 import '../../../../core/data/fake_data.dart';
 import '../../../../core/provider/iar_selection_provider.dart';
 import '../model/dashboard_item.dart';
 import '../widgets/alert_card.dart';
 import '../widgets/filter_chip.dart';
+import '../widgets/q0_score_gauge.dart';
+import '../widgets/q0_spline_chart.dart';
+import '../widgets/q3_sunburst_chart.dart';
+import '../widgets/q5_dougnut_chart.dart';
 
 final dashboardItems = [
 
   DashboardItem(
     title: "ISGPP",
     fullName: "Indice de Satisfaction Globale du Parcours Patient",
-    crossAxis: 10,
-    mainAxis: 4,
+    crossAxis: 12,
+    mainAxis: 5,
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Align(
           alignment: AlignmentGeometry.center,
-          child: AppCharts.gauge(58, AppColors.primaryMenthe),
+          child: Q0ScoreGauge(),
         ),
-        Expanded(child: AppCharts.spline(kpi1Spline)),
+        Expanded(child: Q0SplineChart()),
       ],
     ),
   ),
@@ -31,27 +39,17 @@ final dashboardItems = [
     headerWidget: const SplineLegendHeader(),
     title: "EMP",
     fullName: "Efficacité Médicale Perçue",
-    crossAxis: 14,
-    mainAxis: 4,
-    child: Consumer(
-      builder: (context, ref, child) {
-        final selectedNames = ref.watch(splineSelectionProvider);
-        final activePieData = kpi2Pie
-            .where((data) => selectedNames.contains(data.label))
-            .toList();
-        final activeSplines = splineData1
-            .where((s) => selectedNames.contains(s.name))
-            .toList();
-
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Center(child: AppCharts.pie(activePieData, false)),
-            Expanded(child: AppCharts.spline(activeSplines)),
-          ],
-        );
-      },
+    crossAxis: 12,
+    mainAxis: 5,
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Align(
+          alignment: AlignmentGeometry.center,
+          child: Q1PieChart(),
+        ),
+        Expanded(child: Q1MultiSplineChart()),
+      ],
     ),
   ),
   DashboardItem(
@@ -61,7 +59,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: AppCharts.Treemap(mockPatients),
-    child: AppCharts.SunChart(sunBurstData),
+    child: Q2SunburstSection(),
   ),
   DashboardItem(
     title: "MCR",
@@ -70,7 +68,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: AppCharts.Treemap(mockPatients),
-    child: AppCharts.SunChart(sunBurstData),
+    child: Q3SunburstSection(),
   ),
   DashboardItem(
     title: "IAR",
@@ -79,7 +77,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: AppCharts.Treemap(mockPatients),
-    child: AppCharts.SunChart(sunBurstData),
+    child: Q4SunburstSection(),
   ),
   DashboardItem(
     title: "Consentement",
@@ -88,7 +86,7 @@ final dashboardItems = [
     mainAxis: 6,
     child: Align(
         alignment: AlignmentDirectional.topCenter,
-        child: AppCharts.doughnut(consentementPie)),
+        child: Q5DoughnutSection()),
   ),
 
   DashboardItem(
