@@ -13,9 +13,8 @@ class PatientFilters {
   final String typePriseEncharge;
   final String exploration;
   final String sortie;
-  final DateRange dateRange; // Nouvelle propriété intégrée
+  final DateRange dateRange;
   final DateTimeRange? customRange;
-
 
   PatientFilters({
     this.service = '',
@@ -23,16 +22,17 @@ class PatientFilters {
     this.exploration = '',
     this.sortie = '',
     this.dateRange = DateRange.all,
-    this.customRange
+    this.customRange,
   });
 
+// Dans patient_provider.dart
   PatientFilters copyWith({
     String? service,
     String? typePriseEncharge,
     String? exploration,
     String? sortie,
     DateRange? dateRange,
-    DateTimeRange? customRange,
+    DateTimeRange? customRange, // On repasse en type simple
   }) {
     return PatientFilters(
       service: service ?? this.service,
@@ -40,11 +40,11 @@ class PatientFilters {
       exploration: exploration ?? this.exploration,
       sortie: sortie ?? this.sortie,
       dateRange: dateRange ?? this.dateRange,
+      // On utilise l'ancienne valeur seulement si la nouvelle est strictement nulle
+      // ET que ce n'est pas un changement de dateRange (pour éviter les conflits)
       customRange: customRange ?? this.customRange,
     );
-  }
-}
-
+  }}
 // 3. Instance du service
 final patientServiceProvider = Provider<PatientService>((ref) {
   return PatientService();

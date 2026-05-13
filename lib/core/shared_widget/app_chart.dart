@@ -230,18 +230,23 @@ class AppCharts {
   }
 
   // --- 5. SUNBURST ---
+// --- 5. SUNBURST ---
   static Widget SunChart(xtal.ChartTreeNode data) {
     return RepaintBoundary(
       child: Padding(
         padding: const EdgeInsets.only(bottom: 12),
         child: Center(
-          child: SizedBox.expand(child: SunburstChart(data: data)),
+          child: SizedBox.expand(
+            child: xtal.SunburstChart(
+              data: data,
+              // Si 'palette' n'existe pas, on retire la ligne
+              // Le widget devrait lire la propriété .color de chaque noeud de 'data'
+            ),
+          ),
         ),
       ),
     );
-  }
-
-  static Widget doughnut(List<ChartDataPie> data) {
+  }  static Widget doughnut(List<ChartDataPie> data) {
     if (data.length < 2) {
       return const SizedBox.square(
         dimension: 100,
@@ -255,57 +260,51 @@ class AppCharts {
     final percentage = total > 0 ? (value1 / total) * 100 : 0.0;
 
     return RepaintBoundary(
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 18),
-            child: SfCircularChart(
-              margin: EdgeInsets.zero,
-              // Activation du tooltip (le "hint")
-              tooltipBehavior: TooltipBehavior(
-                enable: true,
-                textStyle: const TextStyle(fontSize: 22),
-              ),
-              annotations: [
-                CircularChartAnnotation(
-                  widget: Center(
-                    child: Text(
-                      "${percentage.toStringAsFixed(1)}%",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 36,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              series: <CircularSeries>[
-                DoughnutSeries<ChartDataPie, String>(
-                  dataSource: data,
-                  xValueMapper: (d, _) => d.label,
-                  yValueMapper: (d, _) => d.value,
-                  pointColorMapper: (d, _) => d.color,
-                  radius: '100%',
-                  innerRadius: '60%',
-                  strokeColor: Colors.white,
-                  strokeWidth: 3,
-                  animationDuration: 600,
-                  // Configuration des labels (les numéros en blanc)
-                  dataLabelSettings: const DataLabelSettings(
-                    isVisible: true,
-                    labelPosition: ChartDataLabelPosition.inside,
-                    textStyle: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+      child: Padding(
+        padding: EdgeInsets.only(bottom: 14),
+        child: SfCircularChart(
+          margin: EdgeInsets.zero,
+          // Activation du tooltip (le "hint")
+          tooltipBehavior: TooltipBehavior(
+            enable: true,
+            textStyle: const TextStyle(fontSize: 14),
           ),
+          annotations: [
+            CircularChartAnnotation(
+              widget: Center(
+                child: Text(
+                  "${percentage.toStringAsFixed(1)}%",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                  ),
+                ),
+              ),
+            ),
+          ],
+          series: <CircularSeries>[
+            DoughnutSeries<ChartDataPie, String>(
+              dataSource: data,
+              xValueMapper: (d, _) => d.label,
+              yValueMapper: (d, _) => d.value,
+              pointColorMapper: (d, _) => d.color,
+              radius: '100%',
+              innerRadius: '60%',
+              strokeColor: Colors.white,
+              strokeWidth: 3,
+              animationDuration: 600,
+              // Configuration des labels (les numéros en blanc)
+              dataLabelSettings: const DataLabelSettings(
+                isVisible: true,
+                labelPosition: ChartDataLabelPosition.inside,
+                textStyle: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:puls/core/color.dart';
 
-// Aucun changement majeur ici, il reste générique et propre !
+
+
 class FilterSelectButton extends StatelessWidget {
   final String label;
   final String? currentValue;
@@ -18,6 +19,9 @@ class FilterSelectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Si la valeur est null ou vide, on n'a pas de sélection active
+    final bool hasSelection = currentValue != null && currentValue!.isNotEmpty;
+
     return PopupMenuButton<String>(
       onSelected: onSelected,
       offset: const Offset(0, 45),
@@ -28,18 +32,23 @@ class FilterSelectButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          border: Border.all(color: AppColors.neutral.withValues(alpha: 0.3)),
+          border: Border.all(
+              color: hasSelection
+                  ? AppColors.textPrimary.withValues(alpha: 0.6)
+                  : AppColors.neutral.withValues(alpha: 0.3)
+          ),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              currentValue ?? label,
-              style: const TextStyle(
+              // CRITIQUE : Si pas de sélection, on affiche le label (ex: "Service")
+              hasSelection ? currentValue! : label,
+              style: TextStyle(
                 color: AppColors.textPrimary,
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: hasSelection ? FontWeight.w600 : FontWeight.w500,
               ),
             ),
             const SizedBox(width: 4),

@@ -12,6 +12,6 @@ String timeAgo(DateTime date) {
   } else if (diff.inMinutes >= 1) {
     return "${diff.inMinutes} minute${diff.inMinutes > 1 ? 's' : ''}";
   } else {
-    return "à l'instant";
+    return "un instant";
   }
 }
