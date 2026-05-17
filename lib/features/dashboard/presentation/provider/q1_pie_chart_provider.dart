@@ -15,11 +15,10 @@ final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
     if (list.isEmpty) return [];
 
     final Map<String, Color> categories = {
-      'oui_totalement': AppColors.primaryMenthe,
-      'oui_plutot': AppColors.primaryMenthe.withValues(alpha: 0.8),
-      'en_partie': const Color(0xFFF59E0B),
-      'non_pas_vraiment': AppColors.primaryMenthe.withValues(alpha: 0.4),
-      'en_attente': AppColors.primaryMenthe.withValues(alpha: 0.6),
+      'Oui totalement': AppColors.primaryMenthe,
+      'En partie': AppColors.primaryMenthe.withValues(alpha: 0.8),
+      'Non': AppColors.primaryMenthe.withValues(alpha: 0.4),
+      'En attente': AppColors.primaryMenthe.withValues(alpha: 0.6),
     };
 
     return categories.entries.map((entry) {

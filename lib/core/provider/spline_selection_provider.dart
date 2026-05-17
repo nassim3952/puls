@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puls/core/data/fake_data.dart';
 
 // On définit l'état du provider (ici, la liste des noms sélectionnés)
 class SplineSelectionNotifier extends Notifier<Set<String>> {
@@ -8,9 +7,8 @@ class SplineSelectionNotifier extends Notifier<Set<String>> {
     // On définit manuellement les clés de référence pour éviter les surprises du fake_data
     return {
       'OUI TOTALEMENT',
-      'OUI PLUTOT',
       'EN PARTIE',
-      'NON PAS VRAIMENT',
+      'NON',
       'EN ATTENTE',
     };
   }

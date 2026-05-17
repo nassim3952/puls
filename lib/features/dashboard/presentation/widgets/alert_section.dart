@@ -2,11 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import 'package:puls/core/shared_widget/widgets.dart';
+import 'package:puls/core/provider/alert_provider.dart';
+import 'package:puls/core/shared_widget/alert_tile.dart';
 
 import '../../utils/time_ago.dart';
-import '../provider/alert_provider.dart';
-
 class AlertSection extends ConsumerWidget {
   const AlertSection({super.key});
 
@@ -40,7 +39,7 @@ class AlertSection extends ConsumerWidget {
                 patientName,
                 timeDisplayText, // Affiche désormais "il y a 2 jours", "il y a 3 heures", etc.
                 alertMessage,
-                AppColors.error,
+                AppColors.primaryMentheError,
                 false,
               );
             }).toList(),

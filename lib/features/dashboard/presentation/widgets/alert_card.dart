@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:puls/core/shared_widget/widgets.dart';
+import 'package:puls/core/shared_widget/alert_tile.dart';
 import '../../../../core/color.dart';
 
 Widget alertCard() {
@@ -11,7 +11,7 @@ Widget alertCard() {
           "Erreur système",
           "5 minutes",
           "Une erreur de connexion a été détectée",
-          AppColors.error,
+          AppColors.primaryMentheError,
           false,
         ),
         AppWidget.alertTile(
@@ -19,7 +19,7 @@ Widget alertCard() {
           "Erreur système",
           "5 minutes",
           "Une erreur de connexion a été détectée",
-          AppColors.warning,
+          AppColors.primaryMentheWarning,
           false,
         ),
         AppWidget.alertTile(
@@ -27,7 +27,7 @@ Widget alertCard() {
           "Erreur système",
           "5 minutes",
           "Une erreur de connexion a été détectée",
-          AppColors.warning,
+          AppColors.primaryMentheWarning,
           false,
         ),
         AppWidget.alertTile(
@@ -35,7 +35,7 @@ Widget alertCard() {
           "Erreur système",
           "5 minutes",
           "Une erreur de connexion a été détectée",
-          AppColors.success,
+          AppColors.primaryMenthe,
           false,
         )
       ],

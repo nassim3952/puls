@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
 // 1. On définit ce qu'on stocke : la classe choisie et la sous-classe choisie

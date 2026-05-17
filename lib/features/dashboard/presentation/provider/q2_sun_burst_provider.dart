@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
+import 'package:puls/core/models/patient.dart';
 import 'package:puls/core/provider/patient_provider.dart';
 import 'package:xtal_dataview/xtal_dataview.dart' as xtal;
 
 // On définit une palette de base pour l'application
-final List<Color> _appPalette = [
-  AppColors.primaryMenthe,
-  Colors.blueAccent,
-  Colors.orangeAccent,
-  Colors.purpleAccent,
-  Colors.teal,
-  Colors.pinkAccent,
-];
+
+
+final List<Color> _mintPalette = [AppColors.primaryMenthe, AppColors.primaryMentheDark, AppColors.primaryMentheDarker];
 
 final q2SunburstProvider = Provider<AsyncValue<xtal.ChartTreeNode>>((ref) {
   final patientsAsync = ref.watch(filteredPatientsProvider);
@@ -20,37 +16,42 @@ final q2SunburstProvider = Provider<AsyncValue<xtal.ChartTreeNode>>((ref) {
   return patientsAsync.whenData((list) {
     if (list.isEmpty) return xtal.ChartTreeNode(name: "TOTAL Q2", children: []);
 
-    // 1. Construction de l'arbre de données
-    Map<String, Map<String, List<String>>> treeMap = {};
+    // 2. On change la Map : on stocke des List<PatientModel> au lieu de List<String>
+    Map<String, Map<String, List<PatientModel>>> treeMap = {};
+
     for (var p in list) {
       final q2 = p.patientResponse.q2;
-      final className = q2.classe ?? "Inconnu";
-      final subClassName = q2.sousClasse ?? "Inconnu";
-      final message = q2.message ?? "";
+      final className = q2.classe;
+      final subClassName = q2.sousClasse;
 
       treeMap.putIfAbsent(className, () => {});
       treeMap[className]!.putIfAbsent(subClassName, () => []);
-      treeMap[className]![subClassName]!.add(message);
+      // On sauvegarde l'objet Patient complet ici
+      treeMap[className]![subClassName]!.add(p);
     }
 
     int classCounter = 0;
 
-    // 2. Mapping vers les Noeuds du graphique avec gestion des couleurs
+    // 3. Mapping vers les Noeuds du graphique
     List<xtal.ChartTreeNode> classNodes = treeMap.entries.map((classEntry) {
-      // On sélectionne une couleur de base pour la classe
-      final Color baseColor = _appPalette[classCounter % _appPalette.length];
+      // Rotation sur tes 3 couleurs Mint selon l'index de la classe
+      final Color baseColor = _mintPalette[classCounter % _mintPalette.length];
       classCounter++;
 
       List<xtal.ChartTreeNode> subClassNodes = classEntry.value.entries.map((subEntry) {
-        // Sous-classe : même teinte, mais un peu plus claire
-        final Color subColor = baseColor.withOpacity(0.7);
+        // Sous-classe : même teinte, mais légèrement plus transparente pour différencier
+        final Color subColor = baseColor.withOpacity(0.8);
 
-        List<xtal.ChartTreeNode> messageNodes = subEntry.value.map((msg) {
-          // Messages (feuilles) : très clairs
+        List<xtal.ChartTreeNode> messageNodes = subEntry.value.map((patient) {
+          // 4. Extraction des données directement depuis le patient
+          final msg = patient.patientResponse.q2.message;
+          final isAlert = patient.hasAlert;
+
           return xtal.ChartTreeNode(
             name: msg,
             value: 1.0,
-            color: baseColor.withOpacity(0.4),
+            // Si alerte -> Rouge, sinon -> Mint très clair
+            color: isAlert ? AppColors.primaryMentheWarning : baseColor.withOpacity(0.4),
           );
         }).toList();
 

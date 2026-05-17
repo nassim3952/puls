@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../model/domain/filtred_state.dart';
+import '../../features/dashboard/presentation/model/domain/filtred_state.dart';
 
 // On utilise Notifier au lieu de StateNotifier
 class FilterNotifier extends Notifier<DashboardFilterState> {

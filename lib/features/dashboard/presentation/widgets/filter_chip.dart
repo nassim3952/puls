@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/color.dart';
 import '../../../../core/provider/spline_selection_provider.dart';
-import '../../../../core/data/fake_data.dart';
 
 class LegendChip extends ConsumerWidget {
   final String label;
@@ -53,7 +53,12 @@ class SplineLegendHeader extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          children: splineData1.map((s) => LegendChip(label: s.name, color: s.color)).toList(),
+          children: [
+            LegendChip(label: "Oui totalement", color: AppColors.primaryMenthe),
+            LegendChip(label: "En partie", color: AppColors.primaryMentheWarning),
+            LegendChip(label: "Non", color: AppColors.primaryMentheError),
+            LegendChip(label: "En attente", color: AppColors.primaryMentheNeutral),
+          ]
         ),
       ),
     );

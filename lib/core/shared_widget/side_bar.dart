@@ -51,7 +51,7 @@ class SideBar extends ConsumerWidget {
               _navItem(
                 ref,
                 Icons.show_chart_rounded,
-                "Historiques KPI",
+                "Historiques",
                 2,
                 currentIndex,
                 isCollapsed,
@@ -120,8 +120,8 @@ class SideBar extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    "CHU al azhar",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    "CHU ABC",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,color: AppColors.textPrimary),
                   ),
                 ],
               ),

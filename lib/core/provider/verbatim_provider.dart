@@ -1,6 +1,6 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../model/domain/verbatim_node.dart';
+import '../../features/dashboard/presentation/model/domain/verbatim_node.dart';
 part 'verbatim_provider.g.dart';
 
 @riverpod

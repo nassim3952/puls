@@ -4,15 +4,11 @@ import 'package:puls/features/dashboard/presentation/provider/Q3FlatNode.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 import 'package:syncfusion_flutter_treemap/treemap.dart';
-import 'package:xtal_dataview/xtal_dataview.dart' hide LegendPosition;
 import 'package:xtal_dataview/xtal_dataview.dart' as xtal;
 
 import '../../features/dashboard/presentation/provider/q3_nav_provider.dart';
 import '../color.dart';
-import '../data/fake_data.dart';
-import '../data/fake_data.dart';
 import '../models/chart_model.dart';
-import '../models/patient.dart';
 
 class AppCharts {
   // --- 1. GRAPHIQUE JAUGE (KPS) ---
@@ -215,7 +211,7 @@ class AppCharts {
                   yValueMapper: (BarData d, _) => d.value,
                   pointColorMapper: (BarData d, _) => d.valence == Valence.bonne
                       ? AppColors.primaryMenthe
-                      : AppColors.warning,
+                      : AppColors.primaryMentheWarning,
                   animationDuration: 600,
                 )
               : ColumnSeries<BarData, String>(
@@ -254,8 +250,8 @@ class AppCharts {
       );
     }
 
-    final value1 = data[0].value ?? 0;
-    final value2 = data[1].value ?? 0;
+    final value1 = data[0].value;
+    final value2 = data[1].value;
     final total = value1 + value2;
     final percentage = total > 0 ? (value1 / total) * 100 : 0.0;
 
@@ -360,6 +356,7 @@ class AppCharts {
         // Le Treemap sans marges inutiles
         Expanded(
           child: SfTreemap(
+
             key: ValueKey('tree_${nav.selectedClasse}_${nav.selectedSousClasse}'),
             dataCount: data.length,
             weightValueMapper: (int index) => 1.0,

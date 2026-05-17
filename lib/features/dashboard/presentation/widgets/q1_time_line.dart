@@ -42,7 +42,7 @@ class Q1MultiSplineChart extends ConsumerWidget {
               ...groups.where((group) => group.isVisible).map((group) {
                 return SplineSeries<ChartDataSpline, String>(
                   name: group.name,
-                  dataSource: group.data as List<ChartDataSpline>,
+                  dataSource: group.data,
                   xValueMapper: (ChartDataSpline d, _) => d.x,
                   yValueMapper: (ChartDataSpline d, _) => d.y,
                   color: group.color,

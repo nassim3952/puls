@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import 'package:puls/core/provider/spline_selection_provider.dart';
+import 'package:puls/core/data/fake_data.dart';
 import 'package:puls/core/shared_widget/app_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/alert_section.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
@@ -9,10 +8,9 @@ import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q2_sunburst_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q3_treemap.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q4_sunburst_chart.dart';
-import '../../../../core/data/fake_data.dart';
-import '../../../../core/provider/iar_selection_provider.dart';
 import '../model/dashboard_item.dart';
-import '../widgets/alert_card.dart';
+
+
 import '../widgets/filter_chip.dart';
 import '../widgets/q0_score_gauge.dart';
 import '../widgets/q0_spline_chart.dart';
@@ -111,7 +109,7 @@ final dashboardItems = [
           alignment: AlignmentGeometry.center,
           child: AppCharts.gauge(87, AppColors.primaryMenthe),
         ),
-        Expanded(child: AppCharts.spline(kpi1Spline)),
+        Expanded(child: AppCharts.spline(splineData2)),
       ],
     ),
   )

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/models/patient.dart';
 
-import '../../../../core/provider/patient_provider.dart';
+import 'patient_provider.dart';
 
 final alertsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final patientsAsync = ref.watch(filteredPatientsProvider);

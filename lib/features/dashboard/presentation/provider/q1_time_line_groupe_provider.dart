@@ -20,11 +20,10 @@ final q1TimelineGroupsProvider = Provider<AsyncValue<List<SplineGroup>>>((ref) {
 
     // 3. Définition des catégories (clés du JSON) et leurs couleurs
     final Map<String, Color> categories = {
-      'oui_totalement': AppColors.primaryMenthe,
-      'oui_plutot': AppColors.primaryMentheWarning,
-      'en_partie': const Color(0xFFF59E0B),
-      'non_pas_vraiment': AppColors.primaryMentheError,
-      'en_attente':  AppColors.primaryMentheNeutral,
+      'Oui totalement': AppColors.primaryMenthe,
+      'En partie': AppColors.primaryMentheWarning,
+      'Non': AppColors.primaryMentheError,
+      'En attente':  AppColors.primaryMentheNeutral,
     };
 
     // 4. On trie les patients par date pour le calcul cumulatif
