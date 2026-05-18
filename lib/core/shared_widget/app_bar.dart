@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import '../../features/historique/historique_screen.dart';
+import '../../features/historique/presentation/historique_screen.dart';
 
 // On utilise ConsumerWidget pour avoir accès à "ref"
 class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -70,7 +70,6 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               child: TextField(
                 controller: searchCtrl,
                 onChanged: (v) =>
-
                     ref.read(historiqueFilterProvider.notifier).setSearch(v),
                 style: const TextStyle(
                   fontSize: 13,
@@ -100,10 +99,13 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
-                      color: searchCtrl.text.isNotEmpty // ✅ ICI : utilise le controller
+                      color:
+                          searchCtrl
+                              .text
+                              .isNotEmpty // ✅ ICI : utilise le controller
                           ? AppColors.primaryMenthe
                           : MintTheme.border,
-                        width: searchCtrl.text.isNotEmpty ? 1.5 : 1
+                      width: searchCtrl.text.isNotEmpty ? 1.5 : 1,
                     ), // Vérifie si AppColors.border existe
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -123,7 +125,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
             if (!isMobile) ...[
               const SizedBox(width: 15),
-              const Icon(Icons.settings_sharp, color: AppColors.textPrimary),
+              const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
             ],
 
             const SizedBox(width: 15),
@@ -131,7 +133,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             Badge(
               label: const Text('3', style: TextStyle(fontSize: 10)),
               child: const Icon(
-                Icons.notifications_sharp,
+                Icons.notifications_none_rounded,
                 color: AppColors.textPrimary,
               ),
             ),
@@ -144,14 +146,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   Widget _buildUserSection({bool showName = true}) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (showName) ...[
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: const [
               Text(
-                "Dr. Marie Dubois",
+                "Admin",
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 14,
@@ -159,14 +162,18 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 ),
               ),
               Text(
-                "Responsable qualité",
+                "Admin",
                 style: TextStyle(color: AppColors.textPrimary, fontSize: 12),
               ),
             ],
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 15),
         ],
-        const CircleAvatar(radius: 18, child: Icon(Icons.person)),
+        CircleAvatar(
+          radius: 18,
+          child: const Icon(Icons.person,color: AppColors.textPrimary),
+          backgroundColor: AppColors.primaryMenthe.withValues(alpha: 0.2),
+        ),
       ],
     );
   }

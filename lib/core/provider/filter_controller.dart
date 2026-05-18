@@ -1,39 +1,29 @@
+// filter_controller.dart
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/dashboard/model/domain/filtred_state.dart';
 
-import '../../features/dashboard/presentation/model/domain/filtred_state.dart';
 
-// On utilise Notifier au lieu de StateNotifier
-class FilterNotifier extends Notifier<DashboardFilterState> {
+class DashboardFilterNotifier extends Notifier<DashboardFilterState> {
   @override
   DashboardFilterState build() {
-    // C'est ici qu'on définit l'état initial
-    return const DashboardFilterState();
+    return const DashboardFilterState(); // État initial vide
   }
 
-  // Méthodes pour modifier l'état
-  void updateService(String? val) {
-    state = state.copyWith(service: val);
-  }
+  void updateService(String? val) => state = state.copyWith(service: val);
 
-  void updateType(String? val) {
-    state = state.copyWith(type: val);
-  }
+  void updateType(String? val) => state = state.copyWith(type: val);
+
+  void updateExploration(String? val) => state = state.copyWith(exploration: val);
+
+  void updateSortie(String? val) => state = state.copyWith(sortie: val);
+
+  void updatePeriode(DateTimeRange? range) => state = state.copyWith(periode: range);
 
   void reset() => state = const DashboardFilterState();
-
-  void applyFilters() {
-    // Ici on accède à l'état interne 'state'
-    print('Application des filtres : ${state.service} / ${state.type}');
-    // Plus tard, c'est ici que tu appelleras ton repository
-  }
-
 }
 
-// Le Provider utilise NotifierProvider
-final filterProvider = NotifierProvider<FilterNotifier, DashboardFilterState>(() {
-  return FilterNotifier();
-}
-
-
-
-);
+// Le Provider global pour ton UI
+final filterProvider = NotifierProvider<DashboardFilterNotifier, DashboardFilterState>(() {
+  return DashboardFilterNotifier();
+});

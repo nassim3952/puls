@@ -5,16 +5,12 @@ import 'package:puls/core/shared_widget/app_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/alert_section.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
-import 'package:puls/features/dashboard/presentation/widgets/q2_sunburst_chart.dart';
+import 'package:puls/features/dashboard/presentation/widgets/sunburst_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q3_treemap.dart';
-import 'package:puls/features/dashboard/presentation/widgets/q4_sunburst_chart.dart';
-import '../model/dashboard_item.dart';
-
-
+import '../../model/dashboard_item.dart';
 import '../widgets/filter_chip.dart';
 import '../widgets/q0_score_gauge.dart';
 import '../widgets/q0_spline_chart.dart';
-import '../widgets/q3_sunburst_chart.dart';
 import '../widgets/q5_dougnut_chart.dart';
 
 final dashboardItems = [
@@ -61,7 +57,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: Q3TreemapSection(),
-    child: Q2SunburstSection(),
+    child: QuestionSunburstSection(questionKey: "q2"),
   ),
   DashboardItem(
     title: "MCR",
@@ -70,7 +66,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: Expanded(child: Q3TreemapSection()),
-    child: Q3SunburstSection(),
+    child: QuestionSunburstSection(questionKey: "q3"),
   ),
   DashboardItem(
     title: "IAR",
@@ -79,7 +75,7 @@ final dashboardItems = [
     mainAxis: 6,
     isExpandable: true,
     secondaryChild: Q3TreemapSection(),
-    child: Q4SunburstSection(),
+    child: QuestionSunburstSection(questionKey: "q4"),
   ),
   DashboardItem(
     title: "Consentement",

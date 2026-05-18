@@ -17,11 +17,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // <--- Vérifie cet import
-import 'package:puls/features/historique/presentation/BuildHeader.dart';
-import '../../core/color.dart';
-import '../../core/models/patient.dart';
-import '../../core/provider/filterprovider.dart';
-import '../../core/provider/patient_provider.dart';
+import 'package:puls/features/dashboard/presentation/widgets/dashboard_build_header.dart';
+import 'package:puls/features/historique/presentation/result_number.dart';
+import '../../../core/color.dart';
+import '../../../core/models/patient.dart';
+import '../../../core/provider/historique_filter_controller.dart';
+import '../../../core/provider/patient_provider.dart';
 
 
 // ---------------------------------------------------------------------------
@@ -29,42 +30,6 @@ import '../../core/provider/patient_provider.dart';
 // ---------------------------------------------------------------------------
 enum SortColumn { nom, date, service, type, score, none }
 enum SortDirection { asc, desc }
-
-class HistoriqueFilterState {
-  final String searchQuery;
-  final String serviceFilter;
-  final String typeFilter;
-  final String alertFilter; // 'all' | 'alert' | 'ok'
-  final SortColumn sortColumn;
-  final SortDirection sortDirection;
-
-  const HistoriqueFilterState({
-    this.searchQuery = '',
-    this.serviceFilter = '',
-    this.typeFilter = '',
-    this.alertFilter = 'all',
-    this.sortColumn = SortColumn.date,
-    this.sortDirection = SortDirection.desc,
-  });
-
-  HistoriqueFilterState copyWith({
-    String? searchQuery,
-    String? serviceFilter,
-    String? typeFilter,
-    String? alertFilter,
-    SortColumn? sortColumn,
-    SortDirection? sortDirection,
-  }) {
-    return HistoriqueFilterState(
-      searchQuery: searchQuery ?? this.searchQuery,
-      serviceFilter: serviceFilter ?? this.serviceFilter,
-      typeFilter: typeFilter ?? this.typeFilter,
-      alertFilter: alertFilter ?? this.alertFilter,
-      sortColumn: sortColumn ?? this.sortColumn,
-      sortDirection: sortDirection ?? this.sortDirection,
-    );
-  }
-}
 
 class HistoriqueFilterNotifier extends Notifier<HistoriqueFilterState> {
   @override
@@ -131,7 +96,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
 
   @override
   Widget build(BuildContext context) {
-    final patientsAsync = ref.watch(filteredHistoriqueProvider);
+    final patientsAsync = ref.watch(filteredPatientsProvider);
     final filters = ref.watch(historiqueFilterProvider);
 
     return Scaffold(
@@ -140,7 +105,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
 
-          buildHeader(patientsAsync, filters),
+          DashboardHeader(),
           _buildFilterBar(filters),
           Expanded(
             child: patientsAsync.when(
@@ -182,22 +147,8 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
           // Recherche
           const SizedBox(width: 10),
           // Service
-          _DropdownFilter(
-            hint: 'Service',
-            value: filters.serviceFilter.isEmpty ? null : filters.serviceFilter,
-            items: services,
-            onChanged: (v) =>
-                ref.read(historiqueFilterProvider.notifier).setService(v ?? ''),
-          ),
           const SizedBox(width: 10),
           // Type
-          _DropdownFilter(
-            hint: 'Type de visite',
-            value: filters.typeFilter.isEmpty ? null : filters.typeFilter,
-            items: types,
-            onChanged: (v) =>
-                ref.read(historiqueFilterProvider.notifier).setType(v ?? ''),
-          ),
           const SizedBox(width: 10),
           // Alertes — classeur par onglets
           _AlertTabFilter(
@@ -690,56 +641,6 @@ class _ScoreBadge extends StatelessWidget {
 
 
 
-class _DropdownFilter extends StatelessWidget {
-  final String hint;
-  final String? value;
-  final List<String> items;
-  final void Function(String?) onChanged;
-
-  const _DropdownFilter({
-    required this.hint,
-    required this.value,
-    required this.items,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) =>
-      SizedBox(
-        height: 38,
-        child: DropdownButtonHideUnderline(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: value != null ? MintTheme.mint400 : MintTheme.border,
-                width: value != null ? 1.5 : 1,
-              ),
-            ),
-            child: DropdownButton<String>(
-              hint: Text(hint, style: const TextStyle(
-                  fontSize: 13, color: MintTheme.textSecondary)),
-              value: value,
-              isDense: true,
-              icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18,
-                  color: MintTheme.mint600),
-              style: const TextStyle(
-                  fontSize: 13, color: MintTheme.textPrimary),
-              onChanged: onChanged,
-              items: [
-                DropdownMenuItem<String>(
-                    value: '', child: Text('Tous — $hint')),
-                ...items.map((s) =>
-                    DropdownMenuItem<String>(value: s, child: Text(s))),
-              ],
-            ),
-          ),
-        ),
-      );
-}
-
 class _AlertTabFilter extends StatelessWidget {
   final String current;
   final void Function(String) onChanged;
@@ -881,7 +782,6 @@ class _InfoItem {
 
   const _InfoItem(this.label, this.value);
 }
-
 class _InfoCard extends StatelessWidget {
   final String title;
   final IconData icon;

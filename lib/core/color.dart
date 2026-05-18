@@ -25,6 +25,28 @@ class MintTheme {
 
 class AppColors {
 
+  static const primary = Color(0xFF10B982);
+  static const primaryDark = Color(0xFF059669);
+  static const primaryLight = Color(0xFFD1FAE5);
+  static const bg = Color(0xFFF0FDF8);
+  static const card = Colors.white;
+  static const textDark = Color(0xFF0F2E22);
+  static const textMid = Color(0xFF4B5563);
+  static const textLight = Color(0xFF9CA3AF);
+  static const border = Color(0xFFE5F7F0);
+
+  static const urgentBg = Color(0xFFFFF1F2);
+  static const urgentText = Color(0xFFE11D48);
+  static const urgentBorder = Color(0xFFFFCDD5);
+
+  static const warningBg = Color(0xFFFFFBEB);
+  static const warningText = Color(0xFFD97706);
+  static const warningBorder = Color(0xFFFDE68A);
+
+  static const infoBg = Color(0xFFEFF6FF);
+  static const infoText = Color(0xFF3B82F6);
+  static const infoBorder = Color(0xFFBFDBFE);
+
 
 
 
@@ -59,6 +81,7 @@ class AppColors {
 
   // Texte
   static const Color textPrimary = Color(0xFF1A2E26);
+  static const Color sideBarText = Color(0xFF545454);
   static const Color textSecondary = Color(0xFF919699);
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);

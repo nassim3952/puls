@@ -8,7 +8,7 @@ import '../core/provider/navigation_provider.dart';
 import '../core/shared_widget/side_bar.dart';
 import 'alertsView/presentation/alerts_view.dart';
 import 'dashboard/presentation/dash_board_view.dart';
-import 'historique/historique_screen.dart';
+import 'historique/presentation/historique_screen.dart';
 
 class MainDashboardScreen extends ConsumerWidget {
   const MainDashboardScreen({super.key});
@@ -45,32 +45,29 @@ class MainDashboardScreen extends ConsumerWidget {
 
           // La partie droite change selon la sélection
           Expanded(
-            child: Container(
-              color: Colors.red,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                      color: AppColors.background,
-                      // Fond gris très léger pour faire ressortir les cartes
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          // AJOUTE CECI :
-                          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-                            return Stack(
-                              alignment: Alignment.topLeft, // Force l'alignement en haut à gauche
-                              children: [
-                                ...previousChildren,
-                                ?currentChild,
-                              ],
-                            );
-                          },
-                          child: currentView,
-                        ),
-                    ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    color: AppColors.background,
+                    // Fond gris très léger pour faire ressortir les cartes
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        // AJOUTE CECI :
+                        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                          return Stack(
+                            alignment: Alignment.topLeft, // Force l'alignement en haut à gauche
+                            children: [
+                              ...previousChildren,
+                              ?currentChild,
+                            ],
+                          );
+                        },
+                        child: currentView,
+                      ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

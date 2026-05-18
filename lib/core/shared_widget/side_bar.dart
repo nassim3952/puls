@@ -135,8 +135,8 @@ class SideBar extends ConsumerWidget {
               child: IconButton(
                 onPressed: () => ref.read(sidebarProvider.notifier).toggle(),
                 icon: collapsed
-                    ? const Icon(Icons.menu)
-                    : const Icon(Icons.menu_open),
+                    ? const Icon(Icons.menu_sharp)
+                    : const Icon(Icons.menu_open_sharp),
               ),
             ),
           ],
@@ -159,7 +159,7 @@ class SideBar extends ConsumerWidget {
 
     final color = isActive
         ? Colors.white
-        : (isDestructive ? Colors.redAccent : AppColors.textSecondary);
+        : (isDestructive ? Colors.redAccent : AppColors.sideBarText);
 
     return InkWell(
       onTap: () => ref.read(navigationProvider.notifier).setIndex(index),

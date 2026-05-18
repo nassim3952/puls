@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import '../models/patient.dart';
 import '../models/patient_service.dart';
+import 'filter_controller.dart';
 
 // 1. Définition des plages de dates
 enum DateRange { week, month, year, all,custom }
@@ -56,13 +57,15 @@ final patientsListProvider = FutureProvider<List<PatientModel>>((ref) async {
   return await service.fetchPatients();
 });
 
-// 5. La "Boîte" qui stocke l'état actuel de tous tes filtres
-final allFiltersProvider = StateProvider<PatientFilters>((ref) => PatientFilters());
+// patient_provider.dart
 
-// 6. LA PASSOIRE UNIQUE : Filtre par Service ET par Date
+// (Supprime l'ancien allFiltersProvider qui était un StateProvider)
+
+// 6. LA PASSOIRE UNIQUE : Écoute désormais le DashboardFilterState du Notifier
 final filteredPatientsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final allPatientsAsync = ref.watch(patientsListProvider);
-  final filters = ref.watch(allFiltersProvider);
+  // On écoute le vrai contrôleur du Dashboard !
+  final filters = ref.watch(filterProvider);
 
   return allPatientsAsync.whenData((patients) {
     final now = DateTime.now();
@@ -70,38 +73,20 @@ final filteredPatientsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) 
 
     return patients.where((p) {
       // --- FILTRAGE PAR CATÉGORIE ---
-      final matchService = filters.service.isEmpty || p.service == filters.service;
-      final matchType = filters.typePriseEncharge.isEmpty || p.visitType == filters.typePriseEncharge;
-      final matchExplo = filters.exploration.isEmpty || p.exploration == filters.exploration;
-      final matchSortie = filters.sortie.isEmpty || p.afterCare == filters.sortie;
+      final matchService = filters.service == null || filters.service!.isEmpty || p.service == filters.service;
+      final matchType = filters.type == null || filters.type!.isEmpty || p.visitType == filters.type;
+      final matchExplo = filters.exploration == null || filters.exploration!.isEmpty || p.exploration == filters.exploration;
+      final matchSortie = filters.sortie == null || filters.sortie!.isEmpty || p.afterCare == filters.sortie;
 
-      // --- FILTRAGE PAR DATE ---
+      // --- FILTRAGE PAR DATE (DateTimeRange unique) ---
       bool matchDate = true;
-      final difference = today.difference(p.date).inDays;
-
-      switch (filters.dateRange) {
-        case DateRange.week:
-          matchDate = difference <= 7 && difference >= 0;
-          break;
-        case DateRange.month:
-          matchDate = difference <= 30 && difference >= 0;
-          break;
-        case DateRange.year:
-          matchDate = difference <= 365 && difference >= 0;
-          break;
-        case DateRange.custom:
-          if (filters.customRange != null) {
-            // On vérifie si la date du patient est entre le début et la fin
-            return p.date.isAfter(filters.customRange!.start) &&
-                p.date.isBefore(filters.customRange!.end.add(const Duration(days: 1)));
-          }
-          return true;
-        case DateRange.all:
-          matchDate = true;
-          break;
+      if (filters.periode != null) {
+        // On vérifie si la date du patient est comprise dans la plage sélectionnée
+        // .add(Duration(days: 1)) pour inclure totalement le dernier jour du filtre
+        matchDate = p.date.isAfter(filters.periode!.start) &&
+            p.date.isBefore(filters.periode!.end.add(const Duration(days: 1)));
       }
 
-      // Le patient doit valider TOUS les critères
       return matchService && matchType && matchExplo && matchSortie && matchDate;
     }).toList();
   });
