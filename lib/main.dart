@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/routes/root_manager.dart';
-// 1. L'import indispensable
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://yyohrbyjwemiqfpplmtj.supabase.co',
+    anonKey: 'sb_publishable_3Kj_37TEdRIf0yIQoOoniA_6fGv_oXA',
+  );
 
-  debugPaintSizeEnabled = false;
-  // 2. C'est ICI que ça se joue :
-  // runApp doit recevoir le ProviderScope en premier.
+
   runApp(
     const ProviderScope(
       child: MyApp(),
@@ -27,8 +29,6 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: RouteManager.generateRoute,
       debugShowCheckedModeBanner: false,
       title: 'Satisfactive',
-      // 3. Ici, ton écran principal sera capable de trouver le ProviderScope
-      // car il est un "enfant" de MyApp, qui est un enfant de ProviderScope.
     );
   }
 }

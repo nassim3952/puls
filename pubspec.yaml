@@ -51,6 +51,7 @@ dependencies:
   syncfusion_flutter_datepicker: ^33.2.5
   data_table_2: ^2.7.2
   intl: ^0.20.2
+  supabase_flutter: ^2.12.4
 
 dev_dependencies:
   flutter_test:
