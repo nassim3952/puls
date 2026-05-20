@@ -25,7 +25,8 @@ class PlanActionCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final (bgColor, textColor, borderColor) = _levelColors;
     final patient = alert.source;
-    final isRejected = patient.planIsValid == false;
+    final visit = patient.latestVisit;
+    final isRejected = visit?.planIsValid == false;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -144,7 +145,7 @@ class PlanActionCard extends ConsumerWidget {
                       size: 14, color: AppColors.primaryDark),
                   const SizedBox(width: 6),
                   Text(
-                    patient.actionPlanLabel ?? '',
+                    visit?.actionPlanLabel ?? '',
                     style: const TextStyle(
                         color: AppColors.primaryDark,
                         fontSize: 12,
@@ -156,8 +157,8 @@ class PlanActionCard extends ConsumerWidget {
           ),
 
           // ── Rapport ─────────────────────────────────────────────────────
-          if (patient.actionPlanReport != null &&
-              patient.actionPlanReport!.isNotEmpty)
+          if (visit?.actionPlanReport != null &&
+              visit!.actionPlanReport!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Container(
@@ -180,7 +181,7 @@ class PlanActionCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      patient.actionPlanReport!,
+                      visit.actionPlanReport!,
                       style: const TextStyle(
                           color: AppColors.textDark,
                           fontSize: 13,

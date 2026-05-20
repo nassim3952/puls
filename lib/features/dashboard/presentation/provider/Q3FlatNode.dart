@@ -17,8 +17,10 @@ final q3TreemapProvider = Provider<AsyncValue<List<Q3FlatNode>>>((ref) {
 
   return patientsAsync.whenData((list) {
     // 1. On crée d'abord la liste complète proprement
-    final allNodes = list.map((p) {
-      final q3 = p.patientResponse.q3;
+    final allNodes = list
+        .where((p) => p.latestVisit?.survey != null)
+        .map((p) {
+      final q3 = p.latestVisit!.survey!.momentMarquant;
       return Q3FlatNode(
         classe: q3.classe.replaceAll('_', ' ').toUpperCase().trim(),
         sousClasse: q3.sousClasse.replaceAll('_', ' ').toUpperCase().trim(),

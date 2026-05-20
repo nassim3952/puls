@@ -65,7 +65,6 @@ class AppWidget {
 
 Color getColor(StatusType status) {
   switch (status) {
-    // <- Correction ici
     case StatusType.success:
       return AppColors.primaryMenthe;
     case StatusType.warning:

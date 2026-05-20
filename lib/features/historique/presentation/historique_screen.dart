@@ -90,7 +90,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
 
   @override
   void dispose() {
-        _tabController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -131,12 +131,12 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
     final patientsAll = ref.watch(patientsListProvider);
     final services = patientsAll.whenOrNull(
       data: (l) =>
-      l.map((p) => p.service).toSet().where((s) => s.isNotEmpty).toList()
+      l.map((p) => p.latestVisit?.service ?? '').toSet().where((s) => s.isNotEmpty).toList()
         ..sort(),
     ) ?? [];
     final types = patientsAll.whenOrNull(
       data: (l) =>
-      l.map((p) => p.visitType).toSet().where((s) => s.isNotEmpty).toList()
+      l.map((p) => p.latestVisit?.visitType ?? '').toSet().where((s) => s.isNotEmpty).toList()
         ..sort(),
     ) ?? [];
 
@@ -158,17 +158,17 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
           ),
           Spacer(),
           if (filters != const HistoriqueFilterState())
-          TextButton.icon(
-            onPressed: () {
-              ref.read(historiqueFilterProvider.notifier).reset();
-            },
-            icon: const Icon(Icons.refresh_rounded, size: 16),
-            label: const Text('Réinitialiser'),
-            style: TextButton.styleFrom(
-              foregroundColor: MintTheme.mint600,
-              textStyle: const TextStyle(fontSize: 13),
-            ),
-          )
+            TextButton.icon(
+              onPressed: () {
+                ref.read(historiqueFilterProvider.notifier).reset();
+              },
+              icon: const Icon(Icons.refresh_rounded, size: 16),
+              label: const Text('Réinitialiser'),
+              style: TextButton.styleFrom(
+                foregroundColor: MintTheme.mint600,
+                textStyle: const TextStyle(fontSize: 13),
+              ),
+            )
         ],
       ),
     );
@@ -299,20 +299,20 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
         )),
         // Service
         DataCell(_Tag(
-            label: p.service, color: MintTheme.mint600, bg: MintTheme.mint100)),
+            label: p.latestVisit?.service ?? '–', color: MintTheme.mint600, bg: MintTheme.mint100)),
         // Type visite
-        DataCell(_Tag(label: p.visitType,
+        DataCell(_Tag(label: p.latestVisit?.visitType ?? '–',
             color: MintTheme.tagBlue,
             bg: MintTheme.tagBlueBg)),
-        // Q0 — recommandation
-        DataCell(_ScoreBadge(score: p.patientResponse.q0)),
+        // attentesSoins (q1) — recommandation
+        DataCell(_ScoreBadge(score: p.latestVisit?.survey?.attentesSoins ?? '–')),
         // Date
         DataCell(Text(
-          fmt.format(p.date),
+          p.latestVisit != null ? fmt.format(p.latestVisit!.date) : '–',
           style: const TextStyle(fontSize: 12, color: MintTheme.textSecondary),
         )),
         // Alerte
-        DataCell(p.hasAlert
+        DataCell((p.latestVisit?.hasAlert ?? false)
             ? Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
@@ -413,7 +413,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                                       fontWeight: FontWeight.w600,
                                       color: MintTheme.textPrimary),
                                 ),
-                                if (p.hasAlert) ...[
+                                if (p.latestVisit?.hasAlert ?? false) ...[
                                   const SizedBox(width: 10),
                                   Container(
                                     padding: const EdgeInsets.symmetric(
@@ -444,8 +444,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              'IPP ${p.ipp}  •  ${p.sex}  •  ${dateFormat
-                                  .format(p.date)}',
+                              'IPP ${p.ipp}  •  ${p.sex}  •  ${p.latestVisit != null ? dateFormat.format(p.latestVisit!.date) : '–'}',
                               style: const TextStyle(
                                   fontSize: 12, color: MintTheme.textSecondary),
                             ),
@@ -464,10 +463,10 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                       title: 'Informations prise en charge',
                       icon: Icons.local_hospital_outlined,
                       items: [
-                        _InfoItem('Service', p.service),
-                        _InfoItem('Type de visite', p.visitType),
-                        _InfoItem('Exploration', p.exploration),
-                        _InfoItem('Suivi sortie', p.afterCare),
+                        _InfoItem('Service', p.latestVisit?.service ?? '–'),
+                        _InfoItem('Type de visite', p.latestVisit?.visitType ?? '–'),
+                        _InfoItem('Exploration', p.latestVisit?.exploration ?? '–'),
+                        _InfoItem('Suivi sortie', p.latestVisit?.afterCare ?? '–'),
                       ],
                     )),
                     const SizedBox(width: 12),
@@ -475,11 +474,10 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                       title: 'Réponses questionnaire',
                       icon: Icons.quiz_outlined,
                       items: [
-                        _InfoItem('Recommandation (Q0)', p.patientResponse.q0),
-                        _InfoItem(
-                            'Satisfaction globale (Q1)', p.patientResponse.q1),
+                        _InfoItem('Score satisfaction (Q0)', '${p.latestVisit?.survey?.qualitePriseEnCharge ?? '–'}/5'),
+                        _InfoItem('Attentes soins (Q1)', p.latestVisit?.survey?.attentesSoins ?? '–'),
                         _InfoItem('Rappelé (Q5)',
-                            p.patientResponse.q5 ? 'Oui' : 'Non'),
+                            p.latestVisit?.survey?.consentementRappel == true ? 'Oui' : 'Non'),
                       ],
                     )),
                   ],
@@ -488,13 +486,13 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
 
                 // Verbatims
                 _VerbatimCard(
-                    title: 'Verbatim Q2', verbatim: p.patientResponse.q2),
+                    title: 'Verbatim Q2 — Parcours', verbatim: p.latestVisit?.survey?.raconteParcours ?? const _EmptyVerbatim()),
                 const SizedBox(height: 12),
                 _VerbatimCard(
-                    title: 'Verbatim Q3', verbatim: p.patientResponse.q3),
+                    title: 'Verbatim Q3 — Moment marquant', verbatim: p.latestVisit?.survey?.momentMarquant ?? const _EmptyVerbatim()),
                 const SizedBox(height: 12),
                 _VerbatimCard(
-                    title: 'Verbatim Q4', verbatim: p.patientResponse.q4),
+                    title: 'Verbatim Q4 — Suggestions', verbatim: p.latestVisit?.survey?.suggestionsAmelioration ?? const _EmptyVerbatim()),
               ],
             ),
           ),
@@ -730,7 +728,7 @@ class _SidePatientList extends StatelessWidget {
               color: isSelected ? MintTheme.mint50 : null,
               child: Row(
                 children: [
-                  if (p.hasAlert)
+                  if (p.latestVisit?.hasAlert ?? false)
                     const Padding(
                       padding: EdgeInsets.only(right: 6),
                       child: Icon(
@@ -755,7 +753,7 @@ class _SidePatientList extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          fmt.format(p.date),
+                          p.latestVisit != null ? fmt.format(p.latestVisit!.date) : '–',
                           style: const TextStyle(
                               fontSize: 10, color: MintTheme.textSecondary),
                         ),
@@ -915,6 +913,14 @@ class _VerbatimCard extends StatelessWidget {
 }
 
 // ─── ÉTATS VIDES / ERREUR / LOADING ────────────────────────────────────────
+// Fallback quand survey est null — évite le crash dans _VerbatimCard
+class _EmptyVerbatim {
+  final String message = '';
+  final String classe = '';
+  final String sousClasse = '';
+  const _EmptyVerbatim();
+}
+
 class _LoadingState extends StatelessWidget {
   const _LoadingState();
 

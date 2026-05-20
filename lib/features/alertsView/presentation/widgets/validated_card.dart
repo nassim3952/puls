@@ -12,8 +12,9 @@ class ValidatedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final patient = alert.source;
-    final resolvedDate = patient.resolvedAt != null
-        ? DateFormat('dd/MM/yyyy à HH:mm').format(patient.resolvedAt!)
+    final visit = patient.latestVisit;
+    final resolvedDate = visit?.resolvedAt != null
+        ? DateFormat('dd/MM/yyyy à HH:mm').format(visit!.resolvedAt!)
         : 'Date inconnue';
 
     return Container(
@@ -154,7 +155,7 @@ class ValidatedCard extends StatelessWidget {
                       size: 14, color: AppColors.primaryDark),
                   const SizedBox(width: 6),
                   Text(
-                    patient.actionPlanLabel ?? 'Plan appliqué',
+                    visit?.actionPlanLabel ?? 'Plan appliqué',
                     style: const TextStyle(
                         color: AppColors.primaryDark,
                         fontSize: 12,
@@ -166,8 +167,8 @@ class ValidatedCard extends StatelessWidget {
           ),
 
           // ── Rapport ─────────────────────────────────────────────────────
-          if (patient.actionPlanReport != null &&
-              patient.actionPlanReport!.isNotEmpty)
+          if (visit?.actionPlanReport != null &&
+              visit!.actionPlanReport!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Container(
@@ -190,7 +191,7 @@ class ValidatedCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      patient.actionPlanReport!,
+                      visit.actionPlanReport!,
                       style: const TextStyle(
                           color: AppColors.textDark,
                           fontSize: 13,

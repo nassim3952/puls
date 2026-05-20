@@ -24,7 +24,6 @@ final sunburstFamilyProvider = Provider.family<AsyncValue<xtal.ChartTreeNode>, S
     final Map<String, Map<String, List<PatientModel>>> treeMap = {};
 
     for (var p in list) {
-      // On extrait dynamiquement la bonne réponse selon la clé demandée
       final qResponse = _getQuestionResponse(p, questionKey);
       if (qResponse == null) continue;
 
@@ -49,7 +48,7 @@ final sunburstFamilyProvider = Provider.family<AsyncValue<xtal.ChartTreeNode>, S
         final List<xtal.ChartTreeNode> messageNodes = subEntry.value.map((patient) {
           final qResponse = _getQuestionResponse(patient, questionKey);
           final msg = qResponse?.message ?? '';
-          final isAlert = patient.hasAlert;
+          final isAlert = patient.latestVisit?.hasAlert ?? false;
 
           return xtal.ChartTreeNode(
             name: msg,
@@ -82,10 +81,12 @@ final sunburstFamilyProvider = Provider.family<AsyncValue<xtal.ChartTreeNode>, S
 
 /// Helper pour extraire de manière sécurisée la structure de la question
 dynamic _getQuestionResponse(PatientModel patient, String key) {
+  final survey = patient.latestVisit?.survey;
+  if (survey == null) return null;
   switch (key.toLowerCase()) {
-    case 'q2': return patient.patientResponse.q2;
-    case 'q3': return patient.patientResponse.q3;
-    case 'q4': return patient.patientResponse.q4;
+    case 'q2': return survey.raconteParcours;
+    case 'q3': return survey.momentMarquant;
+    case 'q4': return survey.suggestionsAmelioration;
     default: return null;
   }
 }

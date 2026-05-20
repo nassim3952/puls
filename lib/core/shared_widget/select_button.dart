@@ -1,66 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:puls/core/color.dart';
 
-
-//TODO: a supprimé si le code n'est plus utilisé
-// class FilterSelectButtons extends StatelessWidget {
-//   final String label;
-//   final String? value;
-//   final List<String> options;
-//   final Function(String) onSelected;
-//
-//   const FilterSelectButtons({
-//     super.key,
-//     required this.label,
-//     required this.value,
-//     required this.options,
-//     required this.onSelected,
-//   });
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     // Si la valeur est null ou vide, on n'a pas de sélection active
-//     final bool hasSelection = value != null && value!.isNotEmpty;
-//
-//     return PopupMenuButton<String>(
-//       onSelected: onSelected,
-//       offset: const Offset(0, 45),
-//       itemBuilder: (context) => options
-//           .map((opt) => PopupMenuItem(value: opt, child: Text(opt)))
-//           .toList(),
-//       child: Container(
-//         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-//         decoration: BoxDecoration(
-//           color: AppColors.surface,
-//           border: Border.all(
-//               color: hasSelection
-//                   ? AppColors.textPrimary.withValues(alpha: 0.6)
-//                   : AppColors.primaryMentheNeutral.withValues(alpha: 0.3)
-//           ),
-//           borderRadius: BorderRadius.circular(4),
-//         ),
-//         child: Row(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [
-//             Text(
-//               // CRITIQUE : Si pas de sélection, on affiche le label (ex: "Service")
-//               hasSelection ? value! : label,
-//               style: TextStyle(
-//                 color: AppColors.textPrimary,
-//                 fontSize: 14,
-//                 fontWeight: hasSelection ? FontWeight.w600 : FontWeight.w500,
-//               ),
-//             ),
-//             const SizedBox(width: 4),
-//             const Icon(Icons.arrow_drop_down, color: AppColors.textPrimary, size: 24),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
 class FilterSelectButton extends StatelessWidget {
   final String label;
   final String? value;

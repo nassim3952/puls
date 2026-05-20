@@ -6,7 +6,7 @@ import 'package:puls/core/models/patient.dart';
 Widget resultNumber(AsyncValue<List<PatientModel>> patientsAsync, dynamic filters) {
   final count = patientsAsync.whenOrNull(data: (l) => l.length) ?? 0;
   final alertCount = patientsAsync.whenOrNull(
-      data: (l) => l.where((p) => p.hasAlert).length) ?? 0;
+      data: (l) => l.where((p) => p.latestVisit?.hasAlert ?? false).length) ?? 0;
 
   // On garde juste un Wrap ou un Row serré, sans Spacer parasite
   return Wrap(

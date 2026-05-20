@@ -60,38 +60,38 @@ class DetailSheet extends StatelessWidget {
           const SizedBox(height: 24),
           SectionTitle('Informations patient'),
           InfoRow(Icons.medical_information_outlined, 'Type de visite',
-              alert.source.visitType),
+              alert.source.latestVisit?.visitType ?? '–'),
           InfoRow(Icons.local_hospital_outlined, 'Service',
-              alert.source.service),
+              alert.source.latestVisit?.service ?? '–'),
           InfoRow(Icons.science_outlined, 'Exploration',
-              alert.source.exploration.isNotEmpty
-                  ? alert.source.exploration
+              (alert.source.latestVisit?.exploration.isNotEmpty ?? false)
+                  ? alert.source.latestVisit!.exploration
                   : 'N/A'),
           InfoRow(Icons.calendar_today_outlined, 'Date de visite',
               alert.lastVisit),
           InfoRow(Icons.badge_outlined, 'IPP', alert.source.ipp),
           const SizedBox(height: 20),
           SectionTitle('Verbatim patient'),
-          // On affiche q2 (point positif) et q4 (point à améliorer)
-          if (alert.source.patientResponse.q2.message.isNotEmpty) ...[
+          // On affiche raconteParcours (q2) et suggestionsAmelioration (q4)
+          if (alert.source.latestVisit?.survey?.raconteParcours.message.isNotEmpty ?? false) ...[
             VerbatimCard(
               icon: Icons.thumb_up_outlined,
               color: AppColors.primary,
               bg: AppColors.primaryLight,
               label: 'Point positif',
-              message: alert.source.patientResponse.q2.message,
-              classe: alert.source.patientResponse.q2.classe,
+              message: alert.source.latestVisit!.survey!.raconteParcours.message,
+              classe: alert.source.latestVisit!.survey!.raconteParcours.classe,
             ),
             const SizedBox(height: 10),
           ],
-          if (alert.source.patientResponse.q4.message.isNotEmpty) ...[
+          if (alert.source.latestVisit?.survey?.suggestionsAmelioration.message.isNotEmpty ?? false) ...[
             VerbatimCard(
               icon: Icons.build_outlined,
               color: AppColors.warningText,
               bg: AppColors.warningBg,
               label: 'Point à améliorer',
-              message: alert.source.patientResponse.q4.message,
-              classe: alert.source.patientResponse.q4.classe,
+              message: alert.source.latestVisit!.survey!.suggestionsAmelioration.message,
+              classe: alert.source.latestVisit!.survey!.suggestionsAmelioration.classe,
             ),
             const SizedBox(height: 10),
           ],

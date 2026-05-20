@@ -1,9 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../color.dart';
+import '../provider/auth_provider.dart';
 import '../provider/navigation_provider.dart';
 import '../provider/side_bar_provider.dart';
+import 'logout_dialog.dart';
 
 class SideBar extends ConsumerWidget {
   const SideBar({super.key});
@@ -32,6 +35,7 @@ class SideBar extends ConsumerWidget {
               const SizedBox(height: 50),
 
               _navItem(
+                context,
                 ref,
                 Icons.grid_view_rounded,
                 "Tableau de bord",
@@ -40,6 +44,7 @@ class SideBar extends ConsumerWidget {
                 isCollapsed,
               ),
               _navItem(
+                context,
                 ref,
                 Icons.notifications_none_rounded,
                 "Alerte",
@@ -49,6 +54,7 @@ class SideBar extends ConsumerWidget {
                 hasBadge: true,
               ),
               _navItem(
+                context,
                 ref,
                 Icons.show_chart_rounded,
                 "Historiques",
@@ -57,6 +63,7 @@ class SideBar extends ConsumerWidget {
                 isCollapsed,
               ),
               _navItem(
+                context,
                 ref,
                 Icons.business_rounded,
                 "Services",
@@ -65,6 +72,7 @@ class SideBar extends ConsumerWidget {
                 isCollapsed,
               ),
               _navItem(
+                context,
                 ref,
                 Icons.description_outlined,
                 "Détails Enquêtes",
@@ -76,6 +84,7 @@ class SideBar extends ConsumerWidget {
               const Spacer(),
 
               _navItem(
+                context,
                 ref,
                 Icons.logout_rounded,
                 "Déconnexion",
@@ -97,11 +106,8 @@ class SideBar extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: SizedBox(
         height: 50,
-        // On utilise un Stack pour que l'icône puisse se déplacer librement
-        // par-dessus ou à côté des autres éléments pendant l'anim
         child: Stack(
           children: [
-            // 1. Le Logo et le Texte (disparaissent en fondu)
             AnimatedOpacity(
               duration: const Duration(milliseconds: 200),
               opacity: collapsed ? 0 : 1,
@@ -110,7 +116,7 @@ class SideBar extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryMenthe.withValues(alpha: 0.1),
+                      color: AppColors.primaryMenthe.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
@@ -121,22 +127,17 @@ class SideBar extends ConsumerWidget {
                   const SizedBox(width: 12),
                   const Text(
                     "CHU ABC",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,color: AppColors.textPrimary),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
                   ),
                 ],
               ),
             ),
-
-            // 2. L'icône Burger avec un alignement animé
             AnimatedAlign(
               duration: const Duration(milliseconds: 200),
-              // Si réduit -> centre, si ouvert -> aligné à droite
               alignment: collapsed ? Alignment.center : Alignment.centerRight,
               child: IconButton(
                 onPressed: () => ref.read(sidebarProvider.notifier).toggle(),
-                icon: collapsed
-                    ? const Icon(Icons.menu_sharp)
-                    : const Icon(Icons.menu_open_sharp),
+                icon: collapsed ? const Icon(Icons.menu_sharp) : const Icon(Icons.menu_open_sharp),
               ),
             ),
           ],
@@ -145,24 +146,32 @@ class SideBar extends ConsumerWidget {
     );
   }
 
+  // ── DIALOGUE DE DÉCONNEXION REFACTORISÉ AU STYLE DE TON APP ────────────────
   Widget _navItem(
-    WidgetRef ref,
-    IconData icon,
-    String label,
-    int index,
-    int currentIndex,
-    bool collapsed, {
-    bool hasBadge = false,
-    bool isDestructive = false,
-  }) {
-    final isActive = currentIndex == index;
+      BuildContext context,
+      WidgetRef ref, // <-- On s'assure que le WidgetRef est bien déclaré ici
+      IconData icon,
+      String label,
+      int index,
+      int currentIndex,
+      bool collapsed, {
+        bool hasBadge = false,
+        bool isDestructive = false,
+      }) {
+    final isActive = (index == 99) ? false : (currentIndex == index);
 
     final color = isActive
         ? Colors.white
-        : (isDestructive ? Colors.redAccent : AppColors.sideBarText);
+        : (isDestructive ? AppColors.primaryMentheError : AppColors.sideBarText);
 
     return InkWell(
-      onTap: () => ref.read(navigationProvider.notifier).setIndex(index),
+      onTap: () {
+        if (index == 99) {
+          showLogoutDialog(context, ref); // <-- On passe aussi ref au dialogue de déconnexion !
+        } else {
+          ref.read(navigationProvider.notifier).setIndex(index);
+        }
+      },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
@@ -171,20 +180,14 @@ class SideBar extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            // L'icône reste toujours visible
             Icon(icon, color: color, size: 20),
-
-            // On remplace le IF par un espacement animé
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: collapsed ? 0 : 16,
             ),
-
-            // Le texte et le badge enveloppés dans l'opacité
             Expanded(
               child: AnimatedOpacity(
                 duration: const Duration(milliseconds: 200),
-                // On cache le texte si collapsed, mais on le garde dans le Row
                 opacity: collapsed ? 0 : 1,
                 child: Row(
                   children: [
@@ -193,9 +196,7 @@ class SideBar extends ConsumerWidget {
                         label,
                         style: TextStyle(
                           color: color,
-                          fontWeight: isActive
-                              ? FontWeight.bold
-                              : FontWeight.w500,
+                          fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -217,5 +218,4 @@ class SideBar extends ConsumerWidget {
         ),
       ),
     );
-  }
-}
+  }}

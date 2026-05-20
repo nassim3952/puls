@@ -10,9 +10,10 @@ final q0TimelineProvider = Provider<AsyncValue<List<ChartDataSpline>>>((ref) {
     // 1. On regroupe les scores par date (YYYY-MM-DD)
     Map<String, List<double>> groupedData = {};
     for (var p in list) {
-      // On formate la date pour ignorer l'heure
-      String dateKey = "${p.date.year}-${p.date.month.toString().padLeft(2, '0')}-${p.date.day.toString().padLeft(2, '0')}";
-      double score = (double.tryParse(p.patientResponse.q0) ?? 0.0) * 20; // Score sur 100
+      final visit = p.latestVisit;
+      if (visit == null) continue;
+      String dateKey = "${visit.date.year}-${visit.date.month.toString().padLeft(2, '0')}-${visit.date.day.toString().padLeft(2, '0')}";
+      double score = (visit.survey?.qualitePriseEnCharge ?? 0).toDouble() * 20;
 
       groupedData.putIfAbsent(dateKey, () => []).add(score);
     }

@@ -36,7 +36,7 @@ class MainDashboardScreen extends ConsumerWidget {
     }
 
     return Scaffold(
-
+      endDrawer: const NotificationsDrawer(),
       appBar: CustomAppBar(),
       body: Row(
         children: [

@@ -103,7 +103,7 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'Type de visite : ${widget.alert.source.visitType.toLowerCase()} · Score satisfaction ${widget.alert.source.patientResponse.q0}/5',
+                    'Type de visite : ${widget.alert.source.latestVisit?.visitType.toLowerCase() ?? '–'} · Score satisfaction ${widget.alert.source.latestVisit?.survey?.qualitePriseEnCharge ?? 0}/5',
                     style: const TextStyle(
                         color: AppColors.primaryDark,
                         fontSize: 12,

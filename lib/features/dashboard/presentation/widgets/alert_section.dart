@@ -27,12 +27,14 @@ class AlertSection extends ConsumerWidget {
         return SingleChildScrollView(
           child: Column(
             children: alerts.map((patient) {
-              // Extraction du message Q2 (Soins & Technique)
-              final alertMessage = patient.patientResponse.q2.message;
+              // Extraction du message Q2 (raconteParcours)
+              final alertMessage = patient.latestVisit?.survey?.raconteParcours.message ?? '';
               final patientName = "${patient.firstName} ${patient.lastName}";
 
-              // Calcul du temps écoulé (optionnel, sinon on met l'heure)
-              final timeDisplayText = timeAgo(patient.date);
+              // Calcul du temps écoulé
+              final timeDisplayText = patient.latestVisit != null
+                  ? timeAgo(patient.latestVisit!.date)
+                  : '–';
 
               return AppWidget.alertTile(
                 StatusType.error,

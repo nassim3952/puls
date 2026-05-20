@@ -1,80 +1,96 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:puls/core/models/patient.dart';
-
 import 'patient_provider.dart';
 
-// ─── State ────────────────────────────────────────────────────────────────────
 
 class AlertsNotifier extends StateNotifier<Map<String, PatientModel>> {
   AlertsNotifier() : super({});
 
-  /// Étape 1 → 2 : assigne un plan d'action (label + rapport)
-  /// On passe le PatientModel complet en cas où il n'est pas encore dans le state local
+  // Étape 1 → 2 : assignation d'un plan
   void assignPlan(PatientModel patient, String label, String report) {
     final current = state[patient.id] ?? patient;
+    final visit = current.latestVisit;
+    if (visit == null) return;
+
     state = {
       ...state,
-      patient.id: current.copyWith(
-        actionPlanLabel: label,
-        actionPlanReport: report,
-        planIsValid: null,
+      patient.id: current.withUpdatedLatestVisit(
+        visit.copyWith(
+          actionPlanLabel: label,
+          actionPlanReport: report,
+          planIsValid: null,
+        ),
       ),
     };
   }
 
-  /// Étape 2 → 3 validé : résout l'alerte
+  // Étape 2 → 3 validé
   void validatePlan(PatientModel patient) {
     final current = state[patient.id] ?? patient;
+    final visit = current.latestVisit;
+    if (visit == null) return;
+
     state = {
       ...state,
-      patient.id: current.copyWith(
-        hasAlert: false,
-        planIsValid: true,
-        resolvedAt: DateTime.now(),
+      patient.id: current.withUpdatedLatestVisit(
+        visit.copyWith(
+          hasAlert: false,
+          planIsValid: true,
+          resolvedAt: DateTime.now(),
+        ),
       ),
     };
   }
 
-  /// Étape 2 → 1 rejeté : remet l'alerte active, marque comme non-valide
+  // Étape 2 → 1 rejeté
   void rejectPlan(PatientModel patient) {
     final current = state[patient.id] ?? patient;
+    final visit = current.latestVisit;
+    if (visit == null) return;
+
     state = {
       ...state,
-      patient.id: current.copyWith(
-        hasAlert: true,
-        planIsValid: false,
-        actionPlanLabel: null,
-        actionPlanReport: null,
+      patient.id: current.withUpdatedLatestVisit(
+        visit.copyWith(
+          hasAlert: true,
+          planIsValid: false,
+          actionPlanLabel: null,
+          actionPlanReport: null,
+        ),
       ),
     };
   }
 
-  /// Supprime un patient de la vue (dismiss local)
   void dismiss(String patientId) {
-    final updated = Map<String, PatientModel>.from(state);
-    updated.remove(patientId);
+    final updated = Map<String, PatientModel>.from(state)..remove(patientId);
     state = updated;
   }
 }
 
-// ─── Provider ─────────────────────────────────────────────────────────────────
+// ── Providers ─────────────────────────────────────────────────────────────────
+
 final alertsNotifierProvider =
 StateNotifierProvider<AlertsNotifier, Map<String, PatientModel>>(
       (ref) => AlertsNotifier(),
 );
 
-/// Provider dérivé qui merge la liste réseau + les overrides locaux
+// Liste des patients avec alerte, overrides locaux appliqués
 final alertsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final patientsAsync = ref.watch(filteredPatientsProvider);
   final overrides = ref.watch(alertsNotifierProvider);
 
   return patientsAsync.whenData((list) {
-    final alerts = list.where((p) => p.hasAlert).toList();
-    alerts.sort((a, b) => b.date.compareTo(a.date));
+    final alerts = list
+        .where((p) => (overrides[p.id] ?? p).latestVisit?.hasAlert ?? false)
+        .map((p) => overrides[p.id] ?? p)
+        .toList()
+      ..sort((a, b) {
+        final dateA = a.latestVisit?.date ?? DateTime(0);
+        final dateB = b.latestVisit?.date ?? DateTime(0);
+        return dateB.compareTo(dateA);
+      });
 
-    // Merge : override local prime sur la donnée réseau
-    // Pas besoin de seeding — si le patient n'est pas dans overrides, on prend p directement
-    return alerts.map((p) => overrides[p.id] ?? p).toList();
+    return alerts;
   });
 });

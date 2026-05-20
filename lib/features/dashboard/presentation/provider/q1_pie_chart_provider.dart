@@ -31,7 +31,7 @@ final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
         return ChartDataPie(label: cleanLabel, value: 0.0, color: Colors.transparent);
       }
 
-      final count = list.where((p) => p.patientResponse.q1 == entry.key).length;
+      final count = list.where((p) => p.latestVisit?.survey?.attentesSoins == entry.key).length;
       final percentage = (count / list.length) * 100;
 
       return ChartDataPie(

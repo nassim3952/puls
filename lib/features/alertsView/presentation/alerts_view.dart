@@ -45,7 +45,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   /// Onglet 1 : alerte active, pas de plan encore
   List<AlertView> _activeAlerts(List<PatientModel> patients) {
     return patients
-        .where((p) => p.hasAlert && p.actionPlanLabel == null)
+        .where((p) =>
+    (p.latestVisit?.hasAlert ?? false) &&
+        p.latestVisit?.actionPlanLabel == null)
         .map((p) => AlertView(p))
         .where((a) => _filterLevel == null || a.level == _filterLevel)
         .toList();
@@ -55,8 +57,8 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   List<AlertView> _pendingPlans(List<PatientModel> patients) {
     return patients
         .where((p) =>
-    p.hasAlert &&
-        p.actionPlanLabel != null)
+    (p.latestVisit?.hasAlert ?? false) &&
+        p.latestVisit?.actionPlanLabel != null)
         .map((p) => AlertView(p))
         .toList();
   }
@@ -64,7 +66,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   /// Onglet 3 : plans validés archivés
   List<AlertView> _validatedPlans(List<PatientModel> patients) {
     return patients
-        .where((p) => !p.hasAlert && p.planIsValid == true)
+        .where((p) =>
+    !(p.latestVisit?.hasAlert ?? true) &&
+        p.latestVisit?.planIsValid == true)
         .map((p) => AlertView(p))
         .toList();
   }

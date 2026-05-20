@@ -1,16 +1,17 @@
 import 'package:intl/intl.dart';
 
 import '../../../../core/models/patient.dart';
+import '../../../../core/models/visit_model.dart';
 import '../alerts_view.dart';
 
 // ─── Alert level ──────────────────────────────────────────────────────────────
 enum AlertLevel { urgent, warning, info }
 
 // ─── Mapping PatientModel → niveau d'alerte ──────────────────────────────────
-// On se base sur q0 (score satisfaction 1-5) :
+// On se base sur qualitePriseEnCharge (score satisfaction 1-5) :
 // 1-2 → urgent, 3 → warning, 4-5 → info
 AlertLevel levelFromPatient(PatientModel p) {
-  final score = int.tryParse(p.patientResponse.q0) ?? 5;
+  final score = p.latestVisit?.survey?.qualitePriseEnCharge ?? 5;
   if (score <= 2) return AlertLevel.urgent;
   if (score == 3) return AlertLevel.warning;
   return AlertLevel.info;
@@ -23,6 +24,8 @@ class AlertView {
 
   AlertView(this.source);
 
+  VisitModel? get _visit => source.latestVisit;
+
   String get patientName => '${source.firstName} ${source.lastName}';
   String get patientId => source.ipp;
   String get avatarInitials {
@@ -34,35 +37,37 @@ class AlertView {
   AlertLevel get level => levelFromPatient(source);
 
   String get title {
+    final score = _visit?.survey?.qualitePriseEnCharge ?? 0;
     switch (level) {
       case AlertLevel.urgent:
-        return 'Satisfaction critique — score ${source.patientResponse.q0}/5';
+        return 'Satisfaction critique — score $score/5';
       case AlertLevel.warning:
-        return 'Satisfaction modérée — score ${source.patientResponse.q0}/5';
+        return 'Satisfaction modérée — score $score/5';
       case AlertLevel.info:
-        return 'Suivi post-visite — score ${source.patientResponse.q0}/5';
+        return 'Suivi post-visite — score $score/5';
     }
   }
 
-  // Le verbatim q4 (point d'amélioration) est la description de l'alerte
+  // suggestionsAmelioration = q4
   String get description {
-    final msg = source.patientResponse.q4.message;
+    final msg = _visit?.survey?.suggestionsAmelioration.message ?? '';
     return msg.isNotEmpty ? msg : 'Aucun commentaire renseigné.';
   }
 
-  String get time => DateFormat('dd/MM/yyyy').format(source.date);
+  String get time =>
+      _visit != null ? DateFormat('dd/MM/yyyy').format(_visit!.date) : '–';
 
-  // On n'a pas le téléphone dans PatientModel — on affiche l'IPP en fallback
-  // (tu peux ajouter phone dans PatientModel / patient_service quand tu veux)
   String get phone => source.ipp;
 
-  String get condition => '${source.visitType} · ${source.service}';
+  String get condition =>
+      '${_visit?.visitType ?? ''} · ${_visit?.service ?? ''}';
 
-  // Score douleur simulé depuis q0 inversé : satisfaction 1 = douleur 9, 5 = 1
+  // Score douleur inversé depuis qualitePriseEnCharge : 1 = 8, 5 = 0
   double get painScore {
-    final q = int.tryParse(source.patientResponse.q0) ?? 3;
+    final q = _visit?.survey?.qualitePriseEnCharge ?? 3;
     return ((6 - q) * 2).clamp(0, 10).toDouble();
   }
 
-  String get lastVisit => DateFormat('dd/MM/yyyy').format(source.date);
+  String get lastVisit =>
+      _visit != null ? DateFormat('dd/MM/yyyy').format(_visit!.date) : '–';
 }

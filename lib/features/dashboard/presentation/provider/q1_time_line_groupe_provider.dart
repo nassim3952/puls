@@ -28,12 +28,19 @@ final q1TimelineGroupsProvider = Provider<AsyncValue<List<SplineGroup>>>((ref) {
 
     // 4. On trie les patients par date pour le calcul cumulatif
     final sortedPatients = List<PatientModel>.from(list)
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) {
+        final da = a.latestVisit?.date ?? DateTime(0);
+        final db = b.latestVisit?.date ?? DateTime(0);
+        return da.compareTo(db);
+      });
 
-    // 5. On récupère toutes les dates uniques au format String
-    final dates = sortedPatients.map((p) =>
-    "${p.date.year}-${p.date.month.toString().padLeft(2, '0')}-${p.date.day.toString().padLeft(2, '0')}"
-    ).toSet().toList();
+    // 5. On récupère toutes les dates uniques (patients sans visite ignorés)
+    final dates = sortedPatients
+        .where((p) => p.latestVisit != null)
+        .map((p) {
+      final d = p.latestVisit!.date;
+      return "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
+    }).toSet().toList();
 
     // 6. Pour chaque catégorie, on construit sa ligne (SplineGroup)
     return categories.entries.map((entry) {
@@ -48,11 +55,13 @@ final q1TimelineGroupsProvider = Provider<AsyncValue<List<SplineGroup>>>((ref) {
       // On parcourt chaque date pour calculer le point à ce moment précis
       for (var date in dates) {
         final patientsToday = sortedPatients.where((p) {
-          final pDate = "${p.date.year}-${p.date.month.toString().padLeft(2, '0')}-${p.date.day.toString().padLeft(2, '0')}";
+          final d = p.latestVisit?.date;
+          if (d == null) return false;
+          final pDate = "${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}";
           return pDate == date;
         }).toList();
 
-        cumulativeCategoryCount += patientsToday.where((p) => p.patientResponse.q1 == categoryKey).length;
+        cumulativeCategoryCount += patientsToday.where((p) => p.latestVisit?.survey?.attentesSoins == categoryKey).length;
         cumulativeTotalCount += patientsToday.length;
 
         double percentage = cumulativeTotalCount == 0

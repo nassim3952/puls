@@ -26,10 +26,10 @@ class PatientListScreen extends ConsumerWidget {
             final patient = patients[index];
             return ListTile(
               title: Text("${patient.firstName} ${patient.lastName}"),
-              subtitle: Text("Service: ${patient.service} - IPP: ${patient.ipp}"),
+              subtitle: Text("Service: ${patient.latestVisit?.service ?? '–'} - IPP: ${patient.ipp}"),
               trailing: Icon(
                 Icons.circle,
-                color: patient.hasAlert ? Colors.red : Colors.green,
+                color: (patient.latestVisit?.hasAlert ?? false) ? Colors.red : Colors.green,
               ),
             );
           },

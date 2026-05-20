@@ -11,7 +11,7 @@ final q0AverageProvider = Provider<double>((ref) {
 
       // 2. On additionne tous les scores q0 (on convertit le String en double)
       final totalScore = list.fold<double>(0, (sum, p) {
-        final score = double.tryParse(p.patientResponse.q0) ?? 0.0;
+        final score = (p.latestVisit?.survey?.qualitePriseEnCharge ?? 0).toDouble();
         return sum + score;
       });
 
