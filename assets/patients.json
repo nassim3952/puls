@@ -1,0 +1,977 @@
+[
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00001",
+      "first_name": "Amira",
+      "last_name": "Benaissa",
+      "sex": "F",
+      "date_of_birth": "1997-04-03",
+      "email": "amira.benaissa@gmail.com",
+      "phone": "213770123456"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Gynécologie-Obstétrique",
+      "visit_type": "Consultation",
+      "exploration": "Imagerie",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Ferhat Samia",
+      "date": "2026-04-03T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-07T09:14:22.000Z",
+      "post_date": "2026-04-07T11:30:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "Le personnel était très attentionné et rassurant tout au long de la consultation." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "L'écoute attentive du médecin qui a pris le temps de tout expliquer." },
+        "q4": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Réduire le délai d'attente avant la consultation." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00002",
+      "first_name": "Yacine",
+      "last_name": "Hadj",
+      "sex": "M",
+      "date_of_birth": "1985-11-21",
+      "email": "yacine.hadj@yahoo.fr",
+      "phone": "213661234567"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Cardiologie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Meziane Karim",
+      "date": "2026-03-15T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-20T08:00:00.000Z",
+      "post_date": "2026-03-20T10:45:00.000Z",
+      "has_alert": true,
+      "alert_resolved": true,
+      "resolved_at": "2026-03-21T09:30:00.000Z",
+      "plan_is_valid": false,
+      "answers": {
+        "q0": "2",
+        "q1": "Non",
+        "q2": { "class": "environnement", "sub_class": "hygiène", "message": "La chambre n'était pas correctement nettoyée à mon arrivée, des traces visibles sur le sol." },
+        "q3": { "class": "organisation", "sub_class": "logistique", "message": "La gestion des repas était désorganisée, horaires non respectés." },
+        "q4": { "class": "relationnel", "sub_class": "communication", "message": "Améliorer la communication entre les infirmiers et les patients concernant les traitements." },
+        "q5": "Oui",
+        "q6": "J'ai eu une douleur thoracique persistante deux jours après ma sortie, j'ai dû retourner aux urgences.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00003",
+      "first_name": "Nadia",
+      "last_name": "Boudjemaa",
+      "sex": "F",
+      "date_of_birth": "2003-07-14",
+      "email": "nadia.boudjemaa@gmail.com",
+      "phone": "213550987654"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Dermatologie",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Aouiche Leila",
+      "date": "2026-04-10T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-14T10:00:00.000Z",
+      "post_date": "2026-04-14T12:15:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "relationnel", "sub_class": "accueil", "message": "Accueil chaleureux à la réception, on se sent bien pris en charge dès l'entrée." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le diagnostic était précis et le traitement bien adapté à ma situation." },
+        "q4": { "class": "environnement", "sub_class": "infrastructure", "message": "La salle d'attente manque de sièges, certains patients étaient debout." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00004",
+      "first_name": "Omar",
+      "last_name": "Khelifi",
+      "sex": "M",
+      "date_of_birth": "1960-02-28",
+      "email": "omar.khelifi@hotmail.com",
+      "phone": "213791456789"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Neurologie",
+      "visit_type": "Consultation",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Instructions de sortie",
+      "doctor_assigned": "Dr. Benali Mourad",
+      "date": "2026-03-28T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-01T09:00:00.000Z",
+      "post_date": "2026-04-01T14:20:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "1",
+        "q1": "Non",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le médecin n'a pas suffisamment expliqué mon diagnostic, je suis sorti sans comprendre mon état." },
+        "q3": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "J'ai attendu plus de 3 heures pour une consultation de 5 minutes, c'est inacceptable." },
+        "q4": { "class": "relationnel", "sub_class": "communication", "message": "Mettre en place un système d'information clair sur les délais d'attente." },
+        "q5": "Non",
+        "q6": "Mes maux de tête persistent et je ne sais pas si c'est normal après la consultation.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00005",
+      "first_name": "Fatima",
+      "last_name": "Zeroual",
+      "sex": "F",
+      "date_of_birth": "1975-09-05",
+      "email": "fatima.zeroual@gmail.com",
+      "phone": "213660345678"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Rhumatologie & Rééducation",
+      "visit_type": "Hospitalisation",
+      "exploration": "Imagerie",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Chibane Farid",
+      "date": "2026-03-05T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-10T08:30:00.000Z",
+      "post_date": "2026-03-10T11:00:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "En partie",
+        "q2": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "Le kinésithérapeute était très professionnel et les séances ont vraiment soulagé mes douleurs." },
+        "q3": { "class": "environnement", "sub_class": "infrastructure", "message": "Les équipements de rééducation sont modernes et bien entretenus." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Mieux organiser les rendez-vous pour éviter les croisements entre patients." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00006",
+      "first_name": "Sofiane",
+      "last_name": "Ait Amar",
+      "sex": "M",
+      "date_of_birth": "1992-06-17",
+      "email": "sofiane.aitamar@gmail.com",
+      "phone": "213770654321"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Gastro-entérologie",
+      "visit_type": "Urgences",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Instructions de sortie",
+      "doctor_assigned": "Dr. Hamidi Rachid",
+      "date": "2026-04-18T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-22T10:00:00.000Z",
+      "post_date": "2026-04-22T13:45:00.000Z",
+      "has_alert": true,
+      "alert_resolved": true,
+      "resolved_at": "2026-04-23T08:00:00.000Z",
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "3",
+        "q1": "En partie",
+        "q2": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Aux urgences, j'ai attendu 2h avant d'être vu alors que ma douleur était intense." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le médecin a été efficace une fois pris en charge, les examens étaient bien ciblés." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Mieux trier les urgences selon la gravité pour prioriser les cas critiques." },
+        "q5": "Oui",
+        "q6": "J'ai toujours des nausées malgré le traitement prescrit.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00007",
+      "first_name": "Meriem",
+      "last_name": "Benaceur",
+      "sex": "F",
+      "date_of_birth": "1988-12-30",
+      "email": "meriem.benaceur@outlook.com",
+      "phone": "213551234890"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Pédiatrie",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Saadoune Houria",
+      "date": "2026-04-05T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-09T09:30:00.000Z",
+      "post_date": "2026-04-09T10:50:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "relationnel", "sub_class": "accueil", "message": "Le personnel a été incroyablement doux avec mon enfant, il s'est senti en confiance." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "La pédiatre a été très minutieuse et a pris le temps de tout expliquer aux parents." },
+        "q4": { "class": "environnement", "sub_class": "infrastructure", "message": "Ajouter un espace de jeux dans la salle d'attente pour les enfants." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00008",
+      "first_name": "Hocine",
+      "last_name": "Tahar",
+      "sex": "M",
+      "date_of_birth": "1955-03-12",
+      "email": "hocine.tahar@gmail.com",
+      "phone": "213793456789"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Oncologie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Imagerie",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Bouchama Djamel",
+      "date": "2026-02-20T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-02-27T08:00:00.000Z",
+      "post_date": "2026-02-27T09:40:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "2",
+        "q1": "Non",
+        "q2": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "Les effets secondaires du traitement n'ont pas été correctement anticipés ni gérés." },
+        "q3": { "class": "relationnel", "sub_class": "communication", "message": "Personne ne m'a informé des risques avant le traitement, j'ai été pris par surprise." },
+        "q4": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Améliorer le suivi post-traitement et assurer un accès rapide en cas de complication." },
+        "q5": "Non",
+        "q6": "Je ressens des douleurs abdominales intenses depuis ma sortie et je ne parviens pas à joindre mon médecin.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00009",
+      "first_name": "Lynda",
+      "last_name": "Messaoud",
+      "sex": "F",
+      "date_of_birth": "2000-08-22",
+      "email": "lynda.messaoud@gmail.com",
+      "phone": "213660789012"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Pneumologie",
+      "visit_type": "Exploration",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Boudjelida Nour",
+      "date": "2026-04-12T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-16T09:00:00.000Z",
+      "post_date": "2026-04-16T11:20:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Les tests respiratoires ont été bien conduits, les explications étaient claires." },
+        "q3": { "class": "relationnel", "sub_class": "accueil", "message": "L'infirmière qui m'a préparée pour les explorations était très bienveillante." },
+        "q4": { "class": "environnement", "sub_class": "hygiène", "message": "S'assurer que les embouts des appareils sont bien stérilisés entre chaque patient." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00010",
+      "first_name": "Rachid",
+      "last_name": "Bouras",
+      "sex": "M",
+      "date_of_birth": "1978-05-03",
+      "email": "rachid.bouras@gmail.com",
+      "phone": "213770011223"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Chirurgie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Imagerie",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Guerfi Nabil",
+      "date": "2026-03-01T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-08T10:00:00.000Z",
+      "post_date": "2026-03-08T12:30:00.000Z",
+      "has_alert": true,
+      "alert_resolved": true,
+      "resolved_at": "2026-03-09T14:00:00.000Z",
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "3",
+        "q1": "En partie",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "L'opération s'est bien déroulée mais la prise en charge post-opératoire manquait de rigueur." },
+        "q3": { "class": "environnement", "sub_class": "hygiène", "message": "La salle de réveil était propre et bien gérée, je me suis senti en sécurité." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Améliorer la gestion des prescriptions à la sortie pour éviter les confusions." },
+        "q5": "Oui",
+        "q6": "La plaie opératoire présente une légère rougeur, je ne sais pas si c'est normal.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00011",
+      "first_name": "Sabrina",
+      "last_name": "Hammoudi",
+      "sex": "F",
+      "date_of_birth": "1994-01-09",
+      "email": "sabrina.hammoudi@gmail.com",
+      "phone": "213551122334"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Medecine interne",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Oussama Brahim",
+      "date": "2026-04-20T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-24T09:00:00.000Z",
+      "post_date": "2026-04-24T10:30:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Prise en charge globale excellente, le médecin a tenu compte de tout mon historique médical." },
+        "q3": { "class": "relationnel", "sub_class": "communication", "message": "Le médecin a expliqué les résultats d'analyses de manière très simple et compréhensible." },
+        "q4": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Le rendez-vous a démarré à l'heure, c'est appréciable." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00012",
+      "first_name": "Khaled",
+      "last_name": "Mebarki",
+      "sex": "M",
+      "date_of_birth": "1968-10-14",
+      "email": "khaled.mebarki@yahoo.fr",
+      "phone": "213662233445"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Cardiologie",
+      "visit_type": "Urgences",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Meziane Karim",
+      "date": "2026-04-01T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-06T08:00:00.000Z",
+      "post_date": "2026-04-06T09:55:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "1",
+        "q1": "Non",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le défibrillateur n'était pas immédiatement disponible lors de mon arrivée aux urgences, situation alarmante." },
+        "q3": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Malgré une douleur thoracique, j'ai attendu trop longtemps avant qu'un médecin me prenne en charge." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Revoir les protocoles d'urgence cardiaque pour éviter tout retard dans la prise en charge." },
+        "q5": "Non",
+        "q6": "Je ressens encore des palpitations depuis ma sortie. Je suis très inquiet.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00013",
+      "first_name": "Imane",
+      "last_name": "Cheurfa",
+      "sex": "F",
+      "date_of_birth": "1990-03-25",
+      "email": "imane.cheurfa@gmail.com",
+      "phone": "213770445566"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Imagerie",
+      "visit_type": "Exploration",
+      "exploration": "Imagerie",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Amrani Sonia",
+      "date": "2026-04-08T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-12T10:00:00.000Z",
+      "post_date": "2026-04-12T12:00:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "L'échographie a été réalisée de manière professionnelle avec des explications en temps réel." },
+        "q3": { "class": "environnement", "sub_class": "infrastructure", "message": "Les équipements d'imagerie sont récents et les salles d'examen bien aménagées." },
+        "q4": { "class": "relationnel", "sub_class": "accueil", "message": "La secrétaire médicale pourrait être plus accueillante avec les patients." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00014",
+      "first_name": "Anis",
+      "last_name": "Ghozlane",
+      "sex": "M",
+      "date_of_birth": "2001-11-07",
+      "email": "anis.ghozlane@gmail.com",
+      "phone": "213553344556"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Laboratoire",
+      "visit_type": "Exploration",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Tebbal Amina",
+      "date": "2026-04-14T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-18T09:00:00.000Z",
+      "post_date": "2026-04-18T10:10:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "La prise de sang s'est faite rapidement et sans douleur, le personnel était très habile." },
+        "q3": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Les résultats ont été disponibles dans les délais annoncés, c'est très appréciable." },
+        "q4": { "class": "environnement", "sub_class": "infrastructure", "message": "Rendre la signalétique plus claire pour trouver facilement les différents services." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00015",
+      "first_name": "Wassila",
+      "last_name": "Boutaleb",
+      "sex": "F",
+      "date_of_birth": "1982-07-19",
+      "email": "wassila.boutaleb@outlook.com",
+      "phone": "213661556677"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Soins de Support",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Instructions de sortie",
+      "doctor_assigned": "Dr. Benkheira Assia",
+      "date": "2026-03-22T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-26T08:30:00.000Z",
+      "post_date": "2026-03-26T10:45:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "En partie",
+        "q2": { "class": "relationnel", "sub_class": "communication", "message": "Le soutien psychologique proposé était adapté, le thérapeute a été très à l'écoute." },
+        "q3": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "L'environnement calme et apaisant du service aide vraiment à se sentir mieux." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Augmenter la fréquence des séances de soutien, une fois par semaine n'est pas suffisant." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00016",
+      "first_name": "Mourad",
+      "last_name": "Laib",
+      "sex": "M",
+      "date_of_birth": "1970-04-30",
+      "email": "mourad.laib@gmail.com",
+      "phone": "213792667788"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Chirurgie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Imagerie",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Guerfi Nabil",
+      "date": "2026-02-10T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-02-17T09:00:00.000Z",
+      "post_date": "2026-02-17T11:30:00.000Z",
+      "has_alert": true,
+      "alert_resolved": true,
+      "resolved_at": "2026-02-18T10:00:00.000Z",
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "3",
+        "q1": "En partie",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "La chirurgie s'est bien passée mais j'aurais souhaité plus d'informations sur la convalescence." },
+        "q3": { "class": "environnement", "sub_class": "hygiène", "message": "Le bloc opératoire était impeccable, j'ai eu confiance dès le début." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Le transfert entre services s'est fait dans la désorganisation, améliorer la coordination." },
+        "q5": "Oui",
+        "q6": "Gonflement au niveau de la cicatrice, j'espère que c'est normal.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00017",
+      "first_name": "Samia",
+      "last_name": "Touati",
+      "sex": "F",
+      "date_of_birth": "1966-12-01",
+      "email": "samia.touati@gmail.com",
+      "phone": "213550778899"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Rhumatologie & Rééducation",
+      "visit_type": "Consultation",
+      "exploration": "Imagerie",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Chibane Farid",
+      "date": "2026-04-02T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-06T10:00:00.000Z",
+      "post_date": "2026-04-06T11:50:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le médecin a parfaitement cerné ma pathologie articulaire et proposé un protocole de soins complet." },
+        "q3": { "class": "relationnel", "sub_class": "communication", "message": "Les exercices de rééducation m'ont été expliqués avec des schémas très clairs à ramener chez moi." },
+        "q4": { "class": "environnement", "sub_class": "infrastructure", "message": "Prévoir un parking plus accessible pour les patients à mobilité réduite." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00018",
+      "first_name": "Bilal",
+      "last_name": "Oulebsir",
+      "sex": "M",
+      "date_of_birth": "1999-09-09",
+      "email": "bilal.oulebsir@gmail.com",
+      "phone": "213772889900"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Neurologie",
+      "visit_type": "Consultation",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Instructions de sortie",
+      "doctor_assigned": "Dr. Benali Mourad",
+      "date": "2026-03-18T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-22T09:00:00.000Z",
+      "post_date": "2026-03-22T10:20:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "L'EEG a été bien réalisé, les résultats m'ont été expliqués clairement avec le neurologue." },
+        "q3": { "class": "relationnel", "sub_class": "accueil", "message": "L'équipe paramédicale était agréable et a bien géré mon stress avant l'examen." },
+        "q4": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Réduire l'attente entre la prise de rendez-vous et la consultation." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00019",
+      "first_name": "Karima",
+      "last_name": "Sahraoui",
+      "sex": "F",
+      "date_of_birth": "1979-06-11",
+      "email": "karima.sahraoui@gmail.com",
+      "phone": "213660990011"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Gastro-entérologie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Hamidi Rachid",
+      "date": "2026-03-10T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-15T08:00:00.000Z",
+      "post_date": "2026-03-15T09:30:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "2",
+        "q1": "Non",
+        "q2": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "J'ai souffert pendant l'hospitalisation sans que personne ne gère correctement ma douleur." },
+        "q3": { "class": "relationnel", "sub_class": "communication", "message": "Les infirmiers ne répondaient pas toujours aux appels, laissant les patients sans aide pendant de longs moments." },
+        "q4": { "class": "environnement", "sub_class": "hygiène", "message": "Les toilettes de la chambre n'étaient pas nettoyées régulièrement, situation inacceptable." },
+        "q5": "Non",
+        "q6": "Je continue à avoir des vomissements fréquents depuis ma sortie il y a 5 jours.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00020",
+      "first_name": "Tarek",
+      "last_name": "Chentouf",
+      "sex": "M",
+      "date_of_birth": "1987-02-14",
+      "email": "tarek.chentouf@gmail.com",
+      "phone": "213770112233"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Médecine interne",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Oussama Brahim",
+      "date": "2026-04-16T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-20T10:00:00.000Z",
+      "post_date": "2026-04-20T12:05:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le bilan sanguin complet m'a permis de comprendre enfin l'origine de mes symptômes." },
+        "q3": { "class": "relationnel", "sub_class": "communication", "message": "Le médecin a pris le temps de commenter chaque résultat, c'est rare et précieux." },
+        "q4": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Améliorer la fluidité de l'accueil administratif avant la consultation." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00021",
+      "first_name": "Houria",
+      "last_name": "Ferroukhi",
+      "sex": "F",
+      "date_of_birth": "1958-08-03",
+      "email": "houria.ferroukhi@hotmail.com",
+      "phone": "213793223344"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Pédiatrie",
+      "visit_type": "Urgences",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Instructions de sortie",
+      "doctor_assigned": "Dr. Saadoune Houria",
+      "date": "2026-04-22T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-26T09:00:00.000Z",
+      "post_date": "2026-04-26T10:40:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "5",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Mon petit-fils a été pris en charge rapidement aux urgences, diagnostic rapide et traitement efficace." },
+        "q3": { "class": "relationnel", "sub_class": "accueil", "message": "Le personnel soignant était rassurant et très attentionné envers les enfants et leurs familles." },
+        "q4": { "class": "environnement", "sub_class": "infrastructure", "message": "Prévoir une zone séparée pour les enfants aux urgences, loin des adultes." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00022",
+      "first_name": "Djamel",
+      "last_name": "Bouzidi",
+      "sex": "M",
+      "date_of_birth": "1952-11-25",
+      "email": "djamel.bouzidi@gmail.com",
+      "phone": "213660334455"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Oncologie",
+      "visit_type": "Consultation",
+      "exploration": "Imagerie",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Bouchama Djamel",
+      "date": "2026-04-25T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-04-29T08:00:00.000Z",
+      "post_date": "2026-04-29T09:50:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "2",
+        "q1": "Non",
+        "q2": { "class": "relationnel", "sub_class": "communication", "message": "L'annonce du résultat de la biopsie a été faite de manière très abrupte, sans aucun soutien psychologique." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le plan de traitement proposé n'a pas été expliqué clairement, j'avais encore beaucoup de questions à la fin." },
+        "q4": { "class": "soins_&_technique", "sub_class": "confort_physique", "message": "Associer systématiquement un soutien psychologique à l'annonce d'un diagnostic grave." },
+        "q5": "Non",
+        "q6": "Je me sens très anxieux, je n'ai pas réussi à dormir depuis l'annonce du diagnostic.",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00023",
+      "first_name": "Rania",
+      "last_name": "Benmansour",
+      "sex": "F",
+      "date_of_birth": "2005-03-17",
+      "email": "rania.benmansour@gmail.com",
+      "phone": "213771445566"
+    },
+    "visit": {
+      "canal": "Whatsapp",
+      "service": "Dermatologie",
+      "visit_type": "Consultation",
+      "exploration": "Biologie / Laboratoire",
+      "aftercare": "Consultation de suivi",
+      "doctor_assigned": "Dr. Aouiche Leila",
+      "date": "2026-05-02T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-05-06T10:00:00.000Z",
+      "post_date": "2026-05-06T11:30:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "Oui totalement",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le traitement prescrit pour l'acné a commencé à montrer des résultats positifs dès la première semaine." },
+        "q3": { "class": "relationnel", "sub_class": "accueil", "message": "Le médecin était très attentionné et n'a pas minimisé ma préoccupation vis-à-vis de ma peau." },
+        "q4": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "Le rendez-vous a été facile à prendre en ligne, c'est très pratique." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00024",
+      "first_name": "Lotfi",
+      "last_name": "Djouider",
+      "sex": "M",
+      "date_of_birth": "1981-07-08",
+      "email": "lotfi.djouider@gmail.com",
+      "phone": "213552556677"
+    },
+    "visit": {
+      "canal": "Email",
+      "service": "Pneumologie",
+      "visit_type": "Hospitalisation",
+      "exploration": "Explorations Fonctionnelles",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Boudjelida Nour",
+      "date": "2026-03-25T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-03-31T09:00:00.000Z",
+      "post_date": "2026-03-31T11:15:00.000Z",
+      "has_alert": false,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": true,
+      "answers": {
+        "q0": "4",
+        "q1": "En partie",
+        "q2": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Le traitement de la bronchite chronique a été bien adapté et j'ai clairement senti une amélioration." },
+        "q3": { "class": "environnement", "sub_class": "hygiène", "message": "La chambre était propre et aérée, ce qui est essentiel pour les pathologies respiratoires." },
+        "q4": { "class": "organisation", "sub_class": "logistique", "message": "Améliorer la coordination entre le pneumologue et le médecin traitant pour le suivi à domicile." },
+        "q5": "Oui",
+        "q6": "",
+        "q7": ""
+      }
+    }
+  },
+  {
+    "hospital_id": "43a2a88b-a8d7-4d79-a1f6-b9519f830c88",
+    "patient": {
+      "ipp": "7AC112BKXYZ00025",
+      "first_name": "Djamila",
+      "last_name": "Rahmani",
+      "sex": "F",
+      "date_of_birth": "1973-01-16",
+      "email": "djamila.rahmani@gmail.com",
+      "phone": "213793667788"
+    },
+    "visit": {
+      "canal": "SMS",
+      "service": "Gynécologie-Obstétrique",
+      "visit_type": "Urgences",
+      "exploration": "Imagerie",
+      "aftercare": "Post-hospitalisation",
+      "doctor_assigned": "Dr. Ferhat Samia",
+      "date": "2026-04-28T00:00:00.000Z"
+    },
+    "survey": {
+      "sent_date": "2026-05-02T08:00:00.000Z",
+      "post_date": "2026-05-02T10:30:00.000Z",
+      "has_alert": true,
+      "alert_resolved": false,
+      "resolved_at": null,
+      "plan_is_valid": null,
+      "answers": {
+        "q0": "2",
+        "q1": "Non",
+        "q2": { "class": "organisation", "sub_class": "gestion_de_temps", "message": "J'ai attendu plus de 2h aux urgences en état de douleur intense, personne ne m'a informée de l'attente." },
+        "q3": { "class": "soins_&_technique", "sub_class": "qualité_médicale", "message": "Une fois prise en charge, le médecin était compétent et l'échographie d'urgence a été faite rapidement." },
+        "q4": { "class": "relationnel", "sub_class": "communication", "message": "Informer les patientes sur les délais estimés aux urgences pour réduire l'anxiété." },
+        "q5": "Non",
+        "q6": "Je continue à saigner légèrement depuis ma sortie, je suis très inquiète.",
+        "q7": ""
+      }
+    }
+  }
+]

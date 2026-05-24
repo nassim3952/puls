@@ -15,7 +15,8 @@ enum AuthStatus {
   loading,
   authenticated,
   unauthenticated,
-  needsEmailConfirmation, // ← NOUVEAU : inscrit mais email pas encore confirmé
+  needsEmailConfirmation,
+  wrongPassword, // ← mdp incorrect mais email valide
   error,
 }
 
@@ -101,6 +102,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signIn({required String email, required String password}) async {
     state = state.copyWith(status: AuthStatus.loading);
     try {
+      // Étape 1 : vérifier si l'email existe dans la table users
+      final userCheck = await _supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+
+      if (userCheck == null) {
+        state = state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: 'Aucun compte trouvé avec cette adresse email.',
+        );
+        return;
+      }
+
+      // Étape 2 : tenter la connexion
       final res = await _supabase.auth.signInWithPassword(
         email: email,
         password: password,
@@ -109,10 +126,20 @@ class AuthNotifier extends StateNotifier<AuthState> {
         await _loadUserFromDb(res.user!.id);
       }
     } on AuthException catch (e) {
-      state = state.copyWith(
-        status: AuthStatus.error,
-        errorMessage: _translateAuthError(e.message),
-      );
+      final msg = e.message.toLowerCase();
+      // À ce stade on sait que l'email existe → c'est forcément le mdp
+      if (msg.contains('invalid login credentials') ||
+          msg.contains('invalid credentials')) {
+        state = state.copyWith(
+          status: AuthStatus.wrongPassword,
+          errorMessage: 'Mot de passe incorrect.',
+        );
+      } else {
+        state = state.copyWith(
+          status: AuthStatus.error,
+          errorMessage: _translateAuthError(e.message),
+        );
+      }
     } catch (e) {
       state = state.copyWith(
         status: AuthStatus.error,

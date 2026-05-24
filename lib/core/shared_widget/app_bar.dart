@@ -32,8 +32,10 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     );
 
     return AppBar(
+
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,
+      automaticallyImplyActions: false,
       elevation: 0,
       backgroundColor: Colors.transparent,
       flexibleSpace: Container(

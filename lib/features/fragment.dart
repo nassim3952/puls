@@ -41,7 +41,7 @@ class MainDashboardScreen extends ConsumerWidget {
       body: Row(
         children: [
           // La Sidebar reste fixe à gauche
-          const SideBar(),
+           SideBar(),
 
           // La partie droite change selon la sélection
           Expanded(

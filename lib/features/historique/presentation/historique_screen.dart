@@ -23,6 +23,7 @@ import '../../../core/color.dart';
 import '../../../core/models/patient.dart';
 import '../../../core/provider/historique_filter_controller.dart';
 import '../../../core/provider/patient_provider.dart';
+import '../../../core/shared_widget/empty_state.dart';
 
 
 // ---------------------------------------------------------------------------
@@ -113,7 +114,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
               error: (e, _) => _ErrorState(error: e.toString()),
               data: (patients) =>
               patients.isEmpty
-                  ? const _EmptyState()
+                  ? const EmptyState()
                   : _selectedPatient != null
                   ? _buildDetailView(patients)
                   : _buildTableView(patients, filters),
@@ -957,22 +958,3 @@ class _ErrorState extends StatelessWidget {
       );
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) =>
-      Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.search_off_rounded, size: 48, color: MintTheme.mint200),
-            const SizedBox(height: 16),
-            const Text(
-              'Aucun patient ne correspond aux filtres',
-              style: TextStyle(fontSize: 15, color: MintTheme.textSecondary),
-            ),
-          ],
-        ),
-      );
-}

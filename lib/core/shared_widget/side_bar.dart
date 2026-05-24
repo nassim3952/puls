@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:puls/features/dashboard/presentation/provider/q1_pie_chart_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../color.dart';
@@ -102,6 +103,9 @@ class SideBar extends ConsumerWidget {
   }
 
   Widget _buildLogo(WidgetRef ref, bool collapsed) {
+    final authState = ref.watch(authProvider);
+    final hospitalName = authState.user?.hospitalName?? "Puls App";
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: SizedBox(
@@ -125,8 +129,8 @@ class SideBar extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    "CHU ABC",
+                   Text(
+                    hospitalName.capitalize(),
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
                   ),
                 ],

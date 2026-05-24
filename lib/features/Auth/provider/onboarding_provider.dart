@@ -106,10 +106,18 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
       state = state.copyWith(status: OnboardingStatus.success);
     } on PostgrestException catch (e) {
-      state = state.copyWith(
-        status: OnboardingStatus.error,
-        errorMessage: 'Erreur BDD : ${e.message}',
-      );
+      // Code 23505 = unique constraint violation (nom hôpital déjà utilisé)
+      if (e.code == '23505') {
+        state = state.copyWith(
+          status: OnboardingStatus.error,
+          errorMessage: 'Un hôpital avec ce nom existe déjà. Choisissez un autre nom.',
+        );
+      } else {
+        state = state.copyWith(
+          status: OnboardingStatus.error,
+          errorMessage: 'Erreur BDD : ${e.message}',
+        );
+      }
     } catch (e) {
       state = state.copyWith(
         status: OnboardingStatus.error,
