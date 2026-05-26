@@ -6,7 +6,7 @@ import 'package:puls/features/dashboard/presentation/widgets/alert_section.dart'
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
 import 'package:puls/features/dashboard/presentation/widgets/sunburst_chart.dart';
-import 'package:puls/features/dashboard/presentation/widgets/q3_treemap.dart';
+import 'package:puls/features/dashboard/presentation/widgets/verbatim_bar_chart.dart';
 import '../../model/dashboard_item.dart';
 import '../widgets/filter_chip.dart';
 import '../widgets/q0_score_gauge.dart';
@@ -24,14 +24,12 @@ final dashboardItems = [
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: AlignmentGeometry.center,
-          child: Q0ScoreGauge(),
-        ),
+        Align(alignment: AlignmentGeometry.center, child: Q0ScoreGauge()),
         Expanded(child: Q0SplineChart()),
       ],
     ),
   ),
+
   DashboardItem(
     headerWidget: const SplineLegendHeader(),
     title: "EMP",
@@ -42,49 +40,49 @@ final dashboardItems = [
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Align(
-          alignment: AlignmentGeometry.center,
-          child: Q1PieChart(),
-        ),
+        Align(alignment: AlignmentGeometry.center, child: Q1PieChart()),
         Expanded(child: Q1MultiSplineChart()),
       ],
     ),
   ),
+
   DashboardItem(
     title: "VQPS",
     fullName: "Vécu Qualitatif du Parcours de Soins",
-    crossAxis: 6,
+    crossAxis: 12,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: Q3TreemapSection(),
-    child: QuestionSunburstSection(questionKey: "q2"),
+    child: VerbatimBarChart(questionKey: 'q2'),
+    secondaryChild: QuestionSunburstSection(questionKey: 'q2'),
   ),
+
   DashboardItem(
     title: "MCR",
     fullName: "Moments Critiques & Réputation de l'Établissement",
-    crossAxis: 6,
+    crossAxis: 12,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: Expanded(child: Q3TreemapSection()),
-    child: QuestionSunburstSection(questionKey: "q3"),
+    child: VerbatimBarChart(questionKey: 'q3'),
+    secondaryChild: QuestionSunburstSection(questionKey: 'q3'),
   ),
+
   DashboardItem(
     title: "IAR",
     fullName: "Indice d'Amélioration & de Réputation",
-    crossAxis: 6,
+    crossAxis: 12,
     mainAxis: 6,
     isExpandable: true,
-    secondaryChild: Q3TreemapSection(),
-    child: QuestionSunburstSection(questionKey: "q4"),
+    child: VerbatimBarChart(questionKey: 'q4'),
+    secondaryChild: QuestionSunburstSection(questionKey: 'q4'),
   ),
+
   DashboardItem(
     title: "Consentement",
     fullName: "Indice d'Amélioration & de Réputation",
     crossAxis: 6,
     mainAxis: 6,
     child: Align(
-        alignment: AlignmentDirectional.topCenter,
-        child: Q5DoughnutSection()),
+        alignment: AlignmentDirectional.topCenter, child: Q5DoughnutSection()),
   ),
 
   DashboardItem(
@@ -94,6 +92,7 @@ final dashboardItems = [
     mainAxis: 8,
     child: AlertSection(),
   ),
+
   DashboardItem(
     title: "Réponse",
     fullName: "Indice d'Amélioration & de Réputation",
@@ -108,5 +107,5 @@ final dashboardItems = [
         Expanded(child: AppCharts.spline(splineData2)),
       ],
     ),
-  )
+  ),
 ];

@@ -13,7 +13,7 @@ Widget buildEmpty() {
         ),
         const SizedBox(height: 16),
         const Text(
-          'Aucune alerte',
+          'Aucune alerte non traitée',
           style: TextStyle(
             color: AppColors.textLight,
             fontSize: 16,

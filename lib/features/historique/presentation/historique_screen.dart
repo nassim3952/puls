@@ -17,8 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart'; // <--- Vérifie cet import
-import 'package:puls/features/dashboard/presentation/widgets/dashboard_build_header.dart';
-import 'package:puls/features/historique/presentation/result_number.dart';
+import 'package:puls/core/shared_widget/build_header.dart';
+import 'package:puls/core/shared_widget/result_number.dart';
 import '../../../core/color.dart';
 import '../../../core/models/patient.dart';
 import '../../../core/provider/historique_filter_controller.dart';
@@ -882,7 +882,7 @@ class _VerbatimCard extends StatelessWidget {
                   color: MintTheme.mint600,
                   bg: MintTheme.mint100),
               const SizedBox(width: 6),
-              _Tag(label: verbatim.sousClasse,
+              _Tag(label: verbatim.polarite,
                   color: MintTheme.tagBlue,
                   bg: MintTheme.tagBlueBg),
             ],
@@ -918,7 +918,7 @@ class _VerbatimCard extends StatelessWidget {
 class _EmptyVerbatim {
   final String message = '';
   final String classe = '';
-  final String sousClasse = '';
+  final String polarite = '';
   const _EmptyVerbatim();
 }
 
@@ -957,4 +957,3 @@ class _ErrorState extends StatelessWidget {
         ),
       );
 }
-

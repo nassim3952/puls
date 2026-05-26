@@ -3,21 +3,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/models/patient.dart';
 
-Widget resultNumber(AsyncValue<List<PatientModel>> patientsAsync, dynamic filters) {
-  final count = patientsAsync.whenOrNull(data: (l) => l.length) ?? 0;
-  final alertCount = patientsAsync.whenOrNull(
-      data: (l) => l.where((p) => p.latestVisit?.hasAlert ?? false).length) ?? 0;
+import '../provider/alert_provider.dart';
+import '../provider/patient_provider.dart';
 
-  // On garde juste un Wrap ou un Row serré, sans Spacer parasite
-  return Wrap(
-    spacing: 8,
-    runSpacing: 8,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      _CountBadge(count: count, label: 'patients'),
-      if (alertCount > 0) _AlertBadge(count: alertCount),
-    ],
-  );
+class ResultNumber extends ConsumerWidget {
+  const ResultNumber({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final patientsAsync = ref.watch(filteredPatientsProvider);
+    final overrides = ref.watch(alertsNotifierProvider); // ← réactif aux actions
+
+    final count = patientsAsync.whenOrNull(data: (l) => l.length) ?? 0;
+    final alertCount = patientsAsync.whenOrNull(
+      data: (l) => l.where((p) {
+        return p.visits.any((v) {
+          final effective = overrides[v.id] ?? v;
+          return effective.hasAlert;
+        });
+      }).length,
+    ) ?? 0;
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        _CountBadge(count: count, label: 'réponses'),
+        if (alertCount > 0) _AlertBadge(count: alertCount),
+      ],
+    );
+  }
 }
 
 class _CountBadge extends StatelessWidget {

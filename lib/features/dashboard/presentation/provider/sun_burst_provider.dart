@@ -28,11 +28,11 @@ final sunburstFamilyProvider = Provider.family<AsyncValue<xtal.ChartTreeNode>, S
       if (qResponse == null) continue;
 
       final className = qResponse.classe;
-      final subClassName = qResponse.sousClasse;
+      final polarite = qResponse.polarite;
 
       treeMap.putIfAbsent(className, () => {});
-      treeMap[className]!.putIfAbsent(subClassName, () => []);
-      treeMap[className]![subClassName]!.add(p);
+      treeMap[className]!.putIfAbsent(polarite, () => []);
+      treeMap[className]![polarite]!.add(p);
     }
 
     int classCounter = 0;

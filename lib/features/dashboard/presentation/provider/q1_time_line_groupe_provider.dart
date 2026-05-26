@@ -6,7 +6,7 @@ import 'package:puls/core/models/chart_model.dart';
 
 import '../../../../core/models/patient.dart';
 import '../../../../core/provider/patient_provider.dart';
-import '../../../../core/provider/spline_selection_provider.dart';
+import 'spline_selection_provider.dart';
 
 final q1TimelineGroupsProvider = Provider<AsyncValue<List<SplineGroup>>>((ref) {
   // 1. On écoute la liste de patients filtrée (Service, Type, etc.)

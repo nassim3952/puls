@@ -91,30 +91,30 @@ class AppCharts {
             activationMode: ActivationMode.singleTap,
             builder:
                 (
-                  dynamic data,
-                  dynamic point,
-                  dynamic series,
-                  int pointIndex,
-                  int seriesIndex,
+                dynamic data,
+                dynamic point,
+                dynamic series,
+                int pointIndex,
+                int seriesIndex,
                 ) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black87,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      '${data.label}: ${data.value}%',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ), // Texte très petit
-                    ),
-                  );
-                },
+              return Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black87,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${data.label}: ${data.value}%',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ), // Texte très petit
+                ),
+              );
+            },
           ),
           series: <CircularSeries<ChartDataPie, String>>[
             PieSeries<ChartDataPie, String>(
@@ -206,20 +206,20 @@ class AppCharts {
         series: <CartesianSeries>[
           isHorizontal
               ? BarSeries<BarData, String>(
-                  dataSource: data,
-                  xValueMapper: (BarData d, _) => d.label,
-                  yValueMapper: (BarData d, _) => d.value,
-                  pointColorMapper: (BarData d, _) => d.valence == Valence.bonne
-                      ? AppColors.primaryMenthe
-                      : AppColors.primaryMentheWarning,
-                  animationDuration: 600,
-                )
+            dataSource: data,
+            xValueMapper: (BarData d, _) => d.label,
+            yValueMapper: (BarData d, _) => d.value,
+            pointColorMapper: (BarData d, _) => d.valence == Valence.bonne
+                ? AppColors.primaryMenthe
+                : AppColors.primaryMentheWarning,
+            animationDuration: 600,
+          )
               : ColumnSeries<BarData, String>(
-                  dataSource: data,
-                  xValueMapper: (BarData d, _) => d.label,
-                  yValueMapper: (BarData d, _) => d.value,
-                  animationDuration: 600,
-                ),
+            dataSource: data,
+            xValueMapper: (BarData d, _) => d.label,
+            yValueMapper: (BarData d, _) => d.value,
+            animationDuration: 600,
+          ),
         ],
       ),
     );
@@ -309,7 +309,7 @@ class AppCharts {
   // AJOUTE "WidgetRef ref" en paramètre pour pouvoir modifier le provider
   static Color _getTileColor(TreemapNavigation nav) {
     if (nav.selectedClasse == null) return AppColors.primaryMenthe;
-    if (nav.selectedSousClasse == null) AppColors.primaryMenthe;
+    if (nav.selectedPolarite == null) AppColors.primaryMenthe;
     return  AppColors.primaryMenthe;
   }
 
@@ -338,12 +338,12 @@ class AppCharts {
                       TreemapNavigation(selectedClasse: nav.selectedClasse),
                   child: Text(nav.selectedClasse!, style: const TextStyle(fontSize: 12)),
                 ),
-                if (nav.selectedSousClasse != null) ...[
+                if (nav.selectedPolarite != null) ...[
                   const Icon(Icons.chevron_right, size: 14, color: Colors.grey),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      nav.selectedSousClasse!,
+                      nav.selectedPolarite!,
                       style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -357,17 +357,17 @@ class AppCharts {
         Expanded(
           child: SfTreemap(
 
-            key: ValueKey('tree_${nav.selectedClasse}_${nav.selectedSousClasse}'),
+            key: ValueKey('tree_${nav.selectedClasse}_${nav.selectedPolarite}'),
             dataCount: data.length,
             weightValueMapper: (int index) => 1.0,
             onSelectionChanged: (TreemapTile tile) {
               final node = data[tile.indices.first];
               if (nav.selectedClasse == null) {
                 ref.read(treemapNavProvider.notifier).state = TreemapNavigation(selectedClasse: node.classe);
-              } else if (nav.selectedSousClasse == null) {
+              } else if (nav.selectedPolarite == null) {
                 ref.read(treemapNavProvider.notifier).state = TreemapNavigation(
                   selectedClasse: node.classe,
-                  selectedSousClasse: node.sousClasse,
+                  selectedPolarite: node.polarite,
                 );
               }
             },
@@ -375,7 +375,7 @@ class AppCharts {
               TreemapLevel(
                 groupMapper: (int index) {
                   if (nav.selectedClasse == null) return data[index].classe;
-                  if (nav.selectedSousClasse == null) return data[index].sousClasse;
+                  if (nav.selectedPolarite == null) return data[index].polarite;
                   return data[index].message;
                 },
                 padding: const EdgeInsets.all(1.0),

@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/legacy.dart';
 // 1. On définit ce qu'on stocke : la classe choisie et la sous-classe choisie
 class TreemapNavigation {
   final String? selectedClasse;
-  final String? selectedSousClasse;
+  final String? selectedPolarite;
 
-  TreemapNavigation({this.selectedClasse, this.selectedSousClasse});
+  TreemapNavigation({this.selectedClasse, this.selectedPolarite});
 }
 
 // 2. Le StateProvider qui garde en mémoire où on est dans l'arborescence

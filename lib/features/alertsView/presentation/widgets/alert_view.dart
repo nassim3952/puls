@@ -7,24 +7,23 @@ import '../alerts_view.dart';
 // ─── Alert level ──────────────────────────────────────────────────────────────
 enum AlertLevel { urgent, warning, info }
 
-// ─── Mapping PatientModel → niveau d'alerte ──────────────────────────────────
+// ─── Mapping VisitModel → niveau d'alerte ────────────────────────────────────
 // On se base sur qualitePriseEnCharge (score satisfaction 1-5) :
 // 1-2 → urgent, 3 → warning, 4-5 → info
-AlertLevel levelFromPatient(PatientModel p) {
-  final score = p.latestVisit?.survey?.qualitePriseEnCharge ?? 5;
+AlertLevel levelFromVisit(VisitModel visit) {
+  final score = visit.survey?.qualitePriseEnCharge ?? 5;
   if (score <= 2) return AlertLevel.urgent;
   if (score == 3) return AlertLevel.warning;
   return AlertLevel.info;
 }
 
-// ─── Vue adaptée depuis PatientModel ─────────────────────────────────────────
+// ─── Vue adaptée depuis PatientModel + VisitModel explicite ──────────────────
 
 class AlertView {
   final PatientModel source;
+  final VisitModel visit; // visite concernée — plus de latestVisit implicite
 
-  AlertView(this.source);
-
-  VisitModel? get _visit => source.latestVisit;
+  AlertView(this.source, this.visit);
 
   String get patientName => '${source.firstName} ${source.lastName}';
   String get patientId => source.ipp;
@@ -34,10 +33,10 @@ class AlertView {
     return '$f$l'.toUpperCase();
   }
 
-  AlertLevel get level => levelFromPatient(source);
+  AlertLevel get level => levelFromVisit(visit);
 
   String get title {
-    final score = _visit?.survey?.qualitePriseEnCharge ?? 0;
+    final score = visit.survey?.qualitePriseEnCharge ?? 0;
     switch (level) {
       case AlertLevel.urgent:
         return 'Satisfaction critique — score $score/5';
@@ -50,24 +49,21 @@ class AlertView {
 
   // suggestionsAmelioration = q4
   String get description {
-    final msg = _visit?.survey?.suggestionsAmelioration.message ?? '';
+    final msg = visit.survey?.suggestionsAmelioration.message ?? '';
     return msg.isNotEmpty ? msg : 'Aucun commentaire renseigné.';
   }
 
-  String get time =>
-      _visit != null ? DateFormat('dd/MM/yyyy').format(_visit!.date) : '–';
+  String get time => DateFormat('dd/MM/yyyy').format(visit.date);
 
   String get phone => source.ipp;
 
-  String get condition =>
-      '${_visit?.visitType ?? ''} · ${_visit?.service ?? ''}';
+  String get condition => '${visit.visitType} · ${visit.service}';
 
   // Score douleur inversé depuis qualitePriseEnCharge : 1 = 8, 5 = 0
   double get painScore {
-    final q = _visit?.survey?.qualitePriseEnCharge ?? 3;
+    final q = visit.survey?.qualitePriseEnCharge ?? 3;
     return ((6 - q) * 2).clamp(0, 10).toDouble();
   }
 
-  String get lastVisit =>
-      _visit != null ? DateFormat('dd/MM/yyyy').format(_visit!.date) : '–';
+  String get lastVisit => DateFormat('dd/MM/yyyy').format(visit.date);
 }

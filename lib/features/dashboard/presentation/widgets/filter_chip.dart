@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import '../../../../core/provider/spline_selection_provider.dart';
+import '../provider/spline_selection_provider.dart';
 
 class LegendChip extends ConsumerWidget {
   final String label;

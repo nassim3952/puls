@@ -3,14 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/provider/historique_filter_controller.dart';
 import 'package:puls/core/provider/patient_provider.dart';
 import 'package:puls/core/shared_widget/select_button.dart';
-import 'package:puls/features/historique/presentation/result_number.dart';
+import 'package:puls/core/shared_widget/result_number.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-import '../../model/domain/filtred_state.dart';
-import '../../../../core/color.dart';
+import '../../features/dashboard/model/domain/filtred_state.dart';
+import '../color.dart';
 
 // Import de tes nouveaux fichiers de gestion d'état
-import '../../../../core/provider/filter_controller.dart';
-import '../../../../core/shared_widget/build_reset_button.dart';
+import '../provider/filter_controller.dart';
+import 'build_reset_button.dart';
 
 class DashboardHeader extends ConsumerWidget {
   const DashboardHeader({super.key});
@@ -30,7 +30,7 @@ class DashboardHeader extends ConsumerWidget {
 
         return Container(
           child: Padding(
-            padding: const EdgeInsets.only(top: 24, right: 24, left: 24),
+            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 24),
             child: isMobile
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,7 +60,7 @@ class DashboardHeader extends ConsumerWidget {
                         filters,
                         notifier,
                         context,
-                      ),resultNumber(patientsAsync, filterss),
+                      ),const ResultNumber(),
                     ]
                   ),
                 ),

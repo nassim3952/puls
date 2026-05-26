@@ -1,96 +1,191 @@
+// alert_provider.dart
+// Refacto multi-visites :
+//  - Map<String, PatientModel> → Map<String, VisitModel> keyed par visit.id
+//  - Toutes les actions opèrent sur visit.id (cohérent avec les writes Supabase)
+//  - alertsProvider reconstruit les patients avec les visites patchées
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:puls/core/models/patient.dart';
+import 'package:puls/core/models/visit_model.dart';
 import 'patient_provider.dart';
 
+// ─── Notifier ─────────────────────────────────────────────────────────────────
 
-class AlertsNotifier extends StateNotifier<Map<String, PatientModel>> {
-  AlertsNotifier() : super({});
+class AlertsNotifier extends StateNotifier<Map<String, VisitModel>> {
+  final SupabaseClient _supabase;
 
-  // Étape 1 → 2 : assignation d'un plan
-  void assignPlan(PatientModel patient, String label, String report) {
-    final current = state[patient.id] ?? patient;
-    final visit = current.latestVisit;
-    if (visit == null) return;
+  AlertsNotifier(this._supabase) : super({});
 
+  // ── Helper : récupère la visite effective (override ou originale) ─────────
+
+  VisitModel _effectiveVisit(VisitModel original) =>
+      state[original.id] ?? original;
+
+  // ── Étape 1 → 2 : assigner un plan ───────────────────────────────────────
+
+  Future<void> assignPlan(
+      VisitModel visit,
+      String label,
+      String report,
+      ) async {
+    final effective = _effectiveVisit(visit);
+
+    // Optimistic update
     state = {
       ...state,
-      patient.id: current.withUpdatedLatestVisit(
-        visit.copyWith(
-          actionPlanLabel: label,
-          actionPlanReport: report,
-          planIsValid: null,
-        ),
+      visit.id: effective.copyWith(
+        actionPlanLabel: label,
+        actionPlanReport: report,
+        planIsValid: null,
       ),
     };
+
+    try {
+      await _supabase.from('survey_responses').update({
+        'action_plan_label': label,
+        'action_plan_report': report,
+        'plan_is_valid': null,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('visit_id', visit.id);
+    } catch (_) {
+      state = {...state, visit.id: effective};
+      rethrow;
+    }
   }
 
-  // Étape 2 → 3 validé
-  void validatePlan(PatientModel patient) {
-    final current = state[patient.id] ?? patient;
-    final visit = current.latestVisit;
-    if (visit == null) return;
+  // ── Étape 2 → 3 : valider le plan ────────────────────────────────────────
 
+  Future<void> validatePlan(VisitModel visit) async {
+    final effective = _effectiveVisit(visit);
+    final now = DateTime.now();
+
+    // Optimistic update
     state = {
       ...state,
-      patient.id: current.withUpdatedLatestVisit(
-        visit.copyWith(
-          hasAlert: false,
-          planIsValid: true,
-          resolvedAt: DateTime.now(),
-        ),
+      visit.id: effective.copyWith(
+        hasAlert: false,
+        alertResolved: true,
+        planIsValid: true,
+        resolvedAt: now,
       ),
     };
+
+    try {
+      await _supabase.from('survey_responses').update({
+        'has_alert': false,
+        'alert_resolved': true,
+        'plan_is_valid': true,
+        'resolved_at': now.toIso8601String(),
+        'updated_at': now.toIso8601String(),
+      }).eq('visit_id', visit.id);
+    } catch (_) {
+      state = {...state, visit.id: effective};
+      rethrow;
+    }
   }
 
-  // Étape 2 → 1 rejeté
-  void rejectPlan(PatientModel patient) {
-    final current = state[patient.id] ?? patient;
-    final visit = current.latestVisit;
-    if (visit == null) return;
+  // ── Étape 2 → 1 : rejeter le plan ────────────────────────────────────────
 
+  Future<void> rejectPlan(VisitModel visit) async {
+    final effective = _effectiveVisit(visit);
+
+    // Optimistic update
     state = {
       ...state,
-      patient.id: current.withUpdatedLatestVisit(
-        visit.copyWith(
-          hasAlert: true,
-          planIsValid: false,
-          actionPlanLabel: null,
-          actionPlanReport: null,
-        ),
+      visit.id: effective.copyWith(
+        hasAlert: true,
+        planIsValid: false,
+        actionPlanLabel: null,
+        actionPlanReport: null,
       ),
     };
+
+    try {
+      await _supabase.from('survey_responses').update({
+        'plan_is_valid': false,
+        'action_plan_label': null,
+        'action_plan_report': null,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('visit_id', visit.id);
+    } catch (_) {
+      state = {...state, visit.id: effective};
+      rethrow;
+    }
   }
 
-  void dismiss(String patientId) {
-    final updated = Map<String, PatientModel>.from(state)..remove(patientId);
-    state = updated;
+  // ── Dismiss : ignorer une alerte ─────────────────────────────────────────
+
+  Future<void> dismiss(VisitModel visit) async {
+    final effective = _effectiveVisit(visit);
+
+    // Retrait optimiste
+    final snapshot = Map<String, VisitModel>.from(state);
+    state = snapshot..remove(visit.id);
+
+    try {
+      await _supabase.from('survey_responses').update({
+        'has_alert': false,
+        'alert_resolved': true,
+        'resolved_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('visit_id', visit.id);
+    } catch (_) {
+      state = {...state, visit.id: effective};
+      rethrow;
+    }
   }
 }
 
-// ── Providers ─────────────────────────────────────────────────────────────────
+// ─── Providers ────────────────────────────────────────────────────────────────
 
 final alertsNotifierProvider =
-StateNotifierProvider<AlertsNotifier, Map<String, PatientModel>>(
-      (ref) => AlertsNotifier(),
+StateNotifierProvider<AlertsNotifier, Map<String, VisitModel>>(
+      (ref) => AlertsNotifier(Supabase.instance.client),
 );
 
-// Liste des patients avec alerte, overrides locaux appliqués
+// ─── alertsProvider ───────────────────────────────────────────────────────────
+// Retourne la liste des PatientModel avec leurs visites patchées par les overrides.
+// Un patient apparaît si au moins une de ses visites a :
+//   - hasAlert == true  (onglets 1 et 2)
+//   - planIsValid == true  (onglet 3)
 final alertsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
-  final patientsAsync = ref.watch(filteredPatientsProvider);
+  final patientsAsync = ref.watch(patientsListProvider);
   final overrides = ref.watch(alertsNotifierProvider);
 
   return patientsAsync.whenData((list) {
-    final alerts = list
-        .where((p) => (overrides[p.id] ?? p).latestVisit?.hasAlert ?? false)
-        .map((p) => overrides[p.id] ?? p)
-        .toList()
-      ..sort((a, b) {
-        final dateA = a.latestVisit?.date ?? DateTime(0);
-        final dateB = b.latestVisit?.date ?? DateTime(0);
-        return dateB.compareTo(dateA);
-      });
+    final result = <PatientModel>[];
 
-    return alerts;
+    for (final patient in list) {
+      // Applique les overrides visite par visite
+      final patchedVisits = patient.visits.map((v) {
+        return overrides.containsKey(v.id) ? overrides[v.id]! : v;
+      }).toList();
+
+      // Le patient entre dans la liste si au moins une visite est concernée
+      final hasRelevantVisit = patchedVisits.any(
+            (v) => v.hasAlert || v.planIsValid == true,
+      );
+
+      if (hasRelevantVisit) {
+        result.add(patient.copyWith(visits: patchedVisits));
+      }
+    }
+
+    // Tri par date de la visite la plus récente en alerte
+    result.sort((a, b) {
+      final dateA = a.visits
+          .where((v) => v.hasAlert || v.planIsValid == true)
+          .map((v) => v.date)
+          .fold(DateTime(0), (prev, d) => d.isAfter(prev) ? d : prev);
+      final dateB = b.visits
+          .where((v) => v.hasAlert || v.planIsValid == true)
+          .map((v) => v.date)
+          .fold(DateTime(0), (prev, d) => d.isAfter(prev) ? d : prev);
+      return dateB.compareTo(dateA);
+    });
+
+    return result;
   });
 });

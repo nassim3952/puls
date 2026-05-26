@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/alert_provider.dart';
 
+import 'action_button.dart';
 import 'alert_view.dart';
 
 class PlanActionCard extends ConsumerWidget {
@@ -24,9 +25,8 @@ class PlanActionCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final (bgColor, textColor, borderColor) = _levelColors;
-    final patient = alert.source;
-    final visit = patient.latestVisit;
-    final isRejected = visit?.planIsValid == false;
+    final visit = alert.visit; // ← visite explicite, plus de latestVisit
+    final isRejected = visit.planIsValid == false;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -145,7 +145,7 @@ class PlanActionCard extends ConsumerWidget {
                       size: 14, color: AppColors.primaryDark),
                   const SizedBox(width: 6),
                   Text(
-                    visit?.actionPlanLabel ?? '',
+                    visit.actionPlanLabel ?? '',
                     style: const TextStyle(
                         color: AppColors.primaryDark,
                         fontSize: 12,
@@ -157,8 +157,8 @@ class PlanActionCard extends ConsumerWidget {
           ),
 
           // ── Rapport ─────────────────────────────────────────────────────
-          if (visit?.actionPlanReport != null &&
-              visit!.actionPlanReport!.isNotEmpty)
+          if (visit.actionPlanReport != null &&
+              visit.actionPlanReport!.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
               child: Container(
@@ -205,25 +205,25 @@ class PlanActionCard extends ConsumerWidget {
                         color: AppColors.textLight, fontSize: 12)),
                 const Spacer(),
                 // Rejeter
-                _ActionBtn(
+                ActionBtn(
                   label: 'Rejeter',
                   icon: Icons.close_rounded,
                   color: AppColors.urgentText,
                   bg: AppColors.urgentBg,
                   onTap: () => ref
                       .read(alertsNotifierProvider.notifier)
-                      .rejectPlan(patient),
+                      .rejectPlan(visit), // ← visit.id
                 ),
                 const SizedBox(width: 8),
                 // Valider
-                _ActionBtn(
+                ActionBtn(
                   label: 'Valider',
                   icon: Icons.check_rounded,
                   color: Colors.white,
                   bg: AppColors.primary,
                   onTap: () => ref
                       .read(alertsNotifierProvider.notifier)
-                      .validatePlan(patient),
+                      .validatePlan(visit), // ← visit.id
                 ),
               ],
             ),
@@ -234,44 +234,3 @@ class PlanActionCard extends ConsumerWidget {
   }
 }
 
-class _ActionBtn extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final Color bg;
-  final VoidCallback onTap;
-
-  const _ActionBtn({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.bg,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(width: 5),
-            Text(label,
-                style: TextStyle(
-                    color: color,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700)),
-          ],
-        ),
-      ),
-    );
-  }
-}

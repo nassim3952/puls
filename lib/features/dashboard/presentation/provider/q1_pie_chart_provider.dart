@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/patient_provider.dart';
-import 'package:puls/core/provider/spline_selection_provider.dart';
+import 'package:puls/features/dashboard/presentation/provider/spline_selection_provider.dart';
 
 final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
   final patientsAsync = ref.watch(filteredPatientsProvider);

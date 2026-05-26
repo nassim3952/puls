@@ -9,11 +9,14 @@ import 'alert_view.dart';
 import 'green_button.dart';
 
 // Labels des deux options disponibles
-const String kPlanContact = 'Contact avec rapport';
-const String kPlanDirect = 'Directement un rapport';
+const String kPlanContact = 'Contact';
+const String kPlanAudit = 'Audit';
+const String kPlanProcess = 'Process';
+const String kPlanRapport = 'Rapport';
 
 class PlanSheet extends ConsumerStatefulWidget {
   final AlertView alert;
+
   const PlanSheet({required this.alert, super.key});
 
   @override
@@ -21,7 +24,7 @@ class PlanSheet extends ConsumerStatefulWidget {
 }
 
 class _PlanSheetState extends ConsumerState<PlanSheet> {
-  String? _selectedLabel;
+  String? _selectedLabel = kPlanRapport; // ← sélectionné par défaut
   final _reportController = TextEditingController();
   bool _submitted = false;
 
@@ -38,11 +41,13 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
     setState(() => _submitted = true);
     if (!_canSubmit) return;
 
-    ref.read(alertsNotifierProvider.notifier).assignPlan(
-      widget.alert.source,
-      _selectedLabel!,
-      _reportController.text.trim(),
-    );
+    ref
+        .read(alertsNotifierProvider.notifier)
+        .assignPlan(
+          widget.alert.visit, // VisitModel
+          _selectedLabel!,
+          _reportController.text.trim(),
+        );
 
     Navigator.pop(context);
   }
@@ -62,8 +67,11 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
                   color: AppColors.primaryLight,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.assignment_outlined,
-                    color: AppColors.primary, size: 22),
+                child: const Icon(
+                  Icons.assignment_outlined,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -73,66 +81,76 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
                     const Text(
                       "Plan d'action",
                       style: TextStyle(
-                          color: AppColors.textDark,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800),
+                        color: AppColors.textDark,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
                     ),
                     Text(
                       widget.alert.patientName,
                       style: const TextStyle(
-                          color: AppColors.textLight, fontSize: 13),
+                        color: AppColors.textLight,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 20),
 
-          // ── Contexte info ───────────────────────────────────────────────
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: AppColors.primaryLight,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.info_outline_rounded,
-                    color: AppColors.primary, size: 18),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Type de visite : ${widget.alert.source.latestVisit?.visitType.toLowerCase() ?? '–'} · Score satisfaction ${widget.alert.source.latestVisit?.survey?.qualitePriseEnCharge ?? 0}/5',
-                    style: const TextStyle(
-                        color: AppColors.primaryDark,
-                        fontSize: 12,
-                        height: 1.4),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 24),
 
           // ── Sélection du type de plan ───────────────────────────────────
           SectionTitle("Type d'action"),
-          const SizedBox(height: 12),
-          _PlanOption(
-            label: kPlanContact,
-            icon: Icons.phone_in_talk_outlined,
-            description:
-            'Contacter le patient puis rédiger un rapport de suivi.',
-            selected: _selectedLabel == kPlanContact,
-            onTap: () => setState(() => _selectedLabel = kPlanContact),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _PlanOption(
+                  label: kPlanContact,
+                  icon: Icons.phone_in_talk_outlined,
+                  description: 'Communication directe avec le patient.',
+                  selected: _selectedLabel == kPlanContact,
+                  onTap: () => setState(() => _selectedLabel = kPlanContact),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _PlanOption(
+                  label: kPlanAudit,
+                  icon: Icons.search_outlined,
+                  description: 'Comprendre pourquoi le problème est arrivé.',
+                  selected: _selectedLabel == kPlanAudit,
+                  onTap: () => setState(() => _selectedLabel = kPlanAudit),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
-          _PlanOption(
-            label: kPlanDirect,
-            icon: Icons.edit_note_rounded,
-            description: 'Rédiger directement un rapport sans appel préalable.',
-            selected: _selectedLabel == kPlanDirect,
-            onTap: () => setState(() => _selectedLabel = kPlanDirect),
+          Row(
+            children: [
+              Expanded(
+                child: _PlanOption(
+                  label: kPlanProcess,
+                  icon: Icons.settings_outlined,
+                  description:
+                      'Modifier une règle ou méthode de travail interne.',
+                  selected: _selectedLabel == kPlanProcess,
+                  onTap: () => setState(() => _selectedLabel = kPlanProcess),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _PlanOption(
+                  label: kPlanRapport,
+                  icon: Icons.edit_note_rounded,
+                  description: 'Rédiger un simple rapport personnalisé.',
+                  selected: _selectedLabel == kPlanRapport,
+                  onTap: () => setState(() => _selectedLabel = kPlanRapport),
+                ),
+              ),
+            ],
           ),
           if (_submitted && _selectedLabel == null) ...[
             const SizedBox(height: 6),
@@ -222,12 +240,12 @@ class _PlanOption extends StatelessWidget {
           ),
           boxShadow: selected
               ? [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 3),
-            )
-          ]
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.15),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
               : [],
         ),
         child: Row(
@@ -238,9 +256,11 @@ class _PlanOption extends StatelessWidget {
                 color: selected ? AppColors.primary : AppColors.bg,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon,
-                  size: 20,
-                  color: selected ? Colors.white : AppColors.textMid),
+              child: Icon(
+                icon,
+                size: 20,
+                color: selected ? Colors.white : AppColors.textMid,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -261,9 +281,10 @@ class _PlanOption extends StatelessWidget {
                   Text(
                     description,
                     style: const TextStyle(
-                        color: AppColors.textLight,
-                        fontSize: 11,
-                        height: 1.4),
+                      color: AppColors.textLight,
+                      fontSize: 11,
+                      height: 1.4,
+                    ),
                   ),
                 ],
               ),
@@ -277,8 +298,7 @@ class _PlanOption extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: selected ? AppColors.primary : Colors.transparent,
                 border: Border.all(
-                  color:
-                  selected ? AppColors.primary : AppColors.textLight,
+                  color: selected ? AppColors.primary : AppColors.textLight,
                   width: 2,
                 ),
               ),

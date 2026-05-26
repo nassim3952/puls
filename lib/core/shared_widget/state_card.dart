@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../color.dart';
 import '../text.dart';
-import '../provider/card_expansion_provider.dart';
-import '../provider/card_view_provider.dart';
+import '../../features/dashboard/presentation/provider/card_expansion_provider.dart';
+import '../../features/dashboard/presentation/provider/card_view_provider.dart';
 
 class StatCard extends ConsumerWidget {
   final String title;

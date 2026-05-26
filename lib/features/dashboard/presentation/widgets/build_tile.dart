@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import '../../../../core/provider/card_expansion_provider.dart';
+
 import '../../../../core/shared_widget/state_card.dart';
 import '../../model/dashboard_item.dart';
+import '../provider/card_expansion_provider.dart';
 
 class DashboardTile extends ConsumerWidget {
   final DashboardItem item;

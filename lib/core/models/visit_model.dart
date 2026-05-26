@@ -45,8 +45,17 @@ class VisitModel {
 
     final rawAnswers = raw['answers'];
     SurveyResponse? survey;
-    if (rawAnswers is List && rawAnswers.isNotEmpty) {
-      survey = SurveyResponse.fromAnswersList(rawAnswers);
+    if (rawAnswers is Map<String, dynamic> && rawAnswers.isNotEmpty) {
+      survey = SurveyResponse.fromAnswersMap(rawAnswers);
+    } else if (rawAnswers is List && rawAnswers.isNotEmpty) {
+      // fallback ancien format liste (rétrocompatibilité)
+      survey = SurveyResponse.fromAnswersMap(
+        Map<String, dynamic>.fromEntries(
+          rawAnswers
+              .whereType<Map>()
+              .map((e) => MapEntry(e['question_id']?.toString() ?? '', e)),
+        ),
+      );
     }
 
     return VisitModel(

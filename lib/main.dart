@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/import_db.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/routes/app_router.dart';
@@ -10,6 +11,7 @@ Future<void> main() async {
     url: 'https://yyohrbyjwemiqfpplmtj.supabase.co',
     anonKey: 'sb_publishable_3Kj_37TEdRIf0yIQoOoniA_6fGv_oXA',
   );
+
 
   runApp(
     const ProviderScope(

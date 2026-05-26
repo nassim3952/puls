@@ -11,7 +11,7 @@ import 'package:puls/features/alertsView/presentation/widgets/plan_action_card.d
 import 'package:puls/features/alertsView/presentation/widgets/plan_sheet.dart';
 import 'package:puls/features/alertsView/presentation/widgets/validated_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/whatsapp_sheet.dart';
-import 'package:puls/features/dashboard/presentation/widgets/dashboard_build_header.dart';
+import 'package:puls/core/shared_widget/build_header.dart';
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 class AlertsScreen extends ConsumerStatefulWidget {
@@ -30,7 +30,6 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    // Rebuild quand on change d'onglet pour mettre à jour les badges
     _tabController.addListener(() => setState(() {}));
   }
 
@@ -40,37 +39,56 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     super.dispose();
   }
 
-  // ── Segmentation des listes selon le workflow ─────────────────────────────
+  // ── Segmentation des AlertView selon le workflow ──────────────────────────
 
-  /// Onglet 1 : alerte active, pas de plan encore
+  /// Onglet 1 : visites avec hasAlert == true et pas de plan encore
   List<AlertView> _activeAlerts(List<PatientModel> patients) {
-    return patients
-        .where((p) =>
-    (p.latestVisit?.hasAlert ?? false) &&
-        p.latestVisit?.actionPlanLabel == null)
-        .map((p) => AlertView(p))
+    final result = <AlertView>[];
+    for (final p in patients) {
+      for (final v in p.visits) {
+        if (v.hasAlert && v.actionPlanLabel == null) {
+          result.add(AlertView(p, v));
+        }
+      }
+    }
+    return result
         .where((a) => _filterLevel == null || a.level == _filterLevel)
         .toList();
   }
 
-  /// Onglet 2 : plan initié, en attente de validation (planIsValid == null OU == false si rejeté)
+  /// Onglet 2 : visites avec hasAlert == true et plan initié
   List<AlertView> _pendingPlans(List<PatientModel> patients) {
-    return patients
-        .where((p) =>
-    (p.latestVisit?.hasAlert ?? false) &&
-        p.latestVisit?.actionPlanLabel != null)
-        .map((p) => AlertView(p))
-        .toList();
+    final result = <AlertView>[];
+    for (final p in patients) {
+      for (final v in p.visits) {
+        if (v.hasAlert && v.actionPlanLabel != null) {
+          result.add(AlertView(p, v));
+        }
+      }
+    }
+    return result;
   }
 
-  /// Onglet 3 : plans validés archivés
+  /// Onglet 3 : visites validées archivées
   List<AlertView> _validatedPlans(List<PatientModel> patients) {
-    return patients
-        .where((p) =>
-    !(p.latestVisit?.hasAlert ?? true) &&
-        p.latestVisit?.planIsValid == true)
-        .map((p) => AlertView(p))
-        .toList();
+    final result = <AlertView>[];
+    for (final p in patients) {
+      for (final v in p.visits) {
+        if (!v.hasAlert && v.planIsValid == true) {
+          result.add(AlertView(p, v));
+        }
+      }
+    }
+    return result;
+  }
+
+  // ── Groupement par patient ────────────────────────────────────────────────
+  Map<String, List<AlertView>> _groupByPatient(List<AlertView> alerts) {
+    final map = <String, List<AlertView>>{};
+    for (final a in alerts) {
+      map.putIfAbsent(a.source.id, () => []).add(a);
+    }
+    return map;
   }
 
   @override
@@ -121,28 +139,22 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DashboardHeader(),
-              // ── TabBar ────────────────────────────────────────────────
               _buildTabBar(
                 activeCount: active.length,
                 pendingCount: pending.length,
                 validatedCount: validated.length,
               ),
-              // ── Filtre niveau (onglet 1 seulement) ───────────────────
               if (_tabController.index == 0) ...[
                 const SizedBox(height: 8),
                 _buildFilters(),
               ],
               const SizedBox(height: 4),
-              // ── Contenu des onglets ───────────────────────────────────
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    // Onglet 1 : Alertes actives
                     _buildActiveTab(active),
-                    // Onglet 2 : Plans en attente
                     _buildPendingTab(pending),
-                    // Onglet 3 : Plans validés
                     _buildValidatedTab(validated),
                   ],
                 ),
@@ -208,21 +220,42 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     );
   }
 
-  // ── Onglet 1 : Alertes actives ────────────────────────────────────────────
+  // ── Onglet 1 : Alertes actives — groupées par patient ────────────────────
   Widget _buildActiveTab(List<AlertView> alerts) {
     if (alerts.isEmpty) return buildEmpty();
+    final grouped = _groupByPatient(alerts);
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-      itemCount: alerts.length,
-      itemBuilder: (ctx, i) => AlertCard(
-        alert: alerts[i],
-        onDelete: () => ref
-            .read(alertsNotifierProvider.notifier)
-            .dismiss(alerts[i].source.id),
-        onWhatsapp: () => _showWhatsappSheet(context, alerts[i]),
-        onDetail: () => _showDetailSheet(context, alerts[i]),
-        onPlan: () => _showPlanSheet(context, alerts[i]),
-      ),
+      itemCount: grouped.length,
+      itemBuilder: (ctx, i) {
+        final patientAlerts = grouped.values.elementAt(i);
+
+        // Un seul alert → AlertCard complète
+        if (patientAlerts.length == 1) {
+          final alert = patientAlerts.first;
+          return AlertCard(
+            alert: alert,
+            onDelete: () => ref
+                .read(alertsNotifierProvider.notifier)
+                .dismiss(alert.visit),
+            onWhatsapp: () => _showWhatsappSheet(context, alert),
+            onDetail: () => _showDetailSheet(context, alert),
+            onPlan: () => _showPlanSheet(context, alert),
+          );
+        }
+
+        // Plusieurs → PatientAlertGroup
+        return PatientAlertGroup(
+          alerts: patientAlerts,
+          onDelete: (alert) => ref
+              .read(alertsNotifierProvider.notifier)
+              .dismiss(alert.visit),
+          onWhatsapp: (alert) => _showWhatsappSheet(context, alert),
+          onDetail: (alert) => _showDetailSheet(context, alert),
+          onPlan: (alert) => _showPlanSheet(context, alert),
+        );
+      },
     );
   }
 
@@ -234,10 +267,29 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
         message: 'Aucun plan en attente de validation.',
       );
     }
+    final grouped = _groupByPatient(alerts);
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-      itemCount: alerts.length,
-      itemBuilder: (ctx, i) => PlanActionCard(alert: alerts[i]),
+      itemCount: grouped.length,
+      itemBuilder: (ctx, i) {
+        final patientAlerts = grouped.values.elementAt(i);
+        final hasMultiple = patientAlerts.length > 1;
+
+        if (!hasMultiple) {
+          return PlanActionCard(alert: patientAlerts.first);
+        }
+
+        return _PatientGroupShell(
+          alert: patientAlerts.first,
+          count: patientAlerts.length,
+          child: Column(
+            children: patientAlerts
+                .map((a) => PlanActionCard(alert: a))
+                .toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -249,10 +301,29 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
         message: 'Aucune alerte archivée pour le moment.',
       );
     }
+    final grouped = _groupByPatient(alerts);
+
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-      itemCount: alerts.length,
-      itemBuilder: (ctx, i) => ValidatedCard(alert: alerts[i]),
+      itemCount: grouped.length,
+      itemBuilder: (ctx, i) {
+        final patientAlerts = grouped.values.elementAt(i);
+        final hasMultiple = patientAlerts.length > 1;
+
+        if (!hasMultiple) {
+          return ValidatedCard(alert: patientAlerts.first);
+        }
+
+        return _PatientGroupShell(
+          alert: patientAlerts.first,
+          count: patientAlerts.length,
+          child: Column(
+            children: patientAlerts
+                .map((a) => ValidatedCard(alert: a))
+                .toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -262,7 +333,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       null,
       AlertLevel.urgent,
       AlertLevel.warning,
-      AlertLevel.info,
+      AlertLevel.info
     ];
     final labels = ['Toutes', 'Urgentes', 'Modérées', 'Info'];
 
@@ -343,6 +414,104 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   }
 }
 
+// ─── Shell générique pour grouper onglets 2 et 3 ─────────────────────────────
+class _PatientGroupShell extends StatelessWidget {
+  final AlertView alert;
+  final int count;
+  final Widget child;
+
+  const _PatientGroupShell({
+    required this.alert,
+    required this.count,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.border, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header patient
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Center(
+                    child: Text(
+                      alert.avatarInitials,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        alert.patientName,
+                        style: const TextStyle(
+                          color: AppColors.textDark,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '${alert.patientId} · $count visites',
+                        style: const TextStyle(
+                            color: AppColors.textLight, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            height: 1,
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            color: AppColors.border,
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+            child: child,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── Tab widget avec badge ────────────────────────────────────────────────────
 class _Tab extends StatelessWidget {
   final String label;
@@ -371,8 +540,7 @@ class _Tab extends StatelessWidget {
               style: TextStyle(
                 color: isSelected ? Colors.white : AppColors.textMid,
                 fontSize: 13,
-                fontWeight:
-                isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
             if (count > 0) ...[
@@ -418,7 +586,7 @@ class _EmptyTab extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.primaryLight,
               shape: BoxShape.circle,
             ),

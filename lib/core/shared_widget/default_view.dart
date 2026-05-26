@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puls/features/dashboard/presentation/widgets/dashboard_build_header.dart';
+import 'package:puls/core/shared_widget/build_header.dart';
 
 class DefaultView extends ConsumerWidget {
   final Widget? customWidget;
