@@ -1,8 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:puls/features/dashboard/presentation/provider/q1_pie_chart_provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../color.dart';
 import '../provider/auth_provider.dart';
 import '../provider/navigation_provider.dart';
@@ -120,12 +118,12 @@ class SideBar extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryMenthe.withOpacity(0.12),
+                      color: AppColors.primaryBlue.withOpacity(0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Icon(
                       Icons.analytics_outlined,
-                      color: AppColors.primaryMenthe,
+                      color: AppColors.primaryBlue,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -166,7 +164,7 @@ class SideBar extends ConsumerWidget {
 
     final color = isActive
         ? Colors.white
-        : (isDestructive ? AppColors.primaryMentheError : AppColors.sideBarText);
+        : (isDestructive ? AppColors.primaryError : AppColors.sideBarText);
 
     return InkWell(
       onTap: () {
@@ -180,7 +178,7 @@ class SideBar extends ConsumerWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
         decoration: BoxDecoration(
-          color: isActive ? AppColors.primaryMenthe : Colors.transparent,
+          gradient: isActive ? AppColors.primaryGradient : null,
         ),
         child: Row(
           children: [

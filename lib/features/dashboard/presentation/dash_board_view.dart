@@ -6,6 +6,7 @@ import 'package:puls/core/provider/filter_controller.dart';
 import 'package:puls/core/provider/patient_provider.dart';
 import 'package:puls/core/shared_widget/empty_state.dart';
 import 'package:puls/features/dashboard/presentation/widgets/build_tile.dart';
+import '../../../core/shared_widget/build_header.dart';
 import '../../../core/shared_widget/default_view.dart';
 import 'configuration/dashboard_items.dart';
 
@@ -15,6 +16,7 @@ class DashboardView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final patientsAsync = ref.watch(filteredPatientsProvider);
+
     final filters = ref.watch(filterProvider);
 
     // On détermine si des filtres sont actifs (pour distinguer les deux cas vides)
@@ -26,21 +28,27 @@ class DashboardView extends ConsumerWidget {
 
     return patientsAsync.when(
       loading: () => const Center(
-        child: CircularProgressIndicator(color: AppColors.primaryMenthe),
+        child: CircularProgressIndicator(color: AppColors.primaryBlue),
       ),
       error: (e, _) => Center(
         child: Text(
           'Erreur : $e',
-          style: const TextStyle(color: AppColors.primaryMentheError),
+          style: const TextStyle(color: AppColors.primaryError),
         ),
       ),
       data: (patients) {
-        // ── CAS VIDE ───────────────────────────────────────────────────────
         if (patients.isEmpty) {
-          return EmptyState(
-            reason: hasActiveFilters
-                ? EmptyStateReason.noResults   // filtres actifs → "aucun résultat"
-                : EmptyStateReason.noData,     // BDD vide → "aucune donnée"
+          return Column(
+            children: [
+              const DashboardHeader(), // 👈 garde le header
+              Expanded(
+                child: EmptyState(
+                  reason: hasActiveFilters
+                      ? EmptyStateReason.noResults
+                      : EmptyStateReason.noData,
+                ),
+              ),
+            ],
           );
         }
 

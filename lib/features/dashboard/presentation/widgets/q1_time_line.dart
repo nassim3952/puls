@@ -55,7 +55,7 @@ class Q1MultiSplineChart extends ConsumerWidget {
                     width: 4,
                     shape: DataMarkerType.circle,
                     borderWidth: 2,
-                    borderColor: AppColors.primaryMenthe,
+                    borderColor: AppColors.primaryBlue,
                   ),
                 );
               }).toList(),

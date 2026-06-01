@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/auth_provider.dart';
 import 'package:puls/core/provider/notification_provider.dart';
-import '../../features/alertsView/presentation/widgets/avatar.dart';
 import '../../features/historique/presentation/historique_screen.dart';
 import '../models/notification_model.dart';
 import 'logout_dialog.dart';
@@ -61,7 +60,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
               isTablet
                   ? const Icon(
                 Icons.flash_on,
-                color: AppColors.primaryMenthe,
+                color: AppColors.primaryBlue,
                 size: 32,
               )
                   : Image.asset('assets/logo.png', width: 200, height: 32),
@@ -83,7 +82,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   prefixIcon: const Icon(
                     Icons.search_rounded,
                     size: 18,
-                    color: AppColors.primaryMenthe,
+                    color: AppColors.primaryBlue,
                   ),
                   suffixIcon: filters.searchQuery.isNotEmpty
                       ? IconButton(
@@ -97,22 +96,22 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   )
                       : null,
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.white,
                   contentPadding:
                   const EdgeInsets.symmetric(horizontal: 14),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(
                       color: searchCtrl.text.isNotEmpty
-                          ? AppColors.primaryMenthe
-                          : MintTheme.border,
+                          ? AppColors.primaryBlue
+                          : AppColors.border,
                       width: searchCtrl.text.isNotEmpty ? 1.5 : 1,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: const BorderSide(
-                      color: AppColors.primaryMenthe,
+                      color: AppColors.primaryBlue,
                       width: 1.5,
                     ),
                   ),
@@ -132,7 +131,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
             PopupMenuButton<int>(
               tooltip: "Menu profil",
               offset: const Offset(0, 50),
-              color: AppColors.kCard,
+              color: AppColors.surface,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               child: _UserSection(
@@ -153,11 +152,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   child: Row(
                     children: const [
                       Icon(Icons.settings_outlined,
-                          size: 18, color: AppColors.textDark),
+                          size: 18, color: AppColors.textPrimary),
                       SizedBox(width: 10),
                       Text("Paramètres",
                           style: TextStyle(
-                              color: AppColors.textDark, fontSize: 13)),
+                              color: AppColors.textPrimary, fontSize: 13)),
                     ],
                   ),
                 ),
@@ -167,11 +166,11 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   child: Row(
                     children: const [
                       Icon(Icons.logout_rounded,
-                          size: 18, color: AppColors.primaryMentheError),
+                          size: 18, color: AppColors.primaryError),
                       SizedBox(width: 10),
                       Text("Déconnexion",
                           style: TextStyle(
-                              color: AppColors.primaryMentheError,
+                              color: AppColors.primaryError,
                               fontSize: 13,
                               fontWeight: FontWeight.w600)),
                     ],
@@ -233,7 +232,7 @@ class _LiveBadgeState extends State<_LiveBadge>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.primaryLight.withOpacity(0.3),
+        color: AppColors.primaryBlueLighter.withOpacity(0.3),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -246,7 +245,7 @@ class _LiveBadgeState extends State<_LiveBadge>
                 width: 7,
                 height: 7,
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryMenthe,
+                  color: AppColors.primaryBlue,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -256,7 +255,7 @@ class _LiveBadgeState extends State<_LiveBadge>
           const Text(
             "Live",
             style: TextStyle(
-                color: AppColors.primaryMentheDarker,
+                color: AppColors.primaryBlueDarker,
                 fontSize: 11,
                 fontWeight: FontWeight.w600),
           ),
@@ -325,6 +324,70 @@ class _UserSection extends StatelessWidget {
             radius: 18,
           ),
         ],
+      ),
+    );
+  }
+}
+// ── Avatar ─────────────────────────────────────────────────────────────────
+
+
+class Avatar extends StatelessWidget {
+  final String? avatarUrl;
+  final String initial;
+  final double radius;
+
+  const Avatar({
+    required this.avatarUrl,
+    required this.initial,
+    required this.radius,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (avatarUrl != null && avatarUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: radius,
+        backgroundColor: AppColors.primaryBlue.withOpacity(0.15),
+        child: ClipOval(
+          child: Image.network(
+            avatarUrl!,
+            width: radius * 2,
+            height: radius * 2,
+            fit: BoxFit.cover,
+            // Chargement progressif
+            loadingBuilder: (_, child, progress) {
+              if (progress == null) return child;
+              return _InitialAvatar(initial: initial, radius: radius);
+            },
+            // Fallback si l'URL est invalide
+            errorBuilder: (_, __, ___) =>
+                _InitialAvatar(initial: initial, radius: radius),
+          ),
+        ),
+      );
+    }
+    return _InitialAvatar(initial: initial, radius: radius);
+  }
+}
+
+class _InitialAvatar extends StatelessWidget {
+  final String initial;
+  final double radius;
+
+  const _InitialAvatar({required this.initial, required this.radius});
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: AppColors.primaryBlue.withOpacity(0.15),
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: AppColors.primaryBlueDarker,
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+        ),
       ),
     );
   }
@@ -406,7 +469,7 @@ class _ShimmerBox extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: AppColors.primaryMenthe.withOpacity(0.2),
+          color: AppColors.primaryBlue.withOpacity(0.2),
           borderRadius: BorderRadius.circular(radius),
         ),
       ),
@@ -435,7 +498,7 @@ class _NotificationBell extends ConsumerWidget {
                 ? Icons.notifications_rounded
                 : Icons.notifications_none_rounded,
             color: unreadCount > 0
-                ? AppColors.primaryMenthe
+                ? AppColors.primaryBlue
                 : AppColors.textPrimary,
           ),
           if (unreadCount > 0)
@@ -447,7 +510,7 @@ class _NotificationBell extends ConsumerWidget {
                 curve: Curves.elasticOut,
                 padding: const EdgeInsets.all(3),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryMentheError,
+                  color: AppColors.primaryError,
                   shape: BoxShape.circle,
                 ),
                 constraints:
@@ -505,7 +568,7 @@ class NotificationsDrawer extends ConsumerWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               border: Border(
-                bottom: BorderSide(color: MintTheme.border),
+                bottom: BorderSide(color: AppColors.surface),
               ),
             ),
             child: Row(
@@ -524,13 +587,13 @@ class NotificationsDrawer extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryMenthe.withOpacity(0.15),
+                      color: AppColors.primaryBlue.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       '${notifState.unreadCount} non lue${notifState.unreadCount > 1 ? 's' : ''}',
                       style: const TextStyle(
-                        color: AppColors.primaryMentheDarker,
+                        color: AppColors.primaryBlueDarker,
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                       ),
@@ -544,7 +607,7 @@ class NotificationsDrawer extends ConsumerWidget {
                     child: const Text(
                       'Tout lire',
                       style: TextStyle(
-                          color: AppColors.primaryMenthe, fontSize: 12),
+                          color: AppColors.primaryBlue, fontSize: 12),
                     ),
                   ),
                 IconButton(
@@ -561,7 +624,7 @@ class NotificationsDrawer extends ConsumerWidget {
             child: notifState.isLoading
                 ? const Center(
               child: CircularProgressIndicator(
-                color: AppColors.primaryMenthe,
+                color: AppColors.primaryBlue,
                 strokeWidth: 2,
               ),
             )
@@ -679,9 +742,9 @@ class _NotificationTile extends StatelessWidget {
   }
 
   Color _severityColor(NotificationSeverity s) => switch (s) {
-    NotificationSeverity.critical => AppColors.primaryMentheError,
+    NotificationSeverity.critical => AppColors.primaryError,
     NotificationSeverity.warning => const Color(0xFFF59E0B),
-    NotificationSeverity.info => AppColors.primaryMenthe,
+    NotificationSeverity.info => AppColors.primaryBlue,
   };
 
   IconData _typeIcon(NotificationType t) => switch (t) {
@@ -709,7 +772,7 @@ class _EmptyNotifications extends StatelessWidget {
           Icon(
             Icons.notifications_none_rounded,
             size: 48,
-            color: AppColors.primaryMenthe.withOpacity(0.3),
+            color: AppColors.primaryBlue.withOpacity(0.3),
           ),
           const SizedBox(height: 12),
           const Text(

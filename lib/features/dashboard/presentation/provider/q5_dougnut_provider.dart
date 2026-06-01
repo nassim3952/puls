@@ -15,8 +15,8 @@ final q5DoughnutProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
     final int nonCount = list.where((p) => p.latestVisit?.survey?.consentementRappel == false).length;
 
     return [
-      ChartDataPie("OUI", ouiCount.toDouble(), AppColors.primaryMenthe),
-      ChartDataPie("NON", nonCount.toDouble(), AppColors.primaryMenthe.withOpacity(0.6)), // Utilise withOpacity
+      ChartDataPie("OUI", ouiCount.toDouble(), AppColors.primaryBlue),
+      ChartDataPie("NON", nonCount.toDouble(), AppColors.primaryBlue.withOpacity(0.6)), // Utilise withOpacity
     ];
   });
 });

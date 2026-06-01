@@ -49,21 +49,23 @@ class MainDashboardScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: Container(
-                    color: AppColors.background,
+                    color: AppColors.primaryBG,
                     // Fond gris très léger pour faire ressortir les cartes
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        // AJOUTE CECI :
-                        layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
-                          return Stack(
-                            alignment: Alignment.topLeft, // Force l'alignement en haut à gauche
-                            children: [
-                              ...previousChildren,
-                              ?currentChild,
-                            ],
-                          );
-                        },
-                        child: currentView,
+                      child: Container(
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          // AJOUTE CECI :
+                          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+                            return Stack(
+                              alignment: Alignment.topLeft, // Force l'alignement en haut à gauche
+                              children: [
+                                ...previousChildren,
+                                ?currentChild,
+                              ],
+                            );
+                          },
+                          child: currentView,
+                        ),
                       ),
                   ),
                 ),

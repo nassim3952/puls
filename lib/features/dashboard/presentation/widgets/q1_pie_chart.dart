@@ -26,12 +26,12 @@ class Q1PieChart extends ConsumerWidget {
                 return Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: Colors.black38,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
                     '${data.label}: ${data.value}%',
-                    style: TextStyle(color: AppColors.white, fontSize: 10),
+                    style: TextStyle(color: AppColors.surface, fontSize: 10),
                   ),
                 );
               },
@@ -43,13 +43,13 @@ class Q1PieChart extends ConsumerWidget {
                 yValueMapper: (ChartDataPie d, _) => d.value,
                 pointColorMapper: (ChartDataPie d, _) => d.color,
                 radius: '100%',
-                strokeColor: AppColors.white,
+                strokeColor: AppColors.surface,
                 strokeWidth: 1,
                 dataLabelSettings: const DataLabelSettings(
                   isVisible: true,
                   labelPosition: ChartDataLabelPosition.inside,
                   overflowMode: OverflowMode.hide,
-                  textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.white),
+                  textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.surface),
                 ),
               ),
             ],

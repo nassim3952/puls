@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/provider/alert_provider.dart';
+import 'package:puls/core/shared_widget/action_button.dart';
 import 'package:puls/features/alertsView/presentation/widgets/section_title.dart';
 import 'package:puls/features/alertsView/presentation/widgets/sheet_base.dart';
 
 import '../../../../core/color.dart';
 import 'alert_view.dart';
-import 'green_button.dart';
 
 // Labels des deux options disponibles
 const String kPlanContact = 'Contact';
@@ -64,12 +64,12 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryLight,
+                  color: AppColors.primaryBlueLighter,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.assignment_outlined,
-                  color: AppColors.primary,
+                  color: AppColors.primaryBlue,
                   size: 22,
                 ),
               ),
@@ -81,7 +81,7 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
                     const Text(
                       "Plan d'action",
                       style: TextStyle(
-                        color: AppColors.textDark,
+                        color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.w800,
                       ),
@@ -89,7 +89,7 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
                     Text(
                       widget.alert.patientName,
                       style: const TextStyle(
-                        color: AppColors.textLight,
+                        color: AppColors.textSecondary,
                         fontSize: 13,
                       ),
                     ),
@@ -156,7 +156,7 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
             const SizedBox(height: 6),
             const Text(
               'Veuillez sélectionner un type d\'action.',
-              style: TextStyle(color: AppColors.urgentText, fontSize: 12),
+              style: TextStyle(color: AppColors.primaryError, fontSize: 12),
             ),
           ],
           const SizedBox(height: 24),
@@ -166,12 +166,12 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.bg,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: (_submitted && _reportController.text.trim().isEmpty)
-                    ? AppColors.urgentBorder
-                    : AppColors.border,
+                    ? AppColors.primaryWarning
+                    : AppColors.surface,
                 width: 1.5,
               ),
             ),
@@ -181,8 +181,19 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
               onChanged: (_) => setState(() {}),
               decoration: const InputDecoration(
                 hintText: 'Détaillez les actions menées ou à mener...',
-                hintStyle: TextStyle(color: AppColors.textLight, fontSize: 13),
-                border: InputBorder.none,
+                hintStyle: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+
+                // Bordure normale
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+
+                // Bordure quand tu cliques dessus
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderSide: BorderSide(color: AppColors.primaryBlue, width: 2),
+                ),
+
                 contentPadding: EdgeInsets.all(16),
               ),
             ),
@@ -191,14 +202,14 @@ class _PlanSheetState extends ConsumerState<PlanSheet> {
             const SizedBox(height: 6),
             const Text(
               'Le rapport ne peut pas être vide.',
-              style: TextStyle(color: AppColors.urgentText, fontSize: 12),
+              style: TextStyle(color: AppColors.primaryError, fontSize: 12),
             ),
           ],
           const SizedBox(height: 24),
 
           // ── Bouton appliquer ────────────────────────────────────────────
-          GreenBtn(
-            label: "Appliquer le plan d'action",
+          AppButton(
+            text: "Appliquer le plan d'action",
             icon: Icons.check_circle_outline_rounded,
             onTap: _apply,
           ),
@@ -232,16 +243,16 @@ class _PlanOption extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primaryLight : AppColors.card,
+          color: selected ? AppColors.primaryBlueLighter : AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
+            color: selected ? AppColors.primaryBlue : AppColors.surface,
             width: selected ? 2 : 1.5,
           ),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.15),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.15),
                     blurRadius: 10,
                     offset: const Offset(0, 3),
                   ),
@@ -253,7 +264,7 @@ class _PlanOption extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: selected ? AppColors.primary : AppColors.bg,
+                color: selected ? AppColors.primaryBlue : AppColors.surface,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(
@@ -271,8 +282,8 @@ class _PlanOption extends StatelessWidget {
                     label,
                     style: TextStyle(
                       color: selected
-                          ? AppColors.primaryDark
-                          : AppColors.textDark,
+                          ? AppColors.primaryBlueDark
+                          : AppColors.textPrimary,
                       fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
@@ -281,7 +292,7 @@ class _PlanOption extends StatelessWidget {
                   Text(
                     description,
                     style: const TextStyle(
-                      color: AppColors.textLight,
+                      color: AppColors.textSecondary,
                       fontSize: 11,
                       height: 1.4,
                     ),
@@ -296,9 +307,9 @@ class _PlanOption extends StatelessWidget {
               height: 20,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: selected ? AppColors.primary : Colors.transparent,
+                color: selected ? AppColors.primaryBlue : Colors.transparent,
                 border: Border.all(
-                  color: selected ? AppColors.primary : AppColors.textLight,
+                  color: selected ? AppColors.primaryBlue : AppColors.textSecondary,
                   width: 2,
                 ),
               ),

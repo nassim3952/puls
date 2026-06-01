@@ -23,15 +23,16 @@ const _kPols = ['Positive', 'Négative', 'Neutre'];
 Color _polColor(String pol) {
   switch (pol) {
     case 'Positive':
-      return AppColors.primaryMenthe;
+      return AppColors.primaryBlue;
     case 'Négative':
-      return AppColors.primaryMentheError;
+      return AppColors.primaryError;
     default:
-      return AppColors.primaryMentheNeutral;
+      return AppColors.primaryNeutral;
   }
 }
 
-Color _polBg(String pol) => _polColor(pol).withOpacity(0.13);
+Color _polBg(String pol) => _polColor(pol).withOpacity(0.9);
+Color _polTrack(String pol) => _polColor(pol).withOpacity(0.06);
 
 // ─── Modèles internes ─────────────────────────────────────────────────────────
 
@@ -116,12 +117,12 @@ class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
     return async.when(
       loading: () => const Center(
         child: CircularProgressIndicator(
-            strokeWidth: 2, color: AppColors.primaryMenthe),
+            strokeWidth: 2, color: AppColors.primaryBlue),
       ),
       error: (e, _) => Center(
         child: Text('Erreur : $e',
             style: const TextStyle(
-                color: AppColors.primaryMentheError, fontSize: 12)),
+                color: AppColors.primaryError, fontSize: 12)),
       ),
       data: (nodes) {
         if (nodes.isEmpty) {
@@ -206,13 +207,13 @@ class _ChartHeader extends StatelessWidget {
               margin: const EdgeInsets.only(right: 8),
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primaryLight,
+                color: AppColors.primaryBlueLighter,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(
                 Icons.arrow_back_ios_new_rounded,
                 size: 12,
-                color: AppColors.primaryMenthe,
+                color: AppColors.primaryBlue,
               ),
             ),
           )
@@ -361,7 +362,7 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 4),
           decoration: BoxDecoration(
             color: _hovered
-                ? AppColors.primaryLight.withOpacity(0.45)
+                ? AppColors.primaryBlueLighter.withOpacity(0.45)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
@@ -402,7 +403,7 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
                                 // Fond vide
                                 Container(
                                   width: totalWidth,
-                                  color: AppColors.primaryLight.withOpacity(0.3),
+                                  color: AppColors.primaryBlueLighter.withValues(alpha: 0.5),
                                 ),
                                 // Partie remplie
                                 SizedBox(
@@ -468,6 +469,52 @@ class _DrillView extends StatefulWidget {
 
 class _DrillViewState extends State<_DrillView> {
   VerbatimFlatNode? _activeVerbatim;
+  OverlayEntry? _overlayEntry;
+  final Map<String, LayerLink> _layerLinks = {};
+
+  @override
+  void initState() {
+    super.initState();
+    for (final pol in _kPols) {
+      _layerLinks[pol] = LayerLink();
+    }
+  }
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+
+  void _showOverlay(VerbatimFlatNode node, LayerLink link) {
+    _removeOverlay();
+    _overlayEntry = OverlayEntry(
+      builder: (_) => _VerbatimOverlay(
+        node: node,
+        link: link,
+        onClose: () {
+          _removeOverlay();
+          setState(() => _activeVerbatim = null);
+        },
+      ),
+    );
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _onTapVerbatim(VerbatimFlatNode node, String pol) {
+    if (_activeVerbatim == node) {
+      _removeOverlay();
+      setState(() => _activeVerbatim = null);
+    } else {
+      setState(() => _activeVerbatim = node);
+      _showOverlay(node, _layerLinks[pol]!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -479,36 +526,20 @@ class _DrillViewState extends State<_DrillView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // ── Barres horizontales par polarité ──────────────────────────────
         for (int i = 0; i < activePols.length; i++) ...[
-          _HorizontalPolarityBar(
-            pol: activePols[i],
-            entries: widget.group.byPol(activePols[i]),
-            maxVal: maxVal,
-            animDelay: Duration(milliseconds: i * 80),
-            activeVerbatim: _activeVerbatim,
-            onTapVerbatim: (node) => setState(() {
-              _activeVerbatim = _activeVerbatim == node ? null : node;
-            }),
+          CompositedTransformTarget(
+            link: _layerLinks[activePols[i]]!,
+            child: _HorizontalPolarityBar(
+              pol: activePols[i],
+              entries: widget.group.byPol(activePols[i]),
+              maxVal: maxVal,
+              animDelay: Duration(milliseconds: i * 80),
+              activeVerbatim: _activeVerbatim,
+              onTapVerbatim: (node) => _onTapVerbatim(node, activePols[i]),
+            ),
           ),
           if (i < activePols.length - 1) const SizedBox(height: 10),
         ],
-
-        // ── Panel verbatim sélectionné ─────────────────────────────────────
-        AnimatedSize(
-          duration: const Duration(milliseconds: 250),
-          curve: Curves.easeOutCubic,
-          alignment: Alignment.topCenter,
-          child: _activeVerbatim != null
-              ? Padding(
-            padding: const EdgeInsets.only(top: 16),
-            child: _VerbatimPanel(
-              node: _activeVerbatim!,
-              onClose: () => setState(() => _activeVerbatim = null),
-            ),
-          )
-              : const SizedBox.shrink(),
-        ),
       ],
     );
   }
@@ -605,7 +636,7 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
                           // Fond
                           Container(
                             width: totalWidth,
-                            color: bg.withOpacity(0.5),
+                            color: _polTrack(widget.pol),
                           ),
                           // Segments cliquables
                           SizedBox(
@@ -705,7 +736,19 @@ class _TappableSegmentState extends State<_TappableSegment> {
               border: widget.showSeparator
                   ? Border(
                   right: BorderSide(
-                      color: widget.color.withOpacity(0.25), width: 0.5))
+                      color: active
+                          ? Colors.white.withOpacity(0.5)
+                          : widget.color.withOpacity(0.25),
+                      width: 0.8))
+                  : null,
+              boxShadow: widget.isActive
+                  ? [
+                BoxShadow(
+                  color: widget.color.withOpacity(0.45),
+                  blurRadius: 4,
+                  spreadRadius: 0,
+                )
+              ]
                   : null,
             ),
           ),
@@ -715,7 +758,89 @@ class _TappableSegmentState extends State<_TappableSegment> {
   }
 }
 
-// ─── Panel verbatim sélectionné ───────────────────────────────────────────────
+// ─── Overlay verbatim flottant ────────────────────────────────────────────────
+
+class _VerbatimOverlay extends StatefulWidget {
+  final VerbatimFlatNode node;
+  final LayerLink link;
+  final VoidCallback onClose;
+
+  const _VerbatimOverlay({
+    required this.node,
+    required this.link,
+    required this.onClose,
+  });
+
+  @override
+  State<_VerbatimOverlay> createState() => _VerbatimOverlayState();
+}
+
+class _VerbatimOverlayState extends State<_VerbatimOverlay>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 180));
+    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _ctrl.forward();
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Tap en dehors = ferme
+        Positioned.fill(
+          child: GestureDetector(
+            onTap: widget.onClose,
+            behavior: HitTestBehavior.translucent,
+            child: const SizedBox.expand(),
+          ),
+        ),
+        CompositedTransformFollower(
+          link: widget.link,
+          showWhenUnlinked: false,
+          offset: const Offset(0, -8), // 8px au-dessus de la barre
+          targetAnchor: Alignment.topLeft,
+          followerAnchor: Alignment.bottomLeft,
+          child: FadeTransition(
+            opacity: _fade,
+            child: SlideTransition(
+              position: _slide,
+              child: Material(
+                color: Colors.transparent,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 320),
+                  child: _VerbatimPanel(
+                    node: widget.node,
+                    onClose: widget.onClose,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
 
 class _VerbatimPanel extends StatelessWidget {
   final VerbatimFlatNode node;
@@ -731,9 +856,16 @@ class _VerbatimPanel extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.07),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withOpacity(0.35), width: 1.2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

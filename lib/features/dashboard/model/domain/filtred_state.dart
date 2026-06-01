@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-@immutable
 class DashboardFilterState {
   final DateTimeRange? periode;
   final String? type;
   final String? service;
   final String? exploration;
   final String? sortie;
+  final String searchQuery; // 👈 ajoute ça
 
   const DashboardFilterState({
     this.periode,
@@ -14,6 +14,7 @@ class DashboardFilterState {
     this.service,
     this.exploration,
     this.sortie,
+    this.searchQuery = '', // 👈
   });
 
   DashboardFilterState copyWith({
@@ -22,6 +23,7 @@ class DashboardFilterState {
     String? service,
     String? exploration,
     String? sortie,
+    String? searchQuery, // 👈
   }) {
     return DashboardFilterState(
       periode: periode ?? this.periode,
@@ -29,6 +31,7 @@ class DashboardFilterState {
       service: service ?? this.service,
       exploration: exploration ?? this.exploration,
       sortie: sortie ?? this.sortie,
+      searchQuery: searchQuery ?? this.searchQuery, // 👈
     );
   }
 }

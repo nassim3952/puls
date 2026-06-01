@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import 'package:puls/features/Auth/presentation/widgets/loginButton.dart';
+import 'package:puls/core/shared_widget/action_button.dart';
+import 'package:puls/features/Auth/presentation/widgets/auth_form.dart';
 import 'package:puls/features/Auth/presentation/widgets/soft_blob.dart';
 
 import '../provider/onboarding_provider.dart';
@@ -90,7 +91,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(error),
-          backgroundColor: AppColors.primaryMentheError,
+          backgroundColor: AppColors.primaryError,
           behavior: SnackBarBehavior.floating,
           shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -112,7 +113,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(state.errorMessage ?? 'Erreur inconnue'),
-          backgroundColor: AppColors.primaryMentheError,
+          backgroundColor: AppColors.primaryError,
           behavior: SnackBarBehavior.floating,
           shape:
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -128,14 +129,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final isLoading = state.status == OnboardingStatus.loading;
 
     return Scaffold(
-      backgroundColor: AppColors.kBg,
+      backgroundColor: AppColors.surface,
       body: Stack(
         children: [
           Positioned(
             top: -100,
             right: -80,
             child: SoftBlob(
-              color: AppColors.primaryMenthe.withOpacity(0.10),
+              color: AppColors.primaryBlue.withOpacity(0.10),
               size: 320,
             ),
           ),
@@ -143,7 +144,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             bottom: -100,
             left: -80,
             child: SoftBlob(
-              color: AppColors.kBgAccent.withOpacity(0.10),
+              color: AppColors.primaryBlueLighter.withOpacity(0.10),
               size: 300,
             ),
           ),
@@ -166,14 +167,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       Container(
                         padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
-                          color: AppColors.kCard,
+                          color: AppColors.surface,
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(
-                              color: AppColors.kBorder, width: 1.5),
+                              color: AppColors.primaryBlueLighter, width: 1.5),
                           boxShadow: [
                             BoxShadow(
                               color:
-                              AppColors.primaryMenthe.withOpacity(0.08),
+                              AppColors.primaryBlue.withOpacity(0.08),
                               blurRadius: 40,
                               spreadRadius: 4,
                               offset: const Offset(0, 12),
@@ -189,12 +190,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(10),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primaryLight,
+                                    color: AppColors.primaryBlueLighter,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
                                     Icons.local_hospital_outlined,
-                                    color: AppColors.primaryMenthe,
+                                    color: AppColors.primaryBlue,
                                     size: 22,
                                   ),
                                 ),
@@ -207,7 +208,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       Text(
                                         'Configurer votre hôpital',
                                         style: TextStyle(
-                                          color: AppColors.kText,
+                                          color: AppColors.textPrimary,
                                           fontSize: 18,
                                           fontWeight: FontWeight.w800,
                                         ),
@@ -289,10 +290,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                             isLoading
                                 ? const Center(
                               child: CircularProgressIndicator(
-                                color: AppColors.primaryMenthe,
+                                color: AppColors.primaryBlue,
                               ),
                             )
-                                : LoginButton(onTap: _submit),
+                                : AppButton(onTap: _submit, text: "S'inscrire"),
                           ],
                         ),
                       ),
@@ -329,7 +330,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: const TextStyle(
-        color: AppColors.kText,
+        color: AppColors.textPrimary,
         fontSize: 13,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.3,
@@ -353,11 +354,7 @@ class _StyledDropdown<T> extends StatelessWidget {
     required this.onChanged,
   });
 
-  static const Color kPrimary = Color(0xFF10B982);
-  static const Color kText = Color(0xFF0F2E22);
-  static const Color kTextSub = Color(0xFF6B7280);
-  static const Color kBorder = Color(0xFFD1FAE5);
-  static const Color kFill = Color(0xFFF6FEFA);
+
 
   @override
   Widget build(BuildContext context) {
@@ -366,19 +363,19 @@ class _StyledDropdown<T> extends StatelessWidget {
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: kTextSub, fontSize: 14),
-        prefixIcon: Icon(icon, color: kPrimary, size: 20),
+        hintStyle: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        prefixIcon: Icon(icon, color: AppColors.primaryBlue, size: 20),
         filled: true,
-        fillColor: kFill,
+        fillColor: AppColors.surface,
         contentPadding:
         const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: kBorder, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.primaryBlueLighter, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: kPrimary, width: 1.8),
+          borderSide: const BorderSide(color: AppColors.textPrimary, width: 1.8),
         ),
       ),
       items: items
@@ -386,11 +383,11 @@ class _StyledDropdown<T> extends StatelessWidget {
         value: e,
         child: Text(e.toString(),
             style:
-            const TextStyle(color: kText, fontSize: 14)),
+            const TextStyle(color: AppColors.textPrimary, fontSize: 14)),
       ))
           .toList(),
       icon: const Icon(Icons.keyboard_arrow_down_rounded,
-          color: kTextSub, size: 20),
+          color: AppColors.textSecondary, size: 20),
       dropdownColor: Colors.white,
       borderRadius: BorderRadius.circular(12),
     );

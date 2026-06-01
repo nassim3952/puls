@@ -19,6 +19,8 @@ class DashboardFilterNotifier extends Notifier<DashboardFilterState> {
 
   void updatePeriode(DateTimeRange? range) => state = state.copyWith(periode: range);
 
+  void updateSearch(String val) => state = state.copyWith(searchQuery: val);
+
   void reset() => state = const DashboardFilterState();
 }
 

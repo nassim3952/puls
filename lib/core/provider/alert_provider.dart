@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/legacy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:puls/core/models/patient.dart';
 import 'package:puls/core/models/visit_model.dart';
+import 'filter_controller.dart';
 import 'patient_provider.dart';
 
 // ─── Notifier ─────────────────────────────────────────────────────────────────
@@ -153,23 +154,42 @@ StateNotifierProvider<AlertsNotifier, Map<String, VisitModel>>(
 final alertsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final patientsAsync = ref.watch(patientsListProvider);
   final overrides = ref.watch(alertsNotifierProvider);
+  final filters = ref.watch(filterProvider); // 👈 ajoute ça
 
   return patientsAsync.whenData((list) {
     final result = <PatientModel>[];
 
     for (final patient in list) {
-      // Applique les overrides visite par visite
       final patchedVisits = patient.visits.map((v) {
         return overrides.containsKey(v.id) ? overrides[v.id]! : v;
       }).toList();
 
-      // Le patient entre dans la liste si au moins une visite est concernée
-      final hasRelevantVisit = patchedVisits.any(
+      // 👇 Filtre les visites selon les filtres actifs
+      final filteredVisits = patchedVisits.where((v) {
+        final matchService = filters.service == null || filters.service!.isEmpty
+            ? true : v.service == filters.service;
+        final matchType = filters.type == null || filters.type!.isEmpty
+            ? true : v.visitType == filters.type;
+        final matchExplo = filters.exploration == null || filters.exploration!.isEmpty
+            ? true : v.exploration == filters.exploration;
+        final matchSortie = filters.sortie == null || filters.sortie!.isEmpty
+            ? true : v.afterCare == filters.sortie;
+
+        var matchDate = true;
+        if (filters.periode != null) {
+          matchDate = v.date.isAfter(filters.periode!.start) &&
+              v.date.isBefore(filters.periode!.end.add(const Duration(days: 1)));
+        }
+
+        return matchService && matchType && matchExplo && matchSortie && matchDate;
+      }).toList();
+
+      final hasRelevantVisit = filteredVisits.any(
             (v) => v.hasAlert || v.planIsValid == true,
       );
 
       if (hasRelevantVisit) {
-        result.add(patient.copyWith(visits: patchedVisits));
+        result.add(patient.copyWith(visits: filteredVisits));
       }
     }
 

@@ -11,7 +11,7 @@ Widget buildResetButton(DashboardFilterNotifier notifier) {
     icon: const Icon(Icons.refresh_rounded, size: 16),
     label: const Text('Réinitialiser'),
     style: TextButton.styleFrom(
-      foregroundColor: AppColors.primaryMenthe,
+      foregroundColor: AppColors.primaryBlue,
       textStyle: const TextStyle(fontSize: 13),
     ),
   );

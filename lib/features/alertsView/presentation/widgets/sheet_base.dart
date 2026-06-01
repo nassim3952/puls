@@ -13,7 +13,7 @@ class SheetBase extends StatelessWidget {
       maxChildSize: 0.95,
       builder: (_, controller) => Container(
         decoration: const BoxDecoration(
-          color: AppColors.card,
+          color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
         child: Column(
@@ -23,7 +23,7 @@ class SheetBase extends StatelessWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

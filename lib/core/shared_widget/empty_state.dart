@@ -22,7 +22,7 @@ class EmptyState extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: AppColors.primaryBlueLighter,
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -30,7 +30,7 @@ class EmptyState extends StatelessWidget {
                   ? Icons.inbox_outlined
                   : Icons.search_off_rounded,
               size: 40,
-              color: AppColors.primaryMenthe,
+              color: AppColors.primaryBlue,
             ),
           ),
           const SizedBox(height: 20),
@@ -41,7 +41,7 @@ class EmptyState extends StatelessWidget {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.kText,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 8),

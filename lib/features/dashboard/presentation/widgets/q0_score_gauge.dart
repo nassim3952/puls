@@ -14,7 +14,7 @@ class Q0ScoreGauge extends ConsumerWidget {
     final score = ref.watch(q0AverageProvider);
 
     // On peut même changer la couleur selon le score !
-    Color gaugeColor = score > 70 ? AppColors.primaryMenthe : (score > 40 ? Colors.orange : Colors.red);
+    Color gaugeColor = score > 70 ? AppColors.primaryBlue : (score > 40 ? Colors.orange : Colors.red);
 
     return RepaintBoundary(
       child: SizedBox(

@@ -19,11 +19,11 @@ class AppWidget {
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: type == StatusType.error
-            ? AppColors.primaryMentheError.withAlpha(12)
+            ? AppColors.primaryError.withAlpha(12)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isSelected ? AppColors.primaryMentheError : Colors.transparent,
+          color: isSelected ? AppColors.primaryError : Colors.transparent,
         ),
       ),
       child: Column(
@@ -66,10 +66,10 @@ class AppWidget {
 Color getColor(StatusType status) {
   switch (status) {
     case StatusType.success:
-      return AppColors.primaryMenthe;
+      return AppColors.primaryBlue;
     case StatusType.warning:
-      return AppColors.primaryMentheWarning;
+      return AppColors.primaryWarning;
     case StatusType.error:
-      return AppColors.primaryMentheError;
+      return AppColors.primaryError;
     }
 }

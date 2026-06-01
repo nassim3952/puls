@@ -14,11 +14,10 @@ import 'dart:ui';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart'; // <--- Vérifie cet import
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:puls/core/shared_widget/alert_patient_avatar.dart';
 import 'package:puls/core/shared_widget/build_header.dart';
-import 'package:puls/core/shared_widget/result_number.dart';
 import '../../../core/color.dart';
 import '../../../core/models/patient.dart';
 import '../../../core/provider/historique_filter_controller.dart';
@@ -100,8 +99,9 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
     final patientsAsync = ref.watch(filteredPatientsProvider);
     final filters = ref.watch(historiqueFilterProvider);
 
+
     return Scaffold(
-      backgroundColor: MintTheme.surface,
+      backgroundColor: AppColors.primaryBG,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -130,16 +130,6 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
   // ─── BARRE DE FILTRES ──────────────────────────────────────────────────────
   Widget _buildFilterBar(HistoriqueFilterState filters) {
     final patientsAll = ref.watch(patientsListProvider);
-    final services = patientsAll.whenOrNull(
-      data: (l) =>
-      l.map((p) => p.latestVisit?.service ?? '').toSet().where((s) => s.isNotEmpty).toList()
-        ..sort(),
-    ) ?? [];
-    final types = patientsAll.whenOrNull(
-      data: (l) =>
-      l.map((p) => p.latestVisit?.visitType ?? '').toSet().where((s) => s.isNotEmpty).toList()
-        ..sort(),
-    ) ?? [];
 
     return Container(
       padding: const EdgeInsets.fromLTRB(28, 0, 28, 16),
@@ -166,7 +156,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
               icon: const Icon(Icons.refresh_rounded, size: 16),
               label: const Text('Réinitialiser'),
               style: TextButton.styleFrom(
-                foregroundColor: MintTheme.mint600,
+                foregroundColor: AppColors.primaryBlue,
                 textStyle: const TextStyle(fontSize: 13),
               ),
             )
@@ -184,9 +174,9 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
       padding: const EdgeInsets.fromLTRB(28, 0, 28, 24),
       child: Container(
         decoration: BoxDecoration(
-          color: MintTheme.cardBg,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: MintTheme.border),
+          border: Border.all(color: AppColors.divider),
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(14),
@@ -196,10 +186,10 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
             minWidth: 900,
             headingRowHeight: 44,
             dataRowHeight: 58,
-            headingRowColor: WidgetStateProperty.all(MintTheme.mint50),
+            headingRowColor: WidgetStateProperty.all(const Color(0xFFF8F9FB)),
             border: TableBorder(
               horizontalInside: BorderSide(
-                  color: MintTheme.border.withOpacity(0.6), width: 0.5),
+                  color: AppColors.divider, width: 0.5),
             ),
             sortColumnIndex: _sortIndex(filters.sortColumn),
             sortAscending: filters.sortDirection == SortDirection.asc,
@@ -242,10 +232,6 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                 label: _ColHeader('Statut'),
                 size: ColumnSize.S,
               ),
-              DataColumn2(
-                label: const SizedBox.shrink(),
-                size: ColumnSize.S,
-              ),
             ],
             rows: patients.map((p) => _buildRow(p, dateFormat)).toList(),
           ),
@@ -255,17 +241,19 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
   }
 
   DataRow2 _buildRow(PatientModel p, DateFormat fmt) {
+    final initials = p.firstName[0] + p.lastName[0];
+    final bool hasAlert = p.latestVisit?.hasAlert ?? false;
     return DataRow2(
       onTap: () => setState(() => _selectedPatient = p),
       color: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.hovered)) return MintTheme.mint50;
+        if (states.contains(WidgetState.hovered)) return const Color(0xFFF8F9FB);
         return null;
       }),
       cells: [
         // Nom
         DataCell(Row(
           children: [
-            _Avatar(firstName: p.firstName, lastName: p.lastName),
+            alertPatientAvatar(initials,36,hasAlert),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -277,14 +265,14 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w500,
-                      color: MintTheme.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
                     p.sex,
                     style: const TextStyle(
-                        fontSize: 11, color: MintTheme.textSecondary),
+                        fontSize: 11, color: AppColors.textSecondary),
                   ),
                 ],
               ),
@@ -295,40 +283,45 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
         DataCell(Text(
           p.ipp,
           style: const TextStyle(fontSize: 12,
-              color: MintTheme.textSecondary,
+              color: AppColors.textSecondary,
               fontFamily: 'monospace'),
         )),
         // Service
-        DataCell(_Tag(
-            label: p.latestVisit?.service ?? '–', color: MintTheme.mint600, bg: MintTheme.mint100)),
+        DataCell(Text(
+          p.latestVisit?.service ?? '–',
+          style: const TextStyle(fontSize: 12, color: AppColors.textMid),
+          overflow: TextOverflow.ellipsis,
+        )),
         // Type visite
-        DataCell(_Tag(label: p.latestVisit?.visitType ?? '–',
-            color: MintTheme.tagBlue,
-            bg: MintTheme.tagBlueBg)),
+        DataCell(Text(
+          p.latestVisit?.visitType ?? '–',
+          style: const TextStyle(fontSize: 12, color: AppColors.textMid),
+          overflow: TextOverflow.ellipsis,
+        )),
         // attentesSoins (q1) — recommandation
         DataCell(_ScoreBadge(score: p.latestVisit?.survey?.attentesSoins ?? '–')),
         // Date
         DataCell(Text(
           p.latestVisit != null ? fmt.format(p.latestVisit!.date) : '–',
-          style: const TextStyle(fontSize: 12, color: MintTheme.textSecondary),
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
         )),
         // Alerte
         DataCell((p.latestVisit?.hasAlert ?? false)
             ? Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: MintTheme.alertRedBg,
+            color: AppColors.primaryError.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: MintTheme.alertRed.withOpacity(0.3)),
+            border: Border.all(color: AppColors.primaryError.withOpacity(0.3)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: const [
               Icon(Icons.warning_amber_rounded, size: 13,
-                  color: MintTheme.alertRed),
+                  color: AppColors.primaryError),
               SizedBox(width: 4),
               Text('Alerte', style: TextStyle(fontSize: 11,
-                  color: MintTheme.alertRed,
+                  color: AppColors.primaryError,
                   fontWeight: FontWeight.w500)),
             ],
           ),
@@ -336,20 +329,13 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
             : Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: MintTheme.mint50,
+            color: const Color(0xFFF1F5F9),
             borderRadius: BorderRadius.circular(6),
-            border: Border.all(color: MintTheme.mint200),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
-          child: const Text('OK', style: TextStyle(fontSize: 11,
-              color: MintTheme.mint700,
+          child: Text('OK', style: TextStyle(fontSize: 11,
+              color: AppColors.textMid,
               fontWeight: FontWeight.w500)),
-        )),
-        // Action
-        DataCell(IconButton(
-          icon: const Icon(
-              Icons.chevron_right_rounded, size: 20, color: MintTheme.mint600),
-          onPressed: () => setState(() => _selectedPatient = p),
-          splashRadius: 18,
         )),
       ],
     );
@@ -358,6 +344,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
   // ─── VUE DÉTAIL ───────────────────────────────────────────────────────────
   Widget _buildDetailView(List<PatientModel> patients) {
     final p = _selectedPatient!;
+    final initials = p.firstName[0] + p.lastName[0];
     final dateFormat = DateFormat('dd MMMM yyyy', 'fr_FR');
 
     return Row(
@@ -384,23 +371,21 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                   margin: const EdgeInsets.only(bottom: 16),
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: MintTheme.cardBg,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: MintTheme.border),
+                    border: Border.all(color: AppColors.surface),
                   ),
                   child: Row(
                     children: [
                       IconButton(
                         icon: const Icon(Icons.arrow_back_rounded, size: 20),
-                        color: MintTheme.mint600,
+                        color: AppColors.primaryBlue,
                         onPressed: () =>
                             setState(() => _selectedPatient = null),
                         splashRadius: 20,
                       ),
                       const SizedBox(width: 12),
-                      _Avatar(firstName: p.firstName,
-                          lastName: p.lastName,
-                          size: 46),
+                      alertPatientAvatar(initials,36,false),
                       const SizedBox(width: 14),
                       Expanded(
                         child: Column(
@@ -412,7 +397,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                                   '${p.firstName} ${p.lastName}',
                                   style: const TextStyle(fontSize: 18,
                                       fontWeight: FontWeight.w600,
-                                      color: MintTheme.textPrimary),
+                                      color: AppColors.textPrimary),
                                 ),
                                 if (p.latestVisit?.hasAlert ?? false) ...[
                                   const SizedBox(width: 10),
@@ -420,10 +405,10 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: MintTheme.alertRedBg,
+                                      color: AppColors.surface,
                                       borderRadius: BorderRadius.circular(6),
                                       border: Border.all(
-                                          color: MintTheme.alertRed.withOpacity(
+                                          color: AppColors.primaryError.withOpacity(
                                               0.3)),
                                     ),
                                     child: Row(
@@ -431,11 +416,11 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                                       children: const [
                                         Icon(Icons.warning_amber_rounded,
                                             size: 13,
-                                            color: MintTheme.alertRed),
+                                            color: AppColors.primaryError),
                                         SizedBox(width: 4),
                                         Text('Alerte active', style: TextStyle(
                                             fontSize: 11,
-                                            color: MintTheme.alertRed,
+                                            color: AppColors.primaryError,
                                             fontWeight: FontWeight.w500)),
                                       ],
                                     ),
@@ -447,7 +432,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
                             Text(
                               'IPP ${p.ipp}  •  ${p.sex}  •  ${p.latestVisit != null ? dateFormat.format(p.latestVisit!.date) : '–'}',
                               style: const TextStyle(
-                                  fontSize: 12, color: MintTheme.textSecondary),
+                                  fontSize: 12, color: AppColors.textPrimary),
                             ),
                           ],
                         ),
@@ -522,37 +507,6 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
 // WIDGETS UTILITAIRES
 // ---------------------------------------------------------------------------
 
-class _Avatar extends StatelessWidget {
-  final String firstName;
-  final String lastName;
-  final double size;
-
-  const _Avatar(
-      {required this.firstName, required this.lastName, this.size = 34});
-
-  @override
-  Widget build(BuildContext context) {
-    final initials = '${firstName.isNotEmpty ? firstName[0] : ''}${lastName
-        .isNotEmpty ? lastName[0] : ''}'.toUpperCase();
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: MintTheme.mint100,
-        borderRadius: BorderRadius.circular(size / 2),
-      ),
-      alignment: Alignment.center,
-      child: Text(
-        initials,
-        style: TextStyle(
-          fontSize: size * 0.35,
-          fontWeight: FontWeight.w600,
-          color: MintTheme.mint700,
-        ),
-      ),
-    );
-  }
-}
 
 class _ColHeader extends StatelessWidget {
   final String label;
@@ -566,7 +520,7 @@ class _ColHeader extends StatelessWidget {
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: MintTheme.textSecondary,
+          color: AppColors.textMid,
           letterSpacing: 0.3,
         ),
       );
@@ -605,34 +559,27 @@ class _ScoreBadge extends StatelessWidget {
 
   Color _color() {
     final s = score.toUpperCase();
-    if (s.contains('OUI TOTALEMENT')) return MintTheme.mint600;
-    if (s.contains('OUI PLUTOT')) return MintTheme.mint400;
-    if (s.contains('EN PARTIE')) return const Color(0xFFD69E2E);
-    if (s.contains('NON')) return MintTheme.alertRed;
-    return MintTheme.textSecondary;
+    if (s.contains('OUI TOTALEMENT')) return AppColors.primarySuccess;
+    if (s.contains('EN ATTENTE')) return AppColors.primaryNeutral;
+    if (s.contains('EN PARTIE')) return AppColors.primaryWarning;
+    if (s.contains('NON')) return AppColors.primaryError;
+    return AppColors.textSecondary;
   }
 
-  Color _bg() {
-    final s = score.toUpperCase();
-    if (s.contains('OUI TOTALEMENT')) return MintTheme.mint100;
-    if (s.contains('OUI PLUTOT')) return MintTheme.mint50;
-    if (s.contains('EN PARTIE')) return const Color(0xFFFEF3C7);
-    if (s.contains('NON')) return MintTheme.alertRedBg;
-    return const Color(0xFFF7F7F7);
-  }
 
   @override
   Widget build(BuildContext context) =>
       Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: _bg(),
+          color: _color().withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: _color(), width: 0.5),
         ),
         child: Text(
           score,
           style: TextStyle(
-              fontSize: 10, color: _color(), fontWeight: FontWeight.w500),
+              fontSize: 11, color: _color()),
           overflow: TextOverflow.ellipsis,
         ),
       );
@@ -657,9 +604,9 @@ class _AlertTabFilter extends StatelessWidget {
     return Container(
       height: 38,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: MintTheme.border),
+        border: Border.all(color: AppColors.surface),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -671,7 +618,7 @@ class _AlertTabFilter extends StatelessWidget {
               duration: const Duration(milliseconds: 150),
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: isActive ? MintTheme.mint400 : Colors.transparent,
+                color: isActive ? AppColors.primaryBlue : Colors.transparent,
                 borderRadius: BorderRadius.circular(9),
               ),
               alignment: Alignment.center,
@@ -680,7 +627,7 @@ class _AlertTabFilter extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w400,
-                  color: isActive ? Colors.white : MintTheme.textSecondary,
+                  color: isActive ? Colors.white : AppColors.textSecondary,
                 ),
               ),
             ),
@@ -709,34 +656,36 @@ class _SidePatientList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(28, 0, 12, 24),
       decoration: BoxDecoration(
-        color: MintTheme.cardBg,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MintTheme.border),
+        border: Border.all(color: AppColors.surface),
       ),
       child: ListView.separated(
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: patients.length,
         separatorBuilder: (_, __) =>
-            Divider(height: 1, color: MintTheme.border.withOpacity(0.7)),
+            Divider(height: 1, color: AppColors.surface.withOpacity(0.7)),
         itemBuilder: (_, i) {
           final p = patients[i];
           final isSelected = p.id == selected.id;
+          final initials = p.firstName[0] + p.lastName[0];
           return InkWell(
             onTap: () => onSelect(p),
             borderRadius: BorderRadius.circular(8),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              color: isSelected ? MintTheme.mint50 : null,
+              color: isSelected ? const Color(0xFFF1F5F9) : null,
               child: Row(
                 children: [
                   if (p.latestVisit?.hasAlert ?? false)
                     const Padding(
                       padding: EdgeInsets.only(right: 6),
                       child: Icon(
-                          Icons.circle, size: 7, color: MintTheme.alertRed),
+                          Icons.circle, size: 7, color: AppColors.textPrimary),
                     ),
-                  _Avatar(
-                      firstName: p.firstName, lastName: p.lastName, size: 28),
+
+
+                  alertPatientAvatar(initials,36,false),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -749,21 +698,20 @@ class _SidePatientList extends StatelessWidget {
                             fontWeight: isSelected
                                 ? FontWeight.w600
                                 : FontWeight.w400,
-                            color: MintTheme.textPrimary,
+                            color: AppColors.textPrimary,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
                           p.latestVisit != null ? fmt.format(p.latestVisit!.date) : '–',
                           style: const TextStyle(
-                              fontSize: 10, color: MintTheme.textSecondary),
+                              fontSize: 10, color: AppColors.textSecondary),
                         ),
                       ],
                     ),
                   ),
                   if (isSelected)
-                    const Icon(Icons.chevron_right_rounded, size: 16,
-                        color: MintTheme.mint600),
+                    const SizedBox(width: 6),
                 ],
               ),
             ),
@@ -797,22 +745,22 @@ class _InfoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: MintTheme.cardBg,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MintTheme.border),
+        border: Border.all(color: AppColors.surface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: MintTheme.mint600),
+              Icon(icon, size: 16, color: AppColors.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 title,
                 style: const TextStyle(fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: MintTheme.textPrimary),
+                    color: AppColors.textPrimary),
               ),
             ],
           ),
@@ -828,7 +776,7 @@ class _InfoCard extends StatelessWidget {
                       child: Text(
                         item.label,
                         style: const TextStyle(
-                            fontSize: 12, color: MintTheme.textSecondary),
+                            fontSize: 12, color: AppColors.textSecondary),
                       ),
                     ),
                     Expanded(
@@ -836,7 +784,7 @@ class _InfoCard extends StatelessWidget {
                         item.value.isEmpty ? '—' : item.value,
                         style: const TextStyle(fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: MintTheme.textPrimary),
+                            color: AppColors.textPrimary),
                       ),
                     ),
                   ],
@@ -859,9 +807,9 @@ class _VerbatimCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: MintTheme.cardBg,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: MintTheme.border),
+        border: Border.all(color: AppColors.surface),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -869,22 +817,22 @@ class _VerbatimCard extends StatelessWidget {
           Row(
             children: [
               const Icon(Icons.chat_bubble_outline_rounded, size: 16,
-                  color: MintTheme.mint600),
+                  color: AppColors.primaryBlue),
               const SizedBox(width: 8),
               Text(
                 title,
                 style: const TextStyle(fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: MintTheme.textPrimary),
+                    color: AppColors.textPrimary),
               ),
               const Spacer(),
               _Tag(label: verbatim.classe,
-                  color: MintTheme.mint600,
-                  bg: MintTheme.mint100),
+                  color: AppColors.primaryBlue,
+                  bg: AppColors.primaryBlueLighter),
               const SizedBox(width: 6),
               _Tag(label: verbatim.polarite,
-                  color: MintTheme.tagBlue,
-                  bg: MintTheme.tagBlueBg),
+                  color: AppColors.textPrimary,
+                  bg: AppColors.surface),
             ],
           ),
           const SizedBox(height: 12),
@@ -892,16 +840,16 @@ class _VerbatimCard extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: MintTheme.mint50,
+              color: AppColors.primaryBlueLighter,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: MintTheme.mint100),
+              border: Border.all(color: AppColors.primaryBlueLighter),
             ),
             child: Text(
               verbatim.message.isEmpty ? 'Aucun commentaire.' : '"${verbatim
                   .message}"',
               style: const TextStyle(
                 fontSize: 13,
-                color: MintTheme.textPrimary,
+                color: AppColors.textPrimary,
                 fontStyle: FontStyle.italic,
                 height: 1.6,
               ),
@@ -929,7 +877,7 @@ class _LoadingState extends StatelessWidget {
   Widget build(BuildContext context) =>
       const Center(
         child: CircularProgressIndicator(
-          color: MintTheme.mint400,
+          color: AppColors.primaryBlue,
           strokeWidth: 2,
         ),
       );
@@ -947,12 +895,12 @@ class _ErrorState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Icon(Icons.error_outline_rounded, size: 40,
-                color: MintTheme.alertRed),
+                color: AppColors.primaryError),
             const SizedBox(height: 12),
             Text('Erreur de chargement',
-                style: TextStyle(fontSize: 15, color: MintTheme.textPrimary)),
+                style: TextStyle(fontSize: 15, color: AppColors.textPrimary)),
             Text(error, style: const TextStyle(
-                fontSize: 12, color: MintTheme.textSecondary)),
+                fontSize: 12, color: AppColors.textSecondary)),
           ],
         ),
       );

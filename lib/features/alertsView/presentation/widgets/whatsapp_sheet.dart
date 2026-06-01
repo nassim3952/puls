@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:puls/core/shared_widget/action_button.dart';
 import 'package:puls/features/alertsView/presentation/widgets/sheet_base.dart';
 
 import '../../../../core/color.dart';
 import 'alert_view.dart';
-import 'green_button.dart';
 
 class WhatsappSheet extends StatelessWidget {
   final AlertView alert;
@@ -38,12 +38,12 @@ class WhatsappSheet extends StatelessWidget {
                 children: [
                   const Text('Répondre via WhatsApp',
                       style: TextStyle(
-                          color: AppColors.textDark,
+                          color: AppColors.textPrimary,
                           fontSize: 18,
                           fontWeight: FontWeight.w800)),
                   Text(alert.patientName,
                       style:
-                      const TextStyle(color: AppColors.textLight, fontSize: 13)),
+                      const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                 ],
               ),
             ],
@@ -51,7 +51,7 @@ class WhatsappSheet extends StatelessWidget {
           const SizedBox(height: 24),
           const Text('Messages suggérés',
               style: TextStyle(
-                  color: AppColors.textDark,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 14)),
           const SizedBox(height: 12),
@@ -59,29 +59,29 @@ class WhatsappSheet extends StatelessWidget {
           const SizedBox(height: 20),
           const Text('Message personnalisé',
               style: TextStyle(
-                  color: AppColors.textDark,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 14)),
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.bg,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.border, width: 1.5),
+              border: Border.all(color: AppColors.surface, width: 1.5),
             ),
             child: const TextField(
               maxLines: 4,
               decoration: InputDecoration(
                 hintText: 'Écrire un message...',
-                hintStyle: TextStyle(color: AppColors.textLight),
+                hintStyle: TextStyle(color: AppColors.textSecondary),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.all(16),
               ),
             ),
           ),
           const SizedBox(height: 16),
-          GreenBtn(
-            label: 'Envoyer sur WhatsApp',
+          AppButton(
+            text: "Envoyer sur WhatsApp",
             icon: Icons.send_rounded,
             onTap: () => Navigator.pop(context),
           ),
@@ -101,9 +101,9 @@ class _SuggestedMsg extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bg,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        border: Border.all(color: AppColors.surface, width: 1.5),
       ),
       child: Row(
         children: [
@@ -114,7 +114,7 @@ class _SuggestedMsg extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           const Icon(Icons.arrow_forward_ios_rounded,
-              size: 14, color: AppColors.primary),
+              size: 14, color: AppColors.primaryBlue),
         ],
       ),
     );

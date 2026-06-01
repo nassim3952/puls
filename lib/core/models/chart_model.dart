@@ -18,7 +18,7 @@ class SplineGroup {
   SplineGroup({
     required this.name,
     required this.data,
-    this.color = AppColors.primaryMenthe,
+    this.color = AppColors.primaryBlue,
     this.isVisible = true,
   });
 

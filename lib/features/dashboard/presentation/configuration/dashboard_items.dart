@@ -102,7 +102,7 @@ final dashboardItems = [
       children: [
         Align(
           alignment: AlignmentGeometry.center,
-          child: AppCharts.gauge(87, AppColors.primaryMenthe),
+          child: AppCharts.gauge(87, AppColors.primaryBlue),
         ),
         Expanded(child: AppCharts.spline(splineData2)),
       ],

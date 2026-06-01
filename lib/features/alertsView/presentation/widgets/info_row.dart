@@ -14,15 +14,15 @@ class InfoRow extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: AppColors.primary),
+          Icon(icon, size: 16, color: AppColors.primaryBlue),
           const SizedBox(width: 10),
           Text('$label : ',
               style:
-              const TextStyle(color: AppColors.textLight, fontSize: 13)),
+              const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
           Expanded(
             child: Text(value,
                 style: const TextStyle(
-                    color: AppColors.textDark,
+                    color: AppColors.textPrimary,
                     fontSize: 13,
                     fontWeight: FontWeight.w600)),
           ),

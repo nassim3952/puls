@@ -6,9 +6,9 @@ import 'package:puls/core/provider/patient_provider.dart';
 import 'package:xtal_dataview/xtal_dataview.dart' as xtal;
 
 final List<Color> _mintPalette = [
-  AppColors.primaryMenthe,
-  AppColors.primaryMentheDark,
-  AppColors.primaryMentheDarker
+  AppColors.primaryBlue,
+  AppColors.primaryBlueDark,
+  AppColors.primaryBlueDarker
 ];
 
 /// Un Provider de type "Family" qui génère dynamiquement le nœud Sunburst
@@ -53,7 +53,7 @@ final sunburstFamilyProvider = Provider.family<AsyncValue<xtal.ChartTreeNode>, S
           return xtal.ChartTreeNode(
             name: msg,
             value: 1.0,
-            color: isAlert ? AppColors.primaryMentheWarning : baseColor.withOpacity(0.4),
+            color: isAlert ? AppColors.primaryWarning : baseColor.withOpacity(0.4),
           );
         }).toList();
 

@@ -18,15 +18,15 @@ void showLogoutDialog(BuildContext context, WidgetRef ref) { // <-- Ajout de Wid
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.kCard,
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: AppColors.kBorder,
+                color: AppColors.primaryBlueLighter,
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryMentheError.withOpacity(0.06),
+                  color: AppColors.primaryError.withOpacity(0.06),
                   blurRadius: 30,
                   spreadRadius: 2,
                   offset: const Offset(0, 10),
@@ -46,12 +46,12 @@ void showLogoutDialog(BuildContext context, WidgetRef ref) { // <-- Ajout de Wid
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryMentheError.withOpacity(0.1),
+                      color: AppColors.primaryError.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.logout_rounded,
-                      color: AppColors.primaryMentheError,
+                      color: AppColors.primaryError,
                       size: 28,
                     ),
                   ),
@@ -60,7 +60,7 @@ void showLogoutDialog(BuildContext context, WidgetRef ref) { // <-- Ajout de Wid
                 const Text(
                   "Déconnexion",
                   style: TextStyle(
-                    color: AppColors.kText,
+                    color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                   ),
@@ -114,14 +114,14 @@ void showLogoutDialog(BuildContext context, WidgetRef ref) { // <-- Ajout de Wid
                           height: 48,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [AppColors.primaryMentheError, Color(0xFFC53030)],
+                              colors: [AppColors.primaryError, Color(0xFFC53030)],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryMentheError.withOpacity(0.3),
+                                color: AppColors.primaryError.withOpacity(0.3),
                                 blurRadius: 12,
                                 offset: const Offset(0, 4),
                               ),

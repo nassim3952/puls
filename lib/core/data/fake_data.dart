@@ -1,11 +1,10 @@
-import 'package:puls/features/alertsView/presentation/alerts_view.dart';
 import '../color.dart';
 import '../models/chart_model.dart';
 
 final splineData1 = [
   SplineGroup(
     name: "Oui totalement",
-    color: AppColors.primaryMenthe,
+    color: AppColors.primaryBlue,
     data: [
       ChartDataSpline('Jan', 60),
       ChartDataSpline('Feb', 45),
@@ -16,7 +15,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "En partie",
-    color: AppColors.primaryMentheNeutral,
+    color: AppColors.primaryNeutral,
     data: [
       ChartDataSpline('Jan', 30),
       ChartDataSpline('Feb', 55),
@@ -27,7 +26,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "Non",
-    color: AppColors.primaryMentheError,
+    color: AppColors.primaryError,
     data: [
       ChartDataSpline('Jan', 38),
       ChartDataSpline('Feb', 58),
@@ -38,7 +37,7 @@ final splineData1 = [
   ),
   SplineGroup(
     name: "En attente",
-    color: AppColors.primaryMentheWarning,
+    color: AppColors.primaryWarning,
     data: [
       ChartDataSpline('Jan', 20),
       ChartDataSpline('Feb', 25),

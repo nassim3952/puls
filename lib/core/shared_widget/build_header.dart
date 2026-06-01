@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:puls/core/provider/historique_filter_controller.dart';
-import 'package:puls/core/provider/patient_provider.dart';
 import 'package:puls/core/shared_widget/select_button.dart';
 import 'package:puls/core/shared_widget/result_number.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
@@ -19,10 +17,8 @@ class DashboardHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // On écoute le nouvel état unifié du Dashboard
     final filters = ref.watch(filterProvider);
-    final filterss = ref.watch(historiqueFilterProvider);
     // On récupère le Notifier pour appeler ses méthodes propres
     final notifier = ref.read(filterProvider.notifier);
-    final patientsAsync = ref.watch(filteredPatientsProvider);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -157,10 +153,21 @@ class DashboardHeader extends ConsumerWidget {
         label: "Service",
         value: (filters.service == null || filters.service!.isEmpty) ? null : filters.service,
         options: const [
-          'Cardiologie',
-          'Gynécologie-Obstétrique',
-          'Pédiatrie',
-          'Neurologie',
+          "Admin & Gestion",
+          "Cardiologie",
+          "Gynécologie-Obstétrique",
+          "Medecine interne",
+          "Pédiatrie",
+          "Neurologie",
+          "Rhumatologie & Rééducation",
+          "Dermatologie",
+          "Pneumologie",
+          "Gastro-entérologie",
+          "Chirurgie",
+          "Oncologie",
+          "Imagerie",
+          "Laboratoire",
+          "Soins de Support",
         ],
         onSelected: (val) {
           notifier.updateService(val == 'Tout' ? '' : val);
@@ -202,11 +209,11 @@ void _showCustomDatePicker(
             backgroundColor: AppColors.surface,
           ),
           backgroundColor: AppColors.surface,
-          selectionColor: AppColors.primaryMenthe,
-          endRangeSelectionColor: AppColors.primaryMenthe,
-          startRangeSelectionColor: AppColors.primaryMenthe,
-          rangeSelectionColor: AppColors.primaryMenthe.withOpacity(0.2),
-          todayHighlightColor: AppColors.primaryMenthe,
+          selectionColor: AppColors.primaryBlue,
+          endRangeSelectionColor: AppColors.primaryBlue,
+          startRangeSelectionColor: AppColors.primaryBlue,
+          rangeSelectionColor: AppColors.primaryBlue.withOpacity(0.2),
+          todayHighlightColor: AppColors.primaryBlue,
           selectionMode: DateRangePickerSelectionMode.range,
           onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
             if (args.value is PickerDateRange) {
@@ -228,7 +235,7 @@ void _showCustomDatePicker(
           onPressed: () => Navigator.pop(context),
           child: const Text(
             "Valider",
-            style: TextStyle(color: AppColors.primaryMenthe),
+            style: TextStyle(color: AppColors.primaryBlue),
           ),
         ),
       ],

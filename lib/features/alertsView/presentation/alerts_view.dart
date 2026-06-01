@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/models/patient.dart';
 import 'package:puls/core/provider/alert_provider.dart';
+import 'package:puls/core/shared_widget/segmented_bar.dart';
 import 'package:puls/features/alertsView/presentation/widgets/alert_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/alert_view.dart';
 import 'package:puls/features/alertsView/presentation/widgets/detail_sheet.dart';
-import 'package:puls/features/alertsView/presentation/widgets/empty.dart';
+import 'package:puls/features/alertsView/presentation/widgets/empty_state.dart';
+import 'package:puls/features/alertsView/presentation/widgets/patient_groupe_shell.dart';
 import 'package:puls/features/alertsView/presentation/widgets/plan_action_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/plan_sheet.dart';
 import 'package:puls/features/alertsView/presentation/widgets/validated_card.dart';
@@ -96,10 +98,10 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     final alertsAsync = ref.watch(alertsProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: AppColors.primaryBG,
       body: alertsAsync.when(
         loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary),
+          child: CircularProgressIndicator(color: AppColors.primaryBlue),
         ),
         error: (err, _) => Center(
           child: Column(
@@ -107,14 +109,14 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
             children: [
               const Icon(
                 Icons.error_outline_rounded,
-                color: AppColors.urgentText,
+                color: AppColors.primaryError,
                 size: 48,
               ),
               const SizedBox(height: 12),
               Text(
                 'Erreur de chargement',
                 style: const TextStyle(
-                  color: AppColors.textDark,
+                  color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
                   fontSize: 16,
                 ),
@@ -123,7 +125,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
               Text(
                 err.toString(),
                 style: const TextStyle(
-                  color: AppColors.textLight,
+                  color: AppColors.textSecondary,
                   fontSize: 12,
                 ),
               ),
@@ -138,17 +140,19 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DashboardHeader(),
-              _buildTabBar(
+              // ── Header (fixe en haut) ──────────────────────────────────
+              const DashboardHeader(),
+
+              // ── Barre unique scrollable : tabs + filtres ───────────────
+              _buildTabAndFilterRow(
                 activeCount: active.length,
                 pendingCount: pending.length,
                 validatedCount: validated.length,
               ),
-              if (_tabController.index == 0) ...[
-                const SizedBox(height: 8),
-                _buildFilters(),
-              ],
+
               const SizedBox(height: 4),
+
+              // ── Contenu des onglets ────────────────────────────────────
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -166,54 +170,26 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     );
   }
 
-  // ── TabBar avec badges ────────────────────────────────────────────────────
-  Widget _buildTabBar({
+  // ── Barre unique : tabs compacts (gauche) + filtres de niveau (suite) ─────
+  Widget _buildTabAndFilterRow({
     required int activeCount,
     required int pendingCount,
     required int validatedCount,
   }) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border, width: 1.5),
-      ),
-      child: TabBar(
-        controller: _tabController,
-        indicator: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withValues(alpha: 0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        indicatorSize: TabBarIndicatorSize.tab,
-        dividerColor: Colors.transparent,
-        labelPadding: EdgeInsets.zero,
-        tabs: [
-          _Tab(
-            label: 'Alertes',
-            count: activeCount,
-            isSelected: _tabController.index == 0,
-            badgeColor: AppColors.urgentText,
-          ),
-          _Tab(
-            label: 'Plans',
-            count: pendingCount,
-            isSelected: _tabController.index == 1,
-            badgeColor: AppColors.warningText,
-          ),
-          _Tab(
-            label: 'Validés',
-            count: validatedCount,
-            isSelected: _tabController.index == 2,
-            badgeColor: AppColors.primaryDark,
+    final filterLevels = [null, AlertLevel.urgent, AlertLevel.warning, AlertLevel.info];
+    final filterLabels = ['Toutes', 'Urgentes', 'Modérées', 'Info'];
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 16),
+      child: Row(
+        children: [
+          Spacer(),
+          SegmentedTabBar(
+            selectedIndex: _tabController.index,
+            activeCount: activeCount,
+            pendingCount: pendingCount,
+            validatedCount: validatedCount,
+            onChanged: (i) => setState(() => _tabController.animateTo(i)),
           ),
         ],
       ),
@@ -222,7 +198,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
 
   // ── Onglet 1 : Alertes actives — groupées par patient ────────────────────
   Widget _buildActiveTab(List<AlertView> alerts) {
-    if (alerts.isEmpty) return buildEmpty();
+    if (alerts.isEmpty) return EmptyTab(icon: Icons.check_circle_outline_rounded ,message: "Aucune alerte non traité",);
     final grouped = _groupByPatient(alerts);
 
     return ListView.builder(
@@ -262,7 +238,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   // ── Onglet 2 : Plans en attente ───────────────────────────────────────────
   Widget _buildPendingTab(List<AlertView> alerts) {
     if (alerts.isEmpty) {
-      return _EmptyTab(
+      return EmptyTab(
         icon: Icons.assignment_outlined,
         message: 'Aucun plan en attente de validation.',
       );
@@ -274,21 +250,14 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       itemCount: grouped.length,
       itemBuilder: (ctx, i) {
         final patientAlerts = grouped.values.elementAt(i);
-        final hasMultiple = patientAlerts.length > 1;
 
-        if (!hasMultiple) {
+        // Un seul → PlanActionCard (header + 1 visite)
+        if (patientAlerts.length == 1) {
           return PlanActionCard(alert: patientAlerts.first);
         }
 
-        return _PatientGroupShell(
-          alert: patientAlerts.first,
-          count: patientAlerts.length,
-          child: Column(
-            children: patientAlerts
-                .map((a) => PlanActionCard(alert: a))
-                .toList(),
-          ),
-        );
+        // Plusieurs → PatientPlanActionGroup (header unique + N tiles)
+        return PatientPlanActionGroup(alerts: patientAlerts);
       },
     );
   }
@@ -296,7 +265,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   // ── Onglet 3 : Plans validés ──────────────────────────────────────────────
   Widget _buildValidatedTab(List<AlertView> alerts) {
     if (alerts.isEmpty) {
-      return _EmptyTab(
+      return EmptyTab(
         icon: Icons.check_circle_outline_rounded,
         message: 'Aucune alerte archivée pour le moment.',
       );
@@ -308,82 +277,19 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       itemCount: grouped.length,
       itemBuilder: (ctx, i) {
         final patientAlerts = grouped.values.elementAt(i);
-        final hasMultiple = patientAlerts.length > 1;
 
-        if (!hasMultiple) {
+        // Un seul → ValidatedCard (header + 1 visite)
+        if (patientAlerts.length == 1) {
           return ValidatedCard(alert: patientAlerts.first);
         }
 
-        return _PatientGroupShell(
-          alert: patientAlerts.first,
-          count: patientAlerts.length,
-          child: Column(
-            children: patientAlerts
-                .map((a) => ValidatedCard(alert: a))
-                .toList(),
-          ),
-        );
+        // Plusieurs → PatientValidatedGroup (header unique + N tiles)
+        return PatientValidatedGroup(alerts: patientAlerts);
       },
     );
   }
 
-  // ── Filtre niveau (onglet 1 seulement) ────────────────────────────────────
-  Widget _buildFilters() {
-    final filters = [
-      null,
-      AlertLevel.urgent,
-      AlertLevel.warning,
-      AlertLevel.info
-    ];
-    final labels = ['Toutes', 'Urgentes', 'Modérées', 'Info'];
 
-    return SizedBox(
-      height: 40,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: filters.length,
-        itemBuilder: (ctx, i) {
-          final selected = _filterLevel == filters[i];
-          return GestureDetector(
-            onTap: () => setState(() => _filterLevel = filters[i]),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              margin: const EdgeInsets.only(right: 10),
-              padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: selected ? AppColors.primary : AppColors.card,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: selected ? AppColors.primary : AppColors.border,
-                  width: 1.5,
-                ),
-                boxShadow: selected
-                    ? [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-                    : [],
-              ),
-              child: Text(
-                labels[i],
-                style: TextStyle(
-                  color: selected ? Colors.white : AppColors.textMid,
-                  fontSize: 13,
-                  fontWeight:
-                  selected ? FontWeight.w700 : FontWeight.w500,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
 
   // ── Bottom Sheets ─────────────────────────────────────────────────────────
   void _showWhatsappSheet(BuildContext context, AlertView alert) {
@@ -410,200 +316,6 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => PlanSheet(alert: alert),
-    );
-  }
-}
-
-// ─── Shell générique pour grouper onglets 2 et 3 ─────────────────────────────
-class _PatientGroupShell extends StatelessWidget {
-  final AlertView alert;
-  final int count;
-  final Widget child;
-
-  const _PatientGroupShell({
-    required this.alert,
-    required this.count,
-    required this.child,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header patient
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [AppColors.primary, AppColors.primaryDark],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(11),
-                  ),
-                  child: Center(
-                    child: Text(
-                      alert.avatarInitials,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        alert.patientName,
-                        style: const TextStyle(
-                          color: AppColors.textDark,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '${alert.patientId} · $count visites',
-                        style: const TextStyle(
-                            color: AppColors.textLight, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 1,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            color: AppColors.border,
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-            child: child,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Tab widget avec badge ────────────────────────────────────────────────────
-class _Tab extends StatelessWidget {
-  final String label;
-  final int count;
-  final bool isSelected;
-  final Color badgeColor;
-
-  const _Tab({
-    required this.label,
-    required this.count,
-    required this.isSelected,
-    required this.badgeColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Tab(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : AppColors.textMid,
-                fontSize: 13,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-            if (count > 0) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isSelected
-                      ? Colors.white.withValues(alpha: 0.25)
-                      : badgeColor.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '$count',
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : badgeColor,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Empty state générique pour les onglets 2 et 3 ───────────────────────────
-class _EmptyTab extends StatelessWidget {
-  final IconData icon;
-  final String message;
-
-  const _EmptyTab({required this.icon, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: const BoxDecoration(
-              color: AppColors.primaryLight,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, size: 36, color: AppColors.primary),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: const TextStyle(
-              color: AppColors.textMid,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
     );
   }
 }

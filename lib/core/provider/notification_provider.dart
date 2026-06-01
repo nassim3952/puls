@@ -57,7 +57,7 @@ class NotificationsNotifier extends StateNotifier<NotificationsState> {
       ),
       callback: (payload) {
         final newNotif = NotificationModel.fromMap(
-          payload.newRecord as Map<String, dynamic>,
+          payload.newRecord,
         );
         // On n'ajoute que si ciblée pour cet user ou broadcast
         final uid = _supabase.auth.currentUser?.id;

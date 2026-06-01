@@ -40,7 +40,7 @@ class Q0SplineChart extends ConsumerWidget {
               dataSource: data,
               xValueMapper: (d, _) => d.x,
               yValueMapper: (d, _) => d.y,
-              color: AppColors.primaryMenthe, // Ta couleur de thème
+              color: AppColors.primaryBlue, // Ta couleur de thème
               width: 3,
               markerSettings: const MarkerSettings(
                 isVisible: true,
@@ -48,7 +48,7 @@ class Q0SplineChart extends ConsumerWidget {
                 width: 4,
                 shape: DataMarkerType.circle,
                 borderWidth: 2,
-                borderColor: AppColors.primaryMenthe,
+                borderColor: AppColors.primaryBlue,
               ),
               animationDuration: 800,
             ),

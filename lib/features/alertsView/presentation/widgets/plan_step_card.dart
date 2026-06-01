@@ -12,9 +12,9 @@ class PlanStepCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.bg,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        border: Border.all(color: AppColors.surface, width: 1.5),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,19 +40,19 @@ class PlanStepCard extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryLight,
+                        color: AppColors.primaryBlueLighter,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text('$index',
                           style: const TextStyle(
-                              color: AppColors.primary,
+                              color: AppColors.primaryBlue,
                               fontSize: 10,
                               fontWeight: FontWeight.w800)),
                     ),
                     const SizedBox(width: 8),
                     Text(step.title,
                         style: const TextStyle(
-                            color: AppColors.textDark,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 13)),
                     const Spacer(),

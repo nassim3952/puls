@@ -41,7 +41,7 @@ class AlertSection extends ConsumerWidget {
                 patientName,
                 timeDisplayText, // Affiche désormais "il y a 2 jours", "il y a 3 heures", etc.
                 alertMessage,
-                AppColors.primaryMentheError,
+                AppColors.primaryError,
                 false,
               );
             }).toList(),

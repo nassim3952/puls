@@ -15,17 +15,17 @@ class PainScoreBar extends StatelessWidget {
             final filled = i < score;
             Color c;
             if (i < 4)
-              c = AppColors.primary;
+              c = AppColors.primaryBlue;
             else if (i < 7)
-              c = AppColors.warningText;
+              c = AppColors.primaryWarning;
             else
-              c = AppColors.urgentText;
+              c = AppColors.primaryError;
             return Expanded(
               child: Container(
                 margin: const EdgeInsets.only(right: 3),
                 height: 10,
                 decoration: BoxDecoration(
-                  color: filled ? c : AppColors.border,
+                  color: filled ? c : AppColors.surface,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -38,15 +38,15 @@ class PainScoreBar extends StatelessWidget {
           children: [
             const Text('Faible',
                 style:
-                TextStyle(color: AppColors.textLight, fontSize: 11)),
+                TextStyle(color: AppColors.textSecondary, fontSize: 11)),
             Text('${score.toInt()}/10',
                 style: const TextStyle(
-                    color: AppColors.urgentText,
+                    color: AppColors.primaryError,
                     fontWeight: FontWeight.w700,
                     fontSize: 13)),
             const Text('Critique',
                 style:
-                TextStyle(color: AppColors.textLight, fontSize: 11)),
+                TextStyle(color: AppColors.textSecondary, fontSize: 11)),
           ],
         ),
       ],

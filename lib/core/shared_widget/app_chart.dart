@@ -210,8 +210,8 @@ class AppCharts {
             xValueMapper: (BarData d, _) => d.label,
             yValueMapper: (BarData d, _) => d.value,
             pointColorMapper: (BarData d, _) => d.valence == Valence.bonne
-                ? AppColors.primaryMenthe
-                : AppColors.primaryMentheWarning,
+                ? AppColors.primaryBlue
+                : AppColors.primaryWarning,
             animationDuration: 600,
           )
               : ColumnSeries<BarData, String>(
@@ -308,9 +308,9 @@ class AppCharts {
 
   // AJOUTE "WidgetRef ref" en paramètre pour pouvoir modifier le provider
   static Color _getTileColor(TreemapNavigation nav) {
-    if (nav.selectedClasse == null) return AppColors.primaryMenthe;
-    if (nav.selectedPolarite == null) AppColors.primaryMenthe;
-    return  AppColors.primaryMenthe;
+    if (nav.selectedClasse == null) return AppColors.primaryBlue;
+    if (nav.selectedPolarite == null) AppColors.primaryBlue;
+    return  AppColors.primaryBlue;
   }
 
   // --- 1. TREEMAP (LE GROS MORCEAU) ---

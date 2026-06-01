@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
-class ActionBtn extends StatelessWidget {
+class Plan_button extends StatelessWidget {
   final IconData icon;
   final Color color;
   final Color bg;
   final VoidCallback onTap;
   final String? label;
+  final Color? border; // <-- Rendu nullable
 
-  const ActionBtn({
+  const Plan_button({
+    super.key, // Pense à ajouter la key, c'est mieux pour Flutter
     required this.icon,
     required this.color,
     required this.bg,
     required this.onTap,
     this.label,
+    this.border, // <-- Plus de 'required'
   });
 
   @override
@@ -23,6 +26,11 @@ class ActionBtn extends StatelessWidget {
         padding: EdgeInsets.symmetric(
             horizontal: label != null ? 10 : 8, vertical: 7),
         decoration: BoxDecoration(
+          // --- La logique est là ---
+          border: border != null
+              ? Border.all(color: border!, width: 1.2)
+              : null, // Si c'est null, pas de bordure
+          // --------------------------
           color: bg,
           borderRadius: BorderRadius.circular(10),
         ),

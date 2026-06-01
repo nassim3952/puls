@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:puls/core/color.dart';
+import 'package:puls/core/shared_widget/alert_patient_avatar.dart';
 
-import 'action_button.dart';
+import 'plan_button.dart';
 import 'alert_view.dart';
+
+// ─── Couleurs locales (chips & badges) ───────────────────────────────────────
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  POINT D'ENTRÉE PUBLIC
@@ -94,14 +98,16 @@ class _PatientAlertGroupState extends State<PatientAlertGroup> {
   Widget build(BuildContext context) {
     final first = widget.alerts.first;
     final count = widget.alerts.length;
-    final (_, labelColor, borderColor) = _levelColors(_worstLevel);
+    final (_, labelColor, _) = _levelColors(_worstLevel);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor, width: 1.5),
+        border: _worstLevel == AlertLevel.urgent
+            ? Border.all(color: AppColors.urgentBorder, width: 0.5)
+            : null,
         boxShadow: [_cardShadow],
       ),
       child: Column(
@@ -115,7 +121,7 @@ class _PatientAlertGroupState extends State<PatientAlertGroup> {
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
               child: Row(
                 children: [
-                  _Avatar(initials: first.avatarInitials, size: 40),
+                  alertPatientAvatar(first.avatarInitials,44,false),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -124,7 +130,7 @@ class _PatientAlertGroupState extends State<PatientAlertGroup> {
                         Text(
                           first.patientName,
                           style: const TextStyle(
-                            color: AppColors.textDark,
+                            color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,
                             fontSize: 15,
                           ),
@@ -133,7 +139,7 @@ class _PatientAlertGroupState extends State<PatientAlertGroup> {
                         Text(
                           first.patientId,
                           style: const TextStyle(
-                            color: AppColors.textLight,
+                            color: AppColors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -211,7 +217,7 @@ class _PatientHeader extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _Avatar(initials: alert.avatarInitials, size: 44),
+          alertPatientAvatar(alert.avatarInitials,44,false),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -220,7 +226,7 @@ class _PatientHeader extends StatelessWidget {
                 Text(
                   alert.patientName,
                   style: const TextStyle(
-                    color: AppColors.textDark,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
                   ),
@@ -229,7 +235,7 @@ class _PatientHeader extends StatelessWidget {
                 Text(
                   alert.patientId,
                   style: const TextStyle(
-                    color: AppColors.textLight,
+                    color: AppColors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -334,7 +340,7 @@ class _VisitContentState extends State<_VisitContent> {
     final alert = widget.alert;
     final visit = alert.visit;
     final survey = visit.survey;
-    final (bgColor, textColor, borderColor) = _levelColors(alert.level);
+    final (_, textColor, _) = _levelColors(alert.level);
 
     // Verbatims filtrés non-vides : parcours, moment, suggestion
     final verbatims = survey == null
@@ -387,9 +393,9 @@ class _VisitContentState extends State<_VisitContent> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: bgColor,
+                color: AppColors.primaryBlueLighter.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: borderColor, width: 1),
+                border: Border.all(color: AppColors.primaryBlueLighter, width: 0.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,9 +452,9 @@ class _VisitContentState extends State<_VisitContent> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: AppColors.bg,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border, width: 1),
+                border: Border.all(color: AppColors.surface, width: 0.5),
               ),
               child: Text(
                 alert.description,
@@ -490,33 +496,29 @@ class _VisitContentState extends State<_VisitContent> {
               ),
               const SizedBox(width: 8),
               // Boutons d'action
-              ActionBtn(
-                icon: Icons.delete_outline_rounded,
-                color: AppColors.urgentText,
-                bg: AppColors.urgentBg,
-                onTap: widget.onDelete,
-              ),
               const SizedBox(width: 8),
-              ActionBtn(
+              Plan_button(
                 icon: Icons.chat_bubble_outline_rounded,
-                color: const Color(0xFF25D366),
-                bg: const Color(0xFFECFDF5),
+                color: AppColors.primaryBlue,
+                bg: AppColors.primaryBlueLighter.withValues(alpha: 0.6),
+                border: AppColors.primaryBlue,
                 onTap: widget.onWhatsapp,
               ),
               const SizedBox(width: 8),
-              ActionBtn(
+              Plan_button(
                 icon: Icons.person_search_outlined,
-                color: AppColors.infoText,
-                bg: AppColors.infoBg,
+                color: AppColors.primaryBlue,
+                bg: AppColors.primaryBlueLighter.withValues(alpha: 0.6),
+                border: AppColors.primaryBlue,
                 onTap: widget.onDetail,
               ),
               const SizedBox(width: 8),
-              ActionBtn(
+              Plan_button(
                 icon: Icons.assignment_outlined,
-                color: AppColors.primary,
-                bg: AppColors.primaryLight,
+                color: AppColors.white,
+                bg: AppColors.primaryBlue,
                 onTap: widget.onPlan,
-                label: 'Plan',
+                label: 'Plan', border: AppColors.primaryBlue,
               ),
             ],
           ),
@@ -531,38 +533,38 @@ class _VisitContentState extends State<_VisitContent> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── Avatar initiales ─────────────────────────────────────────────────────────
-class _Avatar extends StatelessWidget {
-  final String initials;
-  final double size;
-
-  const _Avatar({required this.initials, required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.primary, AppColors.primaryDark],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(size * 0.27),
-      ),
-      child: Center(
-        child: Text(
-          initials,
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: size * 0.32,
-          ),
-        ),
-      ),
-    );
-  }
-}
+// class alertAvatar extends StatelessWidget {
+//   final String initials;
+//   final double size;
+//
+//   const alertAvatar({required this.initials, required this.size});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       width: size,
+//       height: size,
+//       decoration: BoxDecoration(
+//         gradient: const LinearGradient(
+//           colors: [AppColors.primary, AppColors.primaryDark],
+//           begin: Alignment.topLeft,
+//           end: Alignment.bottomRight,
+//         ),
+//         borderRadius: BorderRadius.circular(size * 0.27),
+//       ),
+//       child: Center(
+//         child: Text(
+//           initials,
+//           style: TextStyle(
+//             color: Colors.white,
+//             fontWeight: FontWeight.w700,
+//             fontSize: size * 0.32,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 // ── Badge niveau d'alerte ─────────────────────────────────────────────────────
 class _LevelBadge extends StatelessWidget {
@@ -572,7 +574,7 @@ class _LevelBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (bgColor, textColor, borderColor) = _levelColors(level);
+    final (_, textColor, borderColor) = _levelColors(level);
     final (label, icon) = switch (level) {
       AlertLevel.urgent => ('Urgent', Icons.warning_rounded),
       AlertLevel.warning => ('Modéré', Icons.info_outline_rounded),
@@ -582,9 +584,9 @@ class _LevelBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
-        color: bgColor,
+        color: textColor.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: borderColor, width: 1),
+        border: Border.all(color: borderColor, width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -596,7 +598,7 @@ class _LevelBadge extends StatelessWidget {
             style: TextStyle(
               color: textColor,
               fontSize: 11,
-              fontWeight: FontWeight.w700,
+
             ),
           ),
         ],
@@ -618,11 +620,11 @@ class _MetaChip extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 12, color: AppColors.textLight),
+        Icon(icon, size: 12, color: AppColors.textSecondary),
         const SizedBox(width: 4),
         Text(
           label,
-          style: const TextStyle(color: AppColors.textLight, fontSize: 12),
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
         ),
       ],
     );
@@ -644,7 +646,7 @@ class _ScoreStars extends StatelessWidget {
         return Icon(
           filled ? Icons.star_rounded : Icons.star_outline_rounded,
           size: 16,
-          color: filled ? AppColors.warningText : AppColors.textLight,
+          color: filled ? AppColors.primaryBlue : AppColors.textSecondary,
         );
       }),
     );
@@ -662,9 +664,9 @@ class _AttentesChip extends StatelessWidget {
     if (value.isEmpty) return const SizedBox.shrink();
 
     final (bgColor, textColor) = switch (value.toLowerCase()) {
-      'oui totalement' => (AppColors.primaryLight, AppColors.primaryDark),
-      'en partie' => (AppColors.warningBg, AppColors.warningText),
-      _ => (AppColors.urgentBg, AppColors.urgentText),
+      'oui totalement' => (AppColors.blueFaint,   AppColors.primaryBlueDark),
+      'en partie'      => (AppColors.orangeFaint, AppColors.primaryWarning),
+      _                => (AppColors.redFaint,    AppColors.primaryError),
     };
 
     return Container(
@@ -672,13 +674,13 @@ class _AttentesChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: textColor.withValues(alpha: 0.35), width: 0.5),
       ),
       child: Text(
         value,
         style: TextStyle(
           color: textColor,
           fontSize: 11,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );
@@ -693,11 +695,14 @@ class _ConsentBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color  = consented ? AppColors.primaryBlueDark : AppColors.primaryError;
+    final bgColor = consented ? AppColors.blueFaint : AppColors.redFaint;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: consented ? AppColors.primaryLight : AppColors.urgentBg,
+        color: bgColor,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -707,15 +712,14 @@ class _ConsentBadge extends StatelessWidget {
                 ? Icons.phone_enabled_outlined
                 : Icons.phone_disabled_outlined,
             size: 10,
-            color: consented ? AppColors.primaryDark : AppColors.urgentText,
+            color: color,
           ),
           const SizedBox(width: 3),
           Text(
             consented ? 'Rappel OK' : 'Pas de rappel',
             style: TextStyle(
-              color: consented ? AppColors.primaryDark : AppColors.urgentText,
+              color: color,
               fontSize: 10,
-              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -736,8 +740,9 @@ class _CountBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -747,9 +752,8 @@ class _CountBadge extends StatelessWidget {
           Text(
             '$count alertes',
             style: TextStyle(
-              color: color,
+              color: AppColors.primaryError,
               fontSize: 11,
-              fontWeight: FontWeight.w700,
             ),
           ),
         ],
@@ -768,8 +772,7 @@ class _VerbatimRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _isPositive ? AppColors.primary : AppColors.urgentText;
-    final bg = _isPositive ? AppColors.primaryLight : AppColors.urgentBg;
+    final color = _isPositive ? AppColors.primaryBlue : AppColors.primaryError;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -777,8 +780,9 @@ class _VerbatimRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
           decoration: BoxDecoration(
-            color: bg,
+            color: _isPositive ? AppColors.blueFaint : AppColors.redFaint,
             borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
           ),
           child: Text(
             v.label,
@@ -814,7 +818,7 @@ class _Divider extends StatelessWidget {
     return Container(
       height: 1,
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      color: AppColors.border,
+      color: AppColors.divider,
     );
   }
 }
@@ -827,30 +831,31 @@ class _Divider extends StatelessWidget {
 (Color, Color, Color) _levelColors(AlertLevel level) {
   return switch (level) {
     AlertLevel.urgent => (
-    AppColors.urgentBg,
-    AppColors.urgentText,
-    AppColors.urgentBorder
+    AppColors.surface,
+    AppColors.primaryError,
+    AppColors.urgentBorder,
     ),
     AlertLevel.warning => (
-    AppColors.warningBg,
-    AppColors.warningText,
-    AppColors.warningBorder
+    AppColors.surface,
+    AppColors.primaryWarning,
+    AppColors.warningBorder,
     ),
     AlertLevel.info => (
-    AppColors.infoBg,
+    AppColors.surface,
     AppColors.infoText,
-    AppColors.infoBorder
+    AppColors.infoBorder,
     ),
   };
 }
 
 /// Décoration de la carte principale
 BoxDecoration _cardDecoration(AlertLevel level) {
-  final (_, _, borderColor) = _levelColors(level);
   return BoxDecoration(
-    color: AppColors.card,
+    color: AppColors.surface,
     borderRadius: BorderRadius.circular(18),
-    border: Border.all(color: borderColor, width: 1.5),
+    border: level == AlertLevel.urgent
+        ? Border.all(color: AppColors.urgentBorder, width: 0.5)
+        : null,
     boxShadow: [_cardShadow],
   );
 }

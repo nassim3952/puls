@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:puls/core/color.dart';
+import 'package:puls/core/shared_widget/action_button.dart';
 import 'package:puls/features/alertsView/presentation/widgets/pain_score_bar.dart';
 import 'package:puls/features/alertsView/presentation/widgets/plan_sheet.dart';
 import 'package:puls/features/alertsView/presentation/widgets/section_title.dart';
@@ -8,7 +9,6 @@ import 'package:puls/features/alertsView/presentation/widgets/whatsapp_sheet.dar
 
 import 'alert_view.dart';
 import 'detail_berbatime_card.dart';
-import 'green_button.dart';
 import 'info_row.dart';
 
 class DetailSheet extends StatelessWidget {
@@ -30,7 +30,7 @@ class DetailSheet extends StatelessWidget {
                 height: 52,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.primary, AppColors.primaryDark],
+                    colors: [AppColors.primaryBlue, AppColors.primaryBlueDark],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -40,7 +40,7 @@ class DetailSheet extends StatelessWidget {
                   child: Text(
                     alert.avatarInitials,
                     style: const TextStyle(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       fontWeight: FontWeight.w800,
                       fontSize: 18,
                     ),
@@ -54,7 +54,7 @@ class DetailSheet extends StatelessWidget {
                   Text(
                     alert.patientName,
                     style: const TextStyle(
-                      color: AppColors.textDark,
+                      color: AppColors.textPrimary,
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
                     ),
@@ -62,7 +62,7 @@ class DetailSheet extends StatelessWidget {
                   Text(
                     alert.patientId,
                     style: const TextStyle(
-                      color: AppColors.textLight,
+                      color: AppColors.textSecondary,
                       fontSize: 13,
                     ),
                   ),
@@ -108,8 +108,8 @@ class DetailSheet extends StatelessWidget {
               false) ...[
             VerbatimCard(
               icon: Icons.thumb_up_outlined,
-              color: AppColors.primary,
-              bg: AppColors.primaryLight,
+              color: AppColors.primaryBlue,
+              bg: AppColors.primaryBlueLighter,
               label: 'Point positif',
               message:
                   alert.source.latestVisit!.survey!.raconteParcours.message,
@@ -127,8 +127,8 @@ class DetailSheet extends StatelessWidget {
               false) ...[
             VerbatimCard(
               icon: Icons.build_outlined,
-              color: AppColors.warningText,
-              bg: AppColors.warningBg,
+              color: AppColors.primaryWarning,
+              bg: AppColors.surface,
               label: 'Point à améliorer',
               message: alert
                   .source
@@ -153,8 +153,8 @@ class DetailSheet extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: GreenBtn(
-                  label: 'WhatsApp',
+                child: AppButton(
+                  text: 'WhatsApp',
                   icon: Icons.chat_bubble_outline_rounded,
                   outlined: true,
                   onTap: () {
@@ -170,8 +170,8 @@ class DetailSheet extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: GreenBtn(
-                  label: 'Plan d\'action',
+                child: AppButton(
+                  text: 'Plan d\'action',
                   icon: Icons.assignment_outlined,
                   onTap: () {
                     Navigator.pop(context); // ferme DetailSheet

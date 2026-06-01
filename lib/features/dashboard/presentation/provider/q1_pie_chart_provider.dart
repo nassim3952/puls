@@ -15,10 +15,10 @@ final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
     if (list.isEmpty) return [];
 
     final Map<String, Color> categories = {
-      'Oui totalement': AppColors.primaryMenthe,
-      'En partie': AppColors.primaryMenthe.withValues(alpha: 0.8),
-      'Non': AppColors.primaryMenthe.withValues(alpha: 0.4),
-      'En attente': AppColors.primaryMenthe.withValues(alpha: 0.6),
+      'Oui totalement': AppColors.primaryBlue,
+      'En partie': AppColors.primaryWarning,
+      'Non': AppColors.primaryError,
+      'En attente': AppColors.primaryNeutral,
     };
 
     return categories.entries.map((entry) {

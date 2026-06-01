@@ -54,10 +54,10 @@ class SplineLegendHeader extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            LegendChip(label: "Oui totalement", color: AppColors.primaryMenthe),
-            LegendChip(label: "En partie", color: AppColors.primaryMentheWarning),
-            LegendChip(label: "Non", color: AppColors.primaryMentheError),
-            LegendChip(label: "En attente", color: AppColors.primaryMentheNeutral),
+            LegendChip(label: "Oui totalement", color: AppColors.primaryBlue),
+            LegendChip(label: "En partie", color: AppColors.primaryWarning),
+            LegendChip(label: "Non", color: AppColors.primaryError),
+            LegendChip(label: "En attente", color: AppColors.primaryNeutral),
           ]
         ),
       ),

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/auth_provider.dart';
-import 'package:puls/features/Auth/presentation/widgets/loginButton.dart';
+import 'package:puls/features/Auth/presentation/widgets/auth_form.dart';
+
 import 'package:puls/features/Auth/presentation/widgets/soft_blob.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../core/shared_widget/action_button.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
   const AuthScreen({super.key});
@@ -146,8 +149,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       SnackBar(
         content: Text(message),
         backgroundColor: isError
-            ? AppColors.primaryMentheError
-            : AppColors.primaryMenthe,
+            ? AppColors.primaryError
+            : AppColors.primaryBlue,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
@@ -171,16 +174,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
     final isLoading = ref.watch(authProvider).status == AuthStatus.loading;
 
     return Scaffold(
-      backgroundColor: AppColors.kBg,
+      backgroundColor: AppColors.surface,
       body: Stack(
         children: [
           // Blobs décoratifs
           Positioned(top: -100, right: -80,
-              child: SoftBlob(color: AppColors.primaryMenthe.withOpacity(0.12), size: 340)),
+              child: SoftBlob(color: AppColors.primaryBlue.withOpacity(0.12), size: 340)),
           Positioned(bottom: -120, left: -100,
-              child: SoftBlob(color: AppColors.kBgAccent.withOpacity(0.12), size: 360)),
+              child: SoftBlob(color: AppColors.primaryBlueLighter.withOpacity(0.12), size: 360)),
           Positioned(top: 160, left: -60,
-              child: SoftBlob(color: AppColors.primaryMenthe.withOpacity(0.07), size: 200)),
+              child: SoftBlob(color: AppColors.primaryBlue.withOpacity(0.07), size: 200)),
 
           // Contenu
           Center(
@@ -204,12 +207,12 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                         child: Container(
                           padding: const EdgeInsets.all(28),
                           decoration: BoxDecoration(
-                            color: AppColors.kCard,
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(24),
-                            border: Border.all(color: AppColors.kBorder, width: 1.5),
+                            border: Border.all(color: AppColors.primaryBlueLighter, width: 1.5),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primaryMenthe.withOpacity(0.08),
+                                color: AppColors.primaryBlue.withOpacity(0.08),
                                 blurRadius: 40, spreadRadius: 4,
                                 offset: const Offset(0, 12),
                               ),
@@ -226,7 +229,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                               Text(
                                 _isLogin ? 'Connexion' : 'Créer un compte',
                                 style: const TextStyle(
-                                  color: AppColors.kText,
+                                  color: AppColors.textPrimary,
                                   fontSize: 22,
                                   fontWeight: FontWeight.w800,
                                 ),
@@ -303,10 +306,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                               isLoading
                                   ? const Center(
                                 child: CircularProgressIndicator(
-                                  color: AppColors.primaryMenthe,
+                                  color: AppColors.primaryBlue,
                                 ),
                               )
-                                  : LoginButton(onTap: _submit),
+                                  : AppButton(onTap: _submit, text: 'Se connecter',),
 
                               const SizedBox(height: 8),
 
@@ -318,7 +321,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                     child: const Text(
                                       'Mot de passe oublié ?',
                                       style: TextStyle(
-                                        color: AppColors.primaryMenthe,
+                                        color: AppColors.primaryBlue,
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                       ),

@@ -1,8 +1,6 @@
 import 'package:intl/intl.dart';
-
 import '../../../../core/models/patient.dart';
 import '../../../../core/models/visit_model.dart';
-import '../alerts_view.dart';
 
 // ─── Alert level ──────────────────────────────────────────────────────────────
 enum AlertLevel { urgent, warning, info }
