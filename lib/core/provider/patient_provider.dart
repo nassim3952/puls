@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/historique/presentation/historique_screen.dart' hide historiqueFilterProvider;
 import '../models/patient.dart';
 import '../models/patient_service.dart';
 import 'filter_controller.dart';
+import 'historique_filter_controller.dart';
 
 final patientsListProvider = FutureProvider<List<PatientModel>>((ref) {
   return ref.watch(patientServiceProvider).fetchPatients();
@@ -9,43 +11,92 @@ final patientsListProvider = FutureProvider<List<PatientModel>>((ref) {
 
 final filteredPatientsProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final allPatientsAsync = ref.watch(patientsListProvider);
-  final filters = ref.watch(filterProvider);
+  final filters = ref.watch(historiqueFilterProvider);
 
   return allPatientsAsync.whenData((patients) {
-    return patients.where((p) {
+    var result = patients.where((p) {
       final v = p.latestVisit;
       if (v == null) return false;
 
-      final matchService = filters.service == null || filters.service!.isEmpty
+      // ── Filtres existants ──────────────────────────────────────────────────
+      final matchService = filters.serviceFilter.isEmpty
           ? true
-          : v.service == filters.service;
+          : v.service == filters.serviceFilter;
 
-      final matchType = filters.type == null || filters.type!.isEmpty
+      final matchType = filters.typeFilter.isEmpty
           ? true
-          : v.visitType == filters.type;
+          : v.visitType == filters.typeFilter;
 
-      final matchExplo = filters.exploration == null || filters.exploration!.isEmpty
+      final matchAlert = filters.alertFilter == 'all'
           ? true
-          : v.exploration == filters.exploration;
+          : filters.alertFilter == 'alert'
+          ? (v.hasAlert == true)
+          : (v.hasAlert != true);
 
-      final matchSortie = filters.sortie == null || filters.sortie!.isEmpty
-          ? true
-          : v.afterCare == filters.sortie;
+      // ── Recherche ──────────────────────────────────────────────────────────
+      final q = filters.searchQuery.toLowerCase().trim();
+      bool matchSearch = true;
 
-      var matchDate = true;
-      if (filters.periode != null) {
-        matchDate = v.date.isAfter(filters.periode!.start) &&
-            v.date.isBefore(filters.periode!.end.add(const Duration(days: 1)));
+      if (q.isNotEmpty) {
+        if (filters.searchMode == SearchMode.patient) {
+          // Recherche par nom ou IPP
+          matchSearch =
+              '${p.firstName} ${p.lastName}'.toLowerCase().contains(q) ||
+                  p.ipp.toLowerCase().contains(q);
+        } else {
+          // Recherche par mot-clé dans les verbatims
+          final survey = v.survey;
+          if (survey == null) {
+            matchSearch = false;
+          } else {
+            final verbatims = [
+              survey.raconteParcours.message,
+              survey.momentMarquant.message,
+              survey.suggestionsAmelioration.message,
+            ];
+            matchSearch = verbatims.any(
+                  (msg) => msg.toLowerCase().contains(q),
+            );
+          }
+        }
       }
-      final matchSearch = filters.searchQuery.isEmpty
-          ? true
-          : '${p.firstName} ${p.lastName}'.toLowerCase()
-          .contains(filters.searchQuery.toLowerCase()) ||
-          p.ipp.toLowerCase().contains(filters.searchQuery.toLowerCase());
 
-      return matchService && matchType && matchExplo && matchSortie && matchDate && matchSearch;
-
-      return matchService && matchType && matchExplo && matchSortie && matchDate;
+      return matchService && matchType && matchAlert && matchSearch;
     }).toList();
+
+    // ── Tri ───────────────────────────────────────────────────────────────────
+    final asc = filters.sortDirection == SortDirection.asc;
+    switch (filters.sortColumn) {
+      case SortColumn.nom:
+        result.sort((a, b) {
+          final cmp =
+          '${a.firstName} ${a.lastName}'.compareTo('${b.firstName} ${b.lastName}');
+          return asc ? cmp : -cmp;
+        });
+        break;
+      case SortColumn.date:
+        result.sort((a, b) {
+          final da = a.latestVisit?.date ?? DateTime(0);
+          final db = b.latestVisit?.date ?? DateTime(0);
+          return asc ? da.compareTo(db) : db.compareTo(da);
+        });
+        break;
+      case SortColumn.service:
+        result.sort((a, b) {
+          final cmp = (a.latestVisit?.service ?? '').compareTo(b.latestVisit?.service ?? '');
+          return asc ? cmp : -cmp;
+        });
+        break;
+      case SortColumn.type:
+        result.sort((a, b) {
+          final cmp = (a.latestVisit?.visitType ?? '').compareTo(b.latestVisit?.visitType ?? '');
+          return asc ? cmp : -cmp;
+        });
+        break;
+      default:
+        break;
+    }
+
+    return result;
   });
 });

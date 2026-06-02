@@ -3,18 +3,39 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/auth_provider.dart';
 import 'package:puls/core/provider/notification_provider.dart';
-import '../../features/historique/presentation/historique_screen.dart';
+import '../../features/historique/presentation/historique_screen.dart' hide historiqueFilterProvider;
 import '../models/notification_model.dart';
+import '../provider/historique_filter_controller.dart';
 import 'logout_dialog.dart';
 
-class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
+class CustomAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CustomAppBar> createState() => _CustomAppBarState();
+}
+
+class _CustomAppBarState extends ConsumerState<CustomAppBar> {
+  // ✅ Controller stable — ne sera jamais recréé entre les rebuilds
+  late final TextEditingController _searchCtrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
     final bool isMobile = width < 600;
     final bool isTablet = width >= 600 && width < 1024;
@@ -24,15 +45,15 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     final user = authState.user;
     final unreadCount = ref.watch(unreadNotifCountProvider);
 
-    final TextEditingController searchCtrl = TextEditingController(
-      text: filters.searchQuery,
-    );
-    searchCtrl.selection = TextSelection.fromPosition(
-      TextPosition(offset: searchCtrl.text.length),
-    );
+    // Sync le controller si le state est réinitialisé (ex : bouton reset)
+    if (_searchCtrl.text != filters.searchQuery) {
+      _searchCtrl.value = _searchCtrl.value.copyWith(
+        text: filters.searchQuery,
+        selection: TextSelection.collapsed(offset: filters.searchQuery.length),
+      );
+    }
 
     return AppBar(
-
       scrolledUnderElevation: 0,
       automaticallyImplyLeading: false,
       automaticallyImplyActions: false,
@@ -67,55 +88,77 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
             if (!isMobile) SizedBox(width: isTablet ? 20 : 40),
 
-            // ── Barre de recherche ────────────────────────────────────────
+            // ── Toggle mode de recherche + barre ─────────────────────────
             SizedBox(
-              width: isMobile ? double.infinity : 340,
+              width: isMobile ? double.infinity : 420,
               height: 38,
-              child: TextField(
-                controller: searchCtrl,
-                onChanged: (v) =>
-                    ref.read(historiqueFilterProvider.notifier).setSearch(v),
-                style: const TextStyle(
-                    fontSize: 13, color: AppColors.textPrimary),
-                decoration: InputDecoration(
-                  hintText: 'Rechercher nom, IPP…',
-                  prefixIcon: const Icon(
-                    Icons.search_rounded,
-                    size: 18,
-                    color: AppColors.primaryBlue,
-                  ),
-                  suffixIcon: filters.searchQuery.isNotEmpty
-                      ? IconButton(
-                    icon: const Icon(Icons.close_rounded, size: 16),
-                    onPressed: () {
-                      searchCtrl.clear();
+              child: Row(
+                children: [
+                  // Toggle Patient / Mot-clé
+                  _SearchModeToggle(
+                    current: filters.searchMode,
+                    onChanged: (mode) {
                       ref
                           .read(historiqueFilterProvider.notifier)
-                          .setSearch('');
+                          .setSearchMode(mode);
+                      _searchCtrl.clear();
                     },
-                  )
-                      : null,
-                  filled: true,
-                  fillColor: AppColors.white,
-                  contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 14),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: searchCtrl.text.isNotEmpty
-                          ? AppColors.primaryBlue
-                          : AppColors.border,
-                      width: searchCtrl.text.isNotEmpty ? 1.5 : 1,
+                  ),
+                  const SizedBox(width: 8),
+
+                  // Barre de recherche
+                  Expanded(
+                    child: TextField(
+                      controller: _searchCtrl,
+                      onChanged: (v) => ref
+                          .read(historiqueFilterProvider.notifier)
+                          .setSearch(v),
+                      style: const TextStyle(
+                          fontSize: 13, color: AppColors.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: filters.searchMode == SearchMode.patient
+                            ? 'Nom, prénom, IPP…'
+                            : 'Mot-clé dans les verbatims…',
+                        prefixIcon: const Icon(
+                          Icons.search_rounded,
+                          size: 18,
+                          color: AppColors.primaryBlue,
+                        ),
+                        suffixIcon: filters.searchQuery.isNotEmpty
+                            ? IconButton(
+                          icon: const Icon(Icons.close_rounded, size: 16),
+                          onPressed: () {
+                            _searchCtrl.clear();
+                            ref
+                                .read(historiqueFilterProvider.notifier)
+                                .setSearch('');
+                          },
+                        )
+                            : null,
+                        filled: true,
+                        fillColor: AppColors.white,
+                        contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 14),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide(
+                            color: filters.searchQuery.isNotEmpty
+                                ? AppColors.primaryBlue
+                                : AppColors.border,
+                            width: filters.searchQuery.isNotEmpty ? 1.5 : 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: AppColors.primaryBlue,
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(
-                      color: AppColors.primaryBlue,
-                      width: 1.5,
-                    ),
-                  ),
-                ),
+                ],
               ),
             ),
 
@@ -190,8 +233,83 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
     );
   }
-
 }
+
+
+class _SearchModeToggle extends StatelessWidget {
+  final SearchMode current;
+  final void Function(SearchMode) onChanged;
+
+  const _SearchModeToggle({required this.current, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 38,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _ToggleBtn(
+            icon: Icons.person_search_rounded,
+            tooltip: 'Par patient',
+            isActive: current == SearchMode.patient,
+            onTap: () => onChanged(SearchMode.patient),
+          ),
+          _ToggleBtn(
+            icon: Icons.manage_search_rounded,
+            tooltip: 'Par mot-clé verbatim',
+            isActive: current == SearchMode.keyword,
+            onTap: () => onChanged(SearchMode.keyword),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class _ToggleBtn extends StatelessWidget {
+  final IconData icon;
+  final String tooltip;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _ToggleBtn({
+    required this.icon,
+    required this.tooltip,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: isActive ? AppColors.primaryBlue : Colors.transparent,
+            borderRadius: BorderRadius.circular(9),
+          ),
+          child: Icon(
+            icon,
+            size: 17,
+            color: isActive ? Colors.white : AppColors.textSecondary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
 
 // ══════════════════════════════════════════════════════════════════════════════
 // BADGE LIVE ANIMÉ

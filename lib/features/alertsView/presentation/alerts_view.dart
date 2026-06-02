@@ -14,6 +14,7 @@ import 'package:puls/features/alertsView/presentation/widgets/plan_sheet.dart';
 import 'package:puls/features/alertsView/presentation/widgets/validated_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/whatsapp_sheet.dart';
 import 'package:puls/core/shared_widget/build_header.dart';
+import 'package:puls/core/provider/historique_filter_controller.dart';
 
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 class AlertsScreen extends ConsumerStatefulWidget {
@@ -41,10 +42,29 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     super.dispose();
   }
 
+  // ── Filtre de recherche global ────────────────────────────────────────────
+  bool _matchesSearch(AlertView a, HistoriqueFilterState filters) {
+    final q = filters.searchQuery.trim().toLowerCase();
+    if (q.isEmpty) return true;
+
+    if (filters.searchMode == SearchMode.patient) {
+      return a.source.firstName.toLowerCase().contains(q) ||
+          a.source.lastName.toLowerCase().contains(q) ||
+          a.source.ipp.toLowerCase().contains(q);
+    } else {
+      return a.visit.service.toLowerCase().contains(q) ||
+          a.visit.visitType.toLowerCase().contains(q) ||
+          a.visit.exploration.toLowerCase().contains(q) ||
+          a.visit.afterCare.toLowerCase().contains(q) ||
+          (a.visit.actionPlanLabel?.toLowerCase().contains(q) ?? false) ||
+          (a.visit.actionPlanReport?.toLowerCase().contains(q) ?? false);
+    }
+  }
+
   // ── Segmentation des AlertView selon le workflow ──────────────────────────
 
   /// Onglet 1 : visites avec hasAlert == true et pas de plan encore
-  List<AlertView> _activeAlerts(List<PatientModel> patients) {
+  List<AlertView> _activeAlerts(List<PatientModel> patients, HistoriqueFilterState filters) {
     final result = <AlertView>[];
     for (final p in patients) {
       for (final v in p.visits) {
@@ -55,11 +75,12 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     }
     return result
         .where((a) => _filterLevel == null || a.level == _filterLevel)
+        .where((a) => _matchesSearch(a, filters))
         .toList();
   }
 
   /// Onglet 2 : visites avec hasAlert == true et plan initié
-  List<AlertView> _pendingPlans(List<PatientModel> patients) {
+  List<AlertView> _pendingPlans(List<PatientModel> patients, HistoriqueFilterState filters) {
     final result = <AlertView>[];
     for (final p in patients) {
       for (final v in p.visits) {
@@ -68,11 +89,13 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
         }
       }
     }
-    return result;
+    return result
+        .where((a) => _matchesSearch(a, filters))
+        .toList();
   }
 
   /// Onglet 3 : visites validées archivées
-  List<AlertView> _validatedPlans(List<PatientModel> patients) {
+  List<AlertView> _validatedPlans(List<PatientModel> patients, HistoriqueFilterState filters) {
     final result = <AlertView>[];
     for (final p in patients) {
       for (final v in p.visits) {
@@ -81,7 +104,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
         }
       }
     }
-    return result;
+    return result
+        .where((a) => _matchesSearch(a, filters))
+        .toList();
   }
 
   // ── Groupement par patient ────────────────────────────────────────────────
@@ -96,6 +121,7 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   @override
   Widget build(BuildContext context) {
     final alertsAsync = ref.watch(alertsProvider);
+    final filters = ref.watch(historiqueFilterProvider);
 
     return Scaffold(
       backgroundColor: AppColors.primaryBG,
@@ -133,9 +159,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
           ),
         ),
         data: (patients) {
-          final active = _activeAlerts(patients);
-          final pending = _pendingPlans(patients);
-          final validated = _validatedPlans(patients);
+          final active = _activeAlerts(patients, filters);
+          final pending = _pendingPlans(patients, filters);
+          final validated = _validatedPlans(patients, filters);
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,

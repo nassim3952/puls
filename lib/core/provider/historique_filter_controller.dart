@@ -1,9 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/historique/presentation/historique_screen.dart';
 
+// ─── Mode de recherche ────────────────────────────────────────────────────────
+enum SearchMode { patient, keyword }
+
 // 1. L'état qui regroupe tous les filtres de l'historique
 class HistoriqueFilterState {
   final String searchQuery;
+  final SearchMode searchMode;
   final String serviceFilter;
   final String typeFilter;
   final String alertFilter;
@@ -12,6 +16,7 @@ class HistoriqueFilterState {
 
   const HistoriqueFilterState({
     this.searchQuery = '',
+    this.searchMode = SearchMode.patient,
     this.serviceFilter = '',
     this.typeFilter = '',
     this.alertFilter = 'all',
@@ -19,9 +24,9 @@ class HistoriqueFilterState {
     this.sortDirection = SortDirection.asc,
   });
 
-  // copyWith permet de modifier un seul élément sans effacer les autres
   HistoriqueFilterState copyWith({
     String? searchQuery,
+    SearchMode? searchMode,
     String? serviceFilter,
     String? typeFilter,
     String? alertFilter,
@@ -30,6 +35,7 @@ class HistoriqueFilterState {
   }) {
     return HistoriqueFilterState(
       searchQuery: searchQuery ?? this.searchQuery,
+      searchMode: searchMode ?? this.searchMode,
       serviceFilter: serviceFilter ?? this.serviceFilter,
       typeFilter: typeFilter ?? this.typeFilter,
       alertFilter: alertFilter ?? this.alertFilter,
@@ -39,50 +45,38 @@ class HistoriqueFilterState {
   }
 }
 
-// 2. Le Notifier qui gère les actions de l'utilisateur
+// 2. Le Notifier
 class HistoriqueFilterNotifier extends Notifier<HistoriqueFilterState> {
   @override
-  HistoriqueFilterState build() {
-    return const HistoriqueFilterState(); // État initial
-  }
+  HistoriqueFilterState build() => const HistoriqueFilterState();
 
-  // Méthodes pour mettre à jour l'état
-  void updateSearch(String query) {
-    state = state.copyWith(searchQuery: query);
-  }
+  void setSearch(String v) => state = state.copyWith(searchQuery: v);
 
-  void updateService(String service) {
-    state = state.copyWith(serviceFilter: service);
-  }
+  void setSearchMode(SearchMode mode) =>
+      state = state.copyWith(searchMode: mode, searchQuery: '');
 
-  void updateType(String type) {
-    state = state.copyWith(typeFilter: type);
-  }
+  void setService(String v) => state = state.copyWith(serviceFilter: v);
 
-  void updateAlert(String alert) {
-    state = state.copyWith(alertFilter: alert);
-  }
+  void setType(String v) => state = state.copyWith(typeFilter: v);
 
-  // Gestion intelligente du tri (toggle asc/desc si on reclique sur la même colonne)
-  void changeSort(SortColumn column) {
-    if (state.sortColumn == column) {
+  void setAlert(String v) => state = state.copyWith(alertFilter: v);
+
+  void reset() => state = const HistoriqueFilterState();
+
+  void setSort(SortColumn col) {
+    if (state.sortColumn == col) {
       state = state.copyWith(
         sortDirection: state.sortDirection == SortDirection.asc
             ? SortDirection.desc
             : SortDirection.asc,
       );
     } else {
-      state = state.copyWith(
-        sortColumn: column,
-        sortDirection: SortDirection.asc,
-      );
+      state = state.copyWith(sortColumn: col, sortDirection: SortDirection.asc);
     }
   }
-
-  void reset() => state = const HistoriqueFilterState();
 }
 
-// 3. Le NotifierProvider public
-final historiqueFilterProvider = NotifierProvider<HistoriqueFilterNotifier, HistoriqueFilterState>(() {
-  return HistoriqueFilterNotifier();
-});
+// 3. Le provider public
+final historiqueFilterProvider =
+NotifierProvider<HistoriqueFilterNotifier, HistoriqueFilterState>(
+    HistoriqueFilterNotifier.new);
