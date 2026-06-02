@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart' as gauges;
 
-import '../../../../core/color.dart';
-import '../provider/q0_average_provider.dart';
+import '../color.dart';
+import '../../features/dashboard/presentation/provider/q0_average_provider.dart';
 
 class Q0ScoreGauge extends ConsumerWidget {
   const Q0ScoreGauge({super.key});

@@ -9,7 +9,7 @@ import 'package:puls/features/dashboard/presentation/widgets/sunburst_chart.dart
 import 'package:puls/features/dashboard/presentation/widgets/verbatim_bar_chart.dart';
 import '../../model/dashboard_item.dart';
 import '../widgets/filter_chip.dart';
-import '../widgets/q0_score_gauge.dart';
+import '../../../../core/shared_widget/q0_score_gauge.dart';
 import '../widgets/q0_spline_chart.dart';
 import '../widgets/q5_dougnut_chart.dart';
 
