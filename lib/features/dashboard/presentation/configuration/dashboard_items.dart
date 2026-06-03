@@ -76,36 +76,13 @@ final dashboardItems = [
     secondaryChild: QuestionSunburstSection(questionKey: 'q4'),
   ),
 
-  DashboardItem(
-    title: "Consentement",
-    fullName: "Indice d'Amélioration & de Réputation",
-    crossAxis: 6,
-    mainAxis: 6,
-    child: Align(
-        alignment: AlignmentDirectional.topCenter, child: Q5DoughnutSection()),
-  ),
 
   DashboardItem(
     title: "Alert",
     fullName: "Alert",
     crossAxis: 12,
-    mainAxis: 8,
+    mainAxis: 6,
     child: AlertSection(),
   ),
 
-  DashboardItem(
-    title: "Réponse",
-    fullName: "Indice d'Amélioration & de Réputation",
-    crossAxis: 12,
-    mainAxis: 4,
-    child: Row(
-      children: [
-        Align(
-          alignment: AlignmentGeometry.center,
-          child: AppCharts.gauge(87, AppColors.primaryBlue),
-        ),
-        Expanded(child: AppCharts.spline(splineData2)),
-      ],
-    ),
-  ),
 ];

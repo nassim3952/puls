@@ -11,7 +11,8 @@ import '../provider/filter_controller.dart';
 import 'build_reset_button.dart';
 
 class DashboardHeader extends ConsumerWidget {
-  const DashboardHeader({super.key});
+  final bool showResultChip;
+  const DashboardHeader({super.key, this.showResultChip = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +27,7 @@ class DashboardHeader extends ConsumerWidget {
 
         return Container(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12,horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 24),
             child: isMobile
                 ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -34,11 +35,15 @@ class DashboardHeader extends ConsumerWidget {
                 Wrap(
                   spacing: 10,
                   runSpacing: 10,
-                  children: _buildFilterButtons(
-                    filters,
-                    notifier,
-                    context,
-                  ),
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    ..._buildFilterButtons(
+                      filters,
+                      notifier,
+                      context,
+                    ),
+                    if (showResultChip) const ResultNumber(),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 buildResetButton(notifier),
@@ -56,11 +61,11 @@ class DashboardHeader extends ConsumerWidget {
                         filters,
                         notifier,
                         context,
-                      ),const ResultNumber(),
-                    ]
+                      ),
+                      if (showResultChip) const ResultNumber(),
+                    ],
                   ),
                 ),
-
                 const SizedBox(width: 20),
                 // Si l'état n'est pas l'état initial (vide), on affiche le bouton reset
                 if (filters != const DashboardFilterState())
@@ -189,7 +194,6 @@ class DashboardHeader extends ConsumerWidget {
       ),
     ];
   }
-
 }
 
 void _showCustomDatePicker(

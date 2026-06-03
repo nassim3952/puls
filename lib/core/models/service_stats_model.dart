@@ -19,9 +19,9 @@ class ServiceStats {
 
   // Calculé depuis la liste des patients
   static ServiceStats fromPatients(
-    String serviceName,
-    List<PatientModel> patients,
-  ) {
+      String serviceName,
+      List<PatientModel> patients,
+      ) {
     // Filtrer les visites du service
     final visitsInService = <VisitModel>[];
     final patientsInService = <PatientModel>[];
@@ -68,5 +68,3 @@ class ServiceStats {
 
   Color get isgppColor => getIsgppColor(averageIsgpp);
 }
-
-

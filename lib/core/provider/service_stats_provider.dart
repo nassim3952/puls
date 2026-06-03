@@ -1,7 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:puls/core/models/patient.dart';
 import '../models/service_stats_model.dart';
 import 'patient_provider.dart';
+
+/// Provider pour le patient sélectionné dans la vue détail
+final selectedPatientProvider = StateNotifierProvider<SelectedPatientNotifier, String?>((ref) {
+  return SelectedPatientNotifier();
+});
+
+class SelectedPatientNotifier extends StateNotifier<String?> {
+  SelectedPatientNotifier() : super(null);
+
+  void setPatient(String? patientId) {
+    state = patientId;
+  }
+
+  void clear() {
+    state = null;
+  }
+}
 
 /// Provider qui retourne la liste de tous les services avec leurs stats
 final serviceStatsListProvider = Provider<AsyncValue<List<ServiceStats>>>((ref) {

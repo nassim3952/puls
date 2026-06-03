@@ -12,9 +12,9 @@ class DefaultView extends ConsumerWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          DashboardHeader(),
+          DashboardHeader(showResultChip: false,),
           Padding(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
             child: customWidget ?? const SizedBox(),
           ),
         ],
