@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/routes/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('fr_FR', null);
   await Supabase.initialize(
     url: 'https://yyohrbyjwemiqfpplmtj.supabase.co',
     anonKey: 'sb_publishable_3Kj_37TEdRIf0yIQoOoniA_6fGv_oXA',

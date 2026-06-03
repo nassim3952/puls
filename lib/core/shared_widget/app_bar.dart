@@ -6,6 +6,7 @@ import 'package:puls/core/provider/notification_provider.dart';
 import '../../features/historique/presentation/historique_screen.dart' hide historiqueFilterProvider;
 import '../models/notification_model.dart';
 import '../provider/historique_filter_controller.dart';
+import 'export_pdf_button.dart';
 import 'logout_dialog.dart';
 
 class CustomAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
@@ -169,6 +170,8 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
             ],
 
             const Spacer(),
+            const ExportPdfButton(),
+            const SizedBox(width: 28),
 
             // ── Profil utilisateur ────────────────────────────────────────
             PopupMenuButton<int>(

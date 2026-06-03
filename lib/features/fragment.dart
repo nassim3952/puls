@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/shared_widget/app_bar.dart';
+import 'package:puls/features/service/presentation/services_screen.dart';
 
 // Importe tes nouvelles vues ici
 import '../core/color.dart';
@@ -30,6 +31,9 @@ class MainDashboardScreen extends ConsumerWidget {
         break;
       case 2:
         currentView = const HistoriqueScreen(); // La liste des patients
+        break;
+      case 3:
+        currentView = const ServicesScreen(); // La liste des services
         break;
       default:
         currentView = const DashboardView();
