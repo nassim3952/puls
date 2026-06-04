@@ -93,7 +93,7 @@ class SideBar extends ConsumerWidget {
 
   Widget _buildLogo(WidgetRef ref, bool collapsed) {
     final authState = ref.watch(authProvider);
-    final hospitalName = authState.user?.hospitalName?? "Puls App";
+    final hospitalName = authState.user?.hospitalName?? "HÔPITAL ABC";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
