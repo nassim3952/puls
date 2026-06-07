@@ -77,7 +77,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final data = await _supabase
           .from('users')
-          .select()
+          .select('*, hospitals(name)')
           .eq('id', uid)
           .maybeSingle();
 
@@ -102,37 +102,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signIn({required String email, required String password}) async {
     state = state.copyWith(status: AuthStatus.loading);
     try {
-      // Étape 1 : vérifier si l'email existe dans la table users
-      final userCheck = await _supabase
-          .from('users')
-          .select('id')
-          .eq('email', email)
-          .maybeSingle();
+      // Nettoyage de l'email (évite les majuscules automatiques des claviers mobiles)
+      final cleanEmail = email.trim().toLowerCase();
 
-      if (userCheck == null) {
-        state = state.copyWith(
-          status: AuthStatus.error,
-          errorMessage: 'Aucun compte trouvé avec cette adresse email.',
-        );
-        return;
-      }
-
-      // Étape 2 : tenter la connexion
+      // On tente directement la connexion sans requêter la table 'users' avant
       final res = await _supabase.auth.signInWithPassword(
-        email: email,
+        email: cleanEmail,
         password: password,
       );
+
       if (res.user != null) {
         await _loadUserFromDb(res.user!.id);
       }
     } on AuthException catch (e) {
       final msg = e.message.toLowerCase();
-      // À ce stade on sait que l'email existe → c'est forcément le mdp
+
+      // Si l'identifiant ou le mot de passe est faux, GoTrue renvoie 'invalid login credentials'
       if (msg.contains('invalid login credentials') ||
           msg.contains('invalid credentials')) {
         state = state.copyWith(
-          status: AuthStatus.wrongPassword,
-          errorMessage: 'Mot de passe incorrect.',
+          status: AuthStatus.error, // Ou AuthStatus.wrongPassword selon ta logique UI
+          errorMessage: 'Email ou mot de passe incorrect.',
         );
       } else {
         state = state.copyWith(
@@ -147,7 +137,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
     }
   }
-
   // ── Inscription owner ──────────────────────────────────────────────────────
   Future<void> signUp({
     required String email,

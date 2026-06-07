@@ -50,18 +50,10 @@ class _ExportPdfButtonState extends ConsumerState<ExportPdfButton> {
         '${fmt.format(filters.periode!.start)} – ${fmt.format(filters.periode!.end)}';
       }
 
-      final data = DashboardPdfData(
-        isgppScore:        isgpp,
-        totalPatients:     patients.length,
-        patientsWithAlert: withAlert,
-        serviceFilter:     filters.service,
-        typeFilter:        filters.type,
-        periodeLabel:      periodeLabel,
-        generatedAt:       DateTime.now(),
-      );
+      final bytes = await DashboardPdfService.generateFromSupabase(ref);
 
       // Generation PDF
-      final Uint8List bytes = await DashboardPdfService.generate(data);
+
 
       // Telechargement via le navigateur
       final filename =

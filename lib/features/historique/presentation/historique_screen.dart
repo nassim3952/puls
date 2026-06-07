@@ -12,6 +12,7 @@ import 'package:puls/core/shared_widget/build_header.dart';
 import '../../../core/color.dart';
 import '../../../core/models/patient.dart';
 import '../../../core/models/visit_model.dart';
+import '../../../core/provider/alert_provider.dart';
 import '../../../core/provider/historique_filter_controller.dart';
 import '../../../core/provider/patient_provider.dart';
 import '../../../core/shared_widget/custom_sparkline.dart';
@@ -23,37 +24,6 @@ import '../../../core/shared_widget/empty_state.dart';
 enum SortColumn { nom, date, service, type, score, none }
 enum SortDirection { asc, desc }
 
-// ---------------------------------------------------------------------------
-// PROVIDER FILTRE
-// ---------------------------------------------------------------------------
-class HistoriqueFilterNotifier extends Notifier<HistoriqueFilterState> {
-  @override
-  HistoriqueFilterState build() => const HistoriqueFilterState();
-
-  void setSearch(String v) => state = state.copyWith(searchQuery: v);
-  void setSearchMode(SearchMode mode) =>
-      state = state.copyWith(searchMode: mode, searchQuery: '');
-  void setService(String v) => state = state.copyWith(serviceFilter: v);
-  void setType(String v) => state = state.copyWith(typeFilter: v);
-  void setAlert(String v) => state = state.copyWith(alertFilter: v);
-  void reset() => state = const HistoriqueFilterState();
-
-  void setSort(SortColumn col) {
-    if (state.sortColumn == col) {
-      state = state.copyWith(
-        sortDirection: state.sortDirection == SortDirection.asc
-            ? SortDirection.desc
-            : SortDirection.asc,
-      );
-    } else {
-      state = state.copyWith(sortColumn: col, sortDirection: SortDirection.asc);
-    }
-  }
-}
-
-final historiqueFilterProvider =
-NotifierProvider<HistoriqueFilterNotifier, HistoriqueFilterState>(
-    HistoriqueFilterNotifier.new);
 
 // ---------------------------------------------------------------------------
 // ROUTE OBSERVER — à enregistrer dans GoRouter :
@@ -103,7 +73,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
   void didPush() => _refresh();
 
   void _refresh() {
-    ref.invalidate(patientsListProvider);
+    ref.invalidate(activeAlertsProvider(null));
   }
 
   @override
@@ -115,7 +85,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
 
   @override
   Widget build(BuildContext context) {
-    final patientsAsync = ref.watch(filteredPatientsProvider);
+    final patientsAsync = ref.watch(historiqueListProvider);
     final filters = ref.watch(historiqueFilterProvider);
 
     // Re-synchronise la sélection quand la liste filtrée change.
@@ -178,7 +148,7 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
           const Spacer(),
           // Compteur patients
           Consumer(builder: (ctx, r, _) {
-            final async = r.watch(filteredPatientsProvider);
+            final async = r.watch(historiqueListProvider);
             return async.maybeWhen(
               data: (list) => _CountBadge(count: list.length),
               orElse: () => const SizedBox.shrink(),

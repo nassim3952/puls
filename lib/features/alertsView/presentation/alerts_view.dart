@@ -120,83 +120,72 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
 
   @override
   Widget build(BuildContext context) {
-    final alertsAsync = ref.watch(alertsProvider);
-    final filters = ref.watch(historiqueFilterProvider);
+    // On watch les 3 onglets séparément
+    final activeAsync    = ref.watch(activeAlertsProvider(null));
+    final pendingAsync   = ref.watch(pendingAlertsProvider(null));
+    final validatedAsync = ref.watch(validatedAlertsProvider(null));
+    final filters        = ref.watch(historiqueFilterProvider);
+
+    // On combine les 3 états async
+    final isLoading = activeAsync.isLoading ||
+        pendingAsync.isLoading ||
+        validatedAsync.isLoading;
+
+    final error = activeAsync.error ??
+        pendingAsync.error ??
+        validatedAsync.error;
+
+    if (isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.primaryBG,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primaryBlue),
+        ),
+      );
+    }
+
+    if (error != null) {
+      return Scaffold(
+        backgroundColor: AppColors.primaryBG,
+        body: Center(
+          child: Text(error.toString(),
+              style: const TextStyle(color: AppColors.primaryError)),
+        ),
+      );
+    }
+
+    final active    = _toAlertViews(activeAsync.value ?? [],    filters);
+    final pending   = _toAlertViews(pendingAsync.value ?? [],   filters);
+    final validated = _toAlertViews(validatedAsync.value ?? [], filters);
 
     return Scaffold(
       backgroundColor: AppColors.primaryBG,
-      body: alertsAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primaryBlue),
-        ),
-        error: (err, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.error_outline_rounded,
-                color: AppColors.primaryError,
-                size: 48,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'Erreur de chargement',
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                err.toString(),
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const DashboardHeader(),
+          _buildTabAndFilterRow(
+            activeCount:    active.length,
+            pendingCount:   pending.length,
+            validatedCount: validated.length,
           ),
-        ),
-        data: (patients) {
-          final active = _activeAlerts(patients, filters);
-          final pending = _pendingPlans(patients, filters);
-          final validated = _validatedPlans(patients, filters);
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // ── Header (fixe en haut) ──────────────────────────────────
-              const DashboardHeader(),
-
-              // ── Barre unique scrollable : tabs + filtres ───────────────
-              _buildTabAndFilterRow(
-                activeCount: active.length,
-                pendingCount: pending.length,
-                validatedCount: validated.length,
-              ),
-
-              const SizedBox(height: 4),
-
-              // ── Contenu des onglets ────────────────────────────────────
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildActiveTab(active),
-                    _buildPendingTab(pending),
-                    _buildValidatedTab(validated),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
+          const SizedBox(height: 4),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildActiveTab(active),
+                _buildPendingTab(pending),
+                _buildValidatedTab(validated),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  // ── Barre unique : tabs compacts (gauche) + filtres de niveau (suite) ─────
+
   Widget _buildTabAndFilterRow({
     required int activeCount,
     required int pendingCount,
@@ -222,9 +211,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     );
   }
 
-  // ── Onglet 1 : Alertes actives — groupées par patient ────────────────────
+  // ── Onglet 1 : Alertes actives ────────────────────────────────────────────
   Widget _buildActiveTab(List<AlertView> alerts) {
-    if (alerts.isEmpty) return EmptyTab(icon: Icons.check_circle_outline_rounded ,message: "Aucune alerte non traité",);
+    if (alerts.isEmpty) return EmptyTab(icon: Icons.check_circle_outline_rounded, message: "Aucune alerte non traité");
     final grouped = _groupByPatient(alerts);
 
     return ListView.builder(
@@ -232,27 +221,19 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       itemCount: grouped.length,
       itemBuilder: (ctx, i) {
         final patientAlerts = grouped.values.elementAt(i);
-
-        // Un seul alert → AlertCard complète
         if (patientAlerts.length == 1) {
           final alert = patientAlerts.first;
           return AlertCard(
             alert: alert,
-            onDelete: () => ref
-                .read(alertsNotifierProvider.notifier)
-                .dismiss(alert.visit),
+            onDelete: () => ref.read(alertsNotifierProvider.notifier).dismiss(alert.visit),
             onWhatsapp: () => _showWhatsappSheet(context, alert),
             onDetail: () => _showDetailSheet(context, alert),
             onPlan: () => _showPlanSheet(context, alert),
           );
         }
-
-        // Plusieurs → PatientAlertGroup
         return PatientAlertGroup(
           alerts: patientAlerts,
-          onDelete: (alert) => ref
-              .read(alertsNotifierProvider.notifier)
-              .dismiss(alert.visit),
+          onDelete: (alert) => ref.read(alertsNotifierProvider.notifier).dismiss(alert.visit),
           onWhatsapp: (alert) => _showWhatsappSheet(context, alert),
           onDetail: (alert) => _showDetailSheet(context, alert),
           onPlan: (alert) => _showPlanSheet(context, alert),
@@ -261,13 +242,10 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
     );
   }
 
-  // ── Onglet 2 : Plans en attente ───────────────────────────────────────────
+// ── Onglet 2 : Plans en attente ───────────────────────────────────────────
   Widget _buildPendingTab(List<AlertView> alerts) {
     if (alerts.isEmpty) {
-      return EmptyTab(
-        icon: Icons.assignment_outlined,
-        message: 'Aucun plan en attente de validation.',
-      );
+      return EmptyTab(icon: Icons.assignment_outlined, message: 'Aucun plan en attente de validation.');
     }
     final grouped = _groupByPatient(alerts);
 
@@ -276,25 +254,16 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       itemCount: grouped.length,
       itemBuilder: (ctx, i) {
         final patientAlerts = grouped.values.elementAt(i);
-
-        // Un seul → PlanActionCard (header + 1 visite)
-        if (patientAlerts.length == 1) {
-          return PlanActionCard(alert: patientAlerts.first);
-        }
-
-        // Plusieurs → PatientPlanActionGroup (header unique + N tiles)
+        if (patientAlerts.length == 1) return PlanActionCard(alert: patientAlerts.first);
         return PatientPlanActionGroup(alerts: patientAlerts);
       },
     );
   }
 
-  // ── Onglet 3 : Plans validés ──────────────────────────────────────────────
+// ── Onglet 3 : Plans validés ──────────────────────────────────────────────
   Widget _buildValidatedTab(List<AlertView> alerts) {
     if (alerts.isEmpty) {
-      return EmptyTab(
-        icon: Icons.check_circle_outline_rounded,
-        message: 'Aucune alerte archivée pour le moment.',
-      );
+      return EmptyTab(icon: Icons.check_circle_outline_rounded, message: 'Aucune alerte archivée pour le moment.');
     }
     final grouped = _groupByPatient(alerts);
 
@@ -303,20 +272,42 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
       itemCount: grouped.length,
       itemBuilder: (ctx, i) {
         final patientAlerts = grouped.values.elementAt(i);
-
-        // Un seul → ValidatedCard (header + 1 visite)
-        if (patientAlerts.length == 1) {
-          return ValidatedCard(alert: patientAlerts.first);
-        }
-
-        // Plusieurs → PatientValidatedGroup (header unique + N tiles)
+        if (patientAlerts.length == 1) return ValidatedCard(alert: patientAlerts.first);
         return PatientValidatedGroup(alerts: patientAlerts);
       },
     );
   }
 
+  // Recherche locale + conversion PatientModel → List<AlertView>
+  List<AlertView> _toAlertViews(
+      List<PatientModel> patients, HistoriqueFilterState filters) {
+    final q = filters.searchQuery.trim().toLowerCase();
 
-
+    final result = <AlertView>[];
+    for (final p in patients) {
+      for (final v in p.visits) {
+        final a = AlertView(p, v);
+        if (q.isEmpty) {
+          result.add(a);
+          continue;
+        }
+        if (filters.searchMode == SearchMode.patient) {
+          if (p.firstName.toLowerCase().contains(q) ||
+              p.lastName.toLowerCase().contains(q) ||
+              p.ipp.toLowerCase().contains(q)) {
+            result.add(a);
+          }
+        } else {
+          if (v.service.toLowerCase().contains(q) ||
+              v.visitType.toLowerCase().contains(q) ||
+              (v.actionPlanLabel?.toLowerCase().contains(q) ?? false)) {
+            result.add(a);
+          }
+        }
+      }
+    }
+    return result;
+  }
   // ── Bottom Sheets ─────────────────────────────────────────────────────────
   void _showWhatsappSheet(BuildContext context, AlertView alert) {
     showModalBottomSheet(

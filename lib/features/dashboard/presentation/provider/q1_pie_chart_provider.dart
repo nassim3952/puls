@@ -1,49 +1,9 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
-import 'package:puls/core/provider/patient_provider.dart';
-import 'package:puls/features/dashboard/presentation/provider/spline_selection_provider.dart';
+import 'dashboard_charts_provider.dart';
+import 'spline_selection_provider.dart';
 
-final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
-  final patientsAsync = ref.watch(filteredPatientsProvider);
-  // On écoute les chips sélectionnés
-  final selectedLabels = ref.watch(splineSelectionProvider);
-
-  return patientsAsync.whenData((list) {
-    if (list.isEmpty) return [];
-
-    final Map<String, Color> categories = {
-      'Oui totalement': AppColors.primaryBlue,
-      'En partie': AppColors.primaryWarning,
-      'Non': AppColors.primaryError,
-      'En attente': AppColors.primaryNeutral,
-    };
-
-    return categories.entries.map((entry) {
-      final cleanLabel = entry.key.replaceAll('_', ' ').toUpperCase();
-
-
-      // CONDITION : Si le label n'est pas sélectionné dans tes chips, on met 0
-      if (!selectedLabels.contains(cleanLabel)) {
-        // On renvoie une valeur vide si pas sélectionné
-        return ChartDataPie(label: cleanLabel, value: 0.0, color: Colors.transparent);
-      }
-
-      final count = list.where((p) => p.latestVisit?.survey?.attentesSoins == entry.key).length;
-      final percentage = (count / list.length) * 100;
-
-      return ChartDataPie(
-        label: cleanLabel,
-        value: double.parse(percentage.toStringAsFixed(1)),
-        color: entry.value,
-      );
-    }).where((data) => data.value > 0).toList(); // On cache les tranches désactivées
-  });
-});
-
-// La classe pour les données du camembert
 class ChartDataPie {
   final String label;
   final double value;
@@ -51,7 +11,24 @@ class ChartDataPie {
   ChartDataPie({required this.label, required this.value, required this.color});
 }
 
-// Petite extension pour mettre une majuscule
+final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
+  final selectedLabels = ref.watch(splineSelectionProvider);
+
+  return ref.watch(dashboardChartsProvider).whenData((charts) =>
+      charts.q1Distribution
+          .where((item) {
+        final chipLabel = item.label.toUpperCase();
+        return selectedLabels.isEmpty || selectedLabels.contains(chipLabel);
+      })
+          .map((item) => ChartDataPie(
+        label: item.label.toUpperCase(),
+        value: item.pct,
+        color: item.color,
+      ))
+          .toList(),
+  );
+});
+
 extension StringExtension on String {
-  String capitalize() => this.length > 0 ? '${this[0].toUpperCase()}${substring(1)}' : '';
+  String capitalize() => isNotEmpty ? '${this[0].toUpperCase()}${substring(1)}' : '';
 }

@@ -43,6 +43,8 @@ class VisitModel {
         ? Map<String, dynamic>.from(surveyList.first as Map)
         : <String, dynamic>{};
 
+
+
     final rawAnswers = raw['answers'];
     SurveyResponse? survey;
     if (rawAnswers is Map<String, dynamic> && rawAnswers.isNotEmpty) {
@@ -76,6 +78,37 @@ class VisitModel {
           : null,
       actionPlanLabel: raw['action_plan_label'] as String?,
       actionPlanReport: raw['action_plan_report'] as String?,
+      survey: survey,
+    );
+  }
+
+  // Mapping depuis la vue plate patient_visit_view
+  factory VisitModel.fromFlatRow(Map<String, dynamic> r) {
+    final rawAnswers = r['answers'];
+    SurveyResponse? survey;
+
+    if (rawAnswers is Map<String, dynamic> && rawAnswers.isNotEmpty) {
+      survey = SurveyResponse.fromAnswersMap(rawAnswers);
+    }
+
+    return VisitModel(
+      id:            r['visit_id']?.toString() ?? '',
+      service:       r['service']?.toString() ?? '',
+      visitType:     r['visit_type']?.toString() ?? '',
+      exploration:   r['exploration']?.toString() ?? '',
+      afterCare:     r['aftercare']?.toString() ?? '',
+      date: r['date'] != null
+          ? DateTime.parse(r['date'] as String)
+          : DateTime.now(),
+      hasAlert:      r['has_alert'] as bool? ?? false,
+      alertResolved: r['alert_resolved'] as bool? ?? false,
+      planIsValid:   r['plan_is_valid'] as bool?,
+      planBy:        r['plan_by']?.toString(),
+      resolvedAt: r['resolved_at'] != null
+          ? DateTime.parse(r['resolved_at'] as String)
+          : null,
+      actionPlanLabel:  r['action_plan_label'] as String?,
+      actionPlanReport: r['action_plan_report'] as String?,
       survey: survey,
     );
   }

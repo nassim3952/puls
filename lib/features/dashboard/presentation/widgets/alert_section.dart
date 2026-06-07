@@ -11,7 +11,7 @@ class AlertSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final alertsAsync = ref.watch(alertsProvider);
+    final alertsAsync = ref.watch(activeAlertsProvider(null));
 
     return alertsAsync.when(
       data: (alerts) {

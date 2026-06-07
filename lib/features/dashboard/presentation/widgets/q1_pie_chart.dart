@@ -49,7 +49,7 @@ class Q1PieChart extends ConsumerWidget {
                   isVisible: true,
                   labelPosition: ChartDataLabelPosition.inside,
                   overflowMode: OverflowMode.hide,
-                  textStyle: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppColors.surface),
+                  textStyle: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppColors.surface),
                 ),
               ),
             ],

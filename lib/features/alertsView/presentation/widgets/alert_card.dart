@@ -371,19 +371,32 @@ class _VisitContentState extends State<_VisitContent> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Ligne 1 : [badge niveau] à gauche · étoiles + attentes à droite
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (survey != null) ...[
-                _ScoreStars(score: survey.qualitePriseEnCharge),
-                const SizedBox(width: 8),
-                _AttentesChip(value: survey.attentesSoins),
-              ],
-              const Spacer(),
-              _LevelBadge(level: alert.level),
-
-            ],
-          ),
+// ── Ligne 1 : indicateurs qualité + badge niveau ──────────────────
+        Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (survey != null) ...[
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _QualiteRow(
+                    label: "• Qualité du parcours :",
+                    score: survey.qualitePriseEnCharge,
+                  ),
+                  const SizedBox(height: 6),
+                  _QualiteRow(
+                    label: '• Prise en charge des soins :',
+                    attentesSoins: survey.attentesSoins,
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(width: 8),
+          _LevelBadge(level: alert.level),
+        ],
+      ),
 
           const SizedBox(height: 10),
 
@@ -632,61 +645,78 @@ class _MetaChip extends StatelessWidget {
 }
 
 // ── Étoiles score /5 ─────────────────────────────────────────────────────────
-class _ScoreStars extends StatelessWidget {
-  final int score; // 0–5
-
-  const _ScoreStars({required this.score});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(5, (i) {
-        final filled = i < score;
-        return Icon(
-          filled ? Icons.star_rounded : Icons.star_outline_rounded,
-          size: 16,
-          color: filled ? AppColors.primaryBlue : AppColors.textSecondary,
-        );
-      }),
-    );
-  }
-}
 
 // ── Chip attentes soins ───────────────────────────────────────────────────────
-class _AttentesChip extends StatelessWidget {
-  final String value; // "Oui totalement" | "En partie" | "Non"
+// ── Ligne qualité sobre ───────────────────────────────────────────────────────
+class _QualiteRow extends StatelessWidget {
+  final String label;
+  final int? score;           // pour qualitePriseEnCharge
+  final String? attentesSoins; // pour prise en charge
 
-  const _AttentesChip({required this.value});
+  const _QualiteRow({
+    required this.label,
+    this.score,
+    this.attentesSoins,
+  });
 
   @override
   Widget build(BuildContext context) {
-    if (value.isEmpty) return const SizedBox.shrink();
+    // Calcul de la réponse à afficher
+    final String reponse;
+    final Color chipColor;
+    final Color chipBg;
 
-    final (bgColor, textColor) = switch (value.toLowerCase()) {
-      'oui totalement' => (AppColors.blueFaint,   AppColors.primaryBlueDark),
-      'en partie'      => (AppColors.orangeFaint, AppColors.primaryWarning),
-      _                => (AppColors.redFaint,    AppColors.primaryError),
-    };
+    if (score != null) {
+      // Q0 : score /5 → libellé
+      (reponse, chipColor, chipBg) = switch (score!) {
+        5     => ('Très satisfait',      AppColors.primaryBlueDark,  AppColors.blueFaint),
+        4     => ('Satisfait',           AppColors.primaryBlueDark,  AppColors.blueFaint),
+        3     => ('Moyennement satisfait', AppColors.primaryWarning, AppColors.orangeFaint),
+        2     => ('Peu satisfait',       AppColors.primaryError,     AppColors.redFaint),
+        _     => ('Non satisfait',       AppColors.primaryError,     AppColors.redFaint),
+      };
+    } else if (attentesSoins != null) {
+      // Q1 : attentes soins
+      (reponse, chipColor, chipBg) = switch (attentesSoins!.toLowerCase()) {
+        'oui totalement' => ('Satisfait',                  AppColors.primaryBlueDark, AppColors.blueFaint),
+        'en partie'      => ('Moyennement satisfait',      AppColors.primaryWarning,  AppColors.orangeFaint),
+        'non'            => ('Non satisfait',               AppColors.primaryError,    AppColors.redFaint),
+        _                => ('En attente de résultats',    AppColors.textSecondary,   const Color(0xFFF3F4F6)),
+      };
+    } else {
+      return const SizedBox.shrink();
+    }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: textColor.withValues(alpha: 0.35), width: 0.5),
-      ),
-      child: Text(
-        value,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 11,
+    return Row(
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppColors.textSecondary,
+            fontSize: 12,
+          ),
         ),
-      ),
+        const SizedBox(width: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: chipBg,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: chipColor.withValues(alpha: 0.3), width: 0.5),
+          ),
+          child: Text(
+            reponse,
+            style: TextStyle(
+              color: chipColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
-
 // ── Badge consentement rappel ─────────────────────────────────────────────────
 class _ConsentBadge extends StatelessWidget {
   final bool consented;

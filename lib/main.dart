@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'core/provider/realtime_provider.dart';
 import 'core/routes/app_router.dart';
 
 Future<void> main() async {
@@ -26,6 +27,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(realtimeProvider);
     final router = ref.watch(appRouterProvider);
 
     return MaterialApp.router(

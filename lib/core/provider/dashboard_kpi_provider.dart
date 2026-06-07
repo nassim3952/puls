@@ -1,8 +1,7 @@
-// dashboard_kpi_provider.dart
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/provider/auth_provider.dart';
 import 'package:puls/core/provider/filter_controller.dart';
-import 'package:puls/core/provider/patient_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 const int _kSparkPoints = 7;
 
@@ -53,113 +52,69 @@ class DashboardKpi {
     alertsResolvedSpark: [],
     responseRateSpark: [],
   );
-}
 
-final dashboardKpiProvider = Provider<AsyncValue<DashboardKpi>>((ref) {
-  // ✅ était patientsListProvider — maintenant on lit les patients déjà filtrés
-  final patientsAsync = ref.watch(filteredPatientsProvider);
-  final filters = ref.watch(filterProvider);
-
-  return patientsAsync.whenData((patients) {
-    final periode = filters.periode;
-    final DateTime sparkStart =
-        periode?.start ?? DateTime.now().subtract(const Duration(days: 49));
-    final DateTime sparkEnd = periode?.end ?? DateTime.now();
-    final Duration sparkInterval = Duration(
-      seconds: (sparkEnd.difference(sparkStart).inSeconds / _kSparkPoints)
-          .round()
-          .clamp(1, 999999999),
-    );
-
-    final sparkPatientSets =
-    List<Set<String>>.generate(_kSparkPoints, (_) => {});
-    final sparkVisits = List.filled(_kSparkPoints, 0).toList();
-    final sparkResponses = List.filled(_kSparkPoints, 0).toList();
-    final sparkAlerts = List.filled(_kSparkPoints, 0).toList();
-    final sparkResolved = List.filled(_kSparkPoints, 0).toList();
-
-    final patientsSet = <String>{};
-    int totalVisits = 0;
-    int totalResponses = 0;
-    int totalAlerts = 0;
-    int totalAlertsResolved = 0;
-    int totalConsents = 0;
-
-    for (final patient in patients) {
-      bool patientIncluded = false;
-
-      for (final v in patient.visits) {
-        // ✅ Plus besoin de re-filtrer service / type / explo / sortie / search :
-        // filteredPatientsProvider l'a déjà fait.
-        // On filtre uniquement par date pour positionner les points sparkline.
-        bool matchDate = true;
-        if (filters.periode != null) {
-          matchDate = v.date.isAfter(filters.periode!.start) &&
-              v.date.isBefore(
-                  filters.periode!.end.add(const Duration(days: 1)));
-        }
-        if (!matchDate) continue;
-
-        patientIncluded = true;
-        totalVisits++;
-
-        final hasResponse = v.survey != null;
-        if (hasResponse) {
-          totalResponses++;
-          if (v.survey!.consentementRappel) totalConsents++;
-        }
-        if (v.hasAlert) totalAlerts++;
-        if (v.alertResolved) totalAlertsResolved++;
-
-        final diff = v.date.difference(sparkStart);
-        final idx = (diff.inSeconds / sparkInterval.inSeconds)
-            .floor()
-            .clamp(0, _kSparkPoints - 1);
-
-        sparkVisits[idx]++;
-        if (hasResponse) sparkResponses[idx]++;
-        if (v.hasAlert) sparkAlerts[idx]++;
-        if (v.alertResolved) sparkResolved[idx]++;
-        sparkPatientSets[idx].add(patient.id);
-      }
-
-      if (patientIncluded) patientsSet.add(patient.id);
-    }
-
-    List<double> toSpark(List<int> raw) {
-      final maxVal = raw.reduce((a, b) => a > b ? a : b);
+  factory DashboardKpi.fromJson(Map<String, dynamic> json) {
+    List<double> toSpark(dynamic raw) {
+      if (raw == null) return List.filled(_kSparkPoints, 0.0);
+      final list = (raw as List).map((v) => (v as num).toDouble()).toList();
+      final maxVal = list.fold(0.0, (a, b) => a > b ? a : b);
       if (maxVal == 0) return List.filled(_kSparkPoints, 0.0);
-      return raw.map((v) => (v / maxVal) * 5).toList();
+      return list.map((v) => (v / maxVal) * 5).toList();
     }
 
-    List<double> toSparkD(List<double> raw) {
-      final maxVal = raw.reduce((a, b) => a > b ? a : b);
+    // Sparkline taux de réponse : responses / visits par point
+    List<double> toRateSpark(dynamic rawV, dynamic rawR) {
+      if (rawV == null || rawR == null) return List.filled(_kSparkPoints, 0.0);
+      final visits    = (rawV as List).map((v) => (v as num).toDouble()).toList();
+      final responses = (rawR as List).map((v) => (v as num).toDouble()).toList();
+      final rates = List.generate(visits.length, (i) {
+        return visits[i] == 0 ? 0.0 : responses[i] / visits[i];
+      });
+      final maxVal = rates.fold(0.0, (a, b) => a > b ? a : b);
       if (maxVal == 0) return List.filled(_kSparkPoints, 0.0);
-      return raw.map((v) => (v / maxVal) * 5).toList();
+      return rates.map((v) => (v / maxVal) * 5).toList();
     }
-
-    final rateRaw = List.generate(_kSparkPoints, (i) {
-      final v = sparkVisits[i];
-      return v == 0 ? 0.0 : sparkResponses[i] / v;
-    });
 
     return DashboardKpi(
-      totalPatients: patientsSet.length,
-      totalVisits: totalVisits,
-      totalResponses: totalResponses,
-      totalAlerts: totalAlerts,
-      totalAlertsResolved: totalAlertsResolved,
-      responseRate:
-      totalVisits == 0 ? 0.0 : totalResponses / totalVisits,
-      consentRate:
-      totalResponses == 0 ? 0.0 : totalConsents / totalResponses,
-      patientsSpark:
-      toSpark(sparkPatientSets.map((s) => s.length).toList()),
-      visitsSpark: toSpark(sparkVisits),
-      responsesSpark: toSpark(sparkResponses),
-      alertsSpark: toSpark(sparkAlerts),
-      alertsResolvedSpark: toSpark(sparkResolved),
-      responseRateSpark: toSparkD(rateRaw),
+      totalPatients:       (json['total_patients']        as num).toInt(),
+      totalVisits:         (json['total_visits']          as num).toInt(),
+      totalResponses:      (json['total_responses']       as num).toInt(),
+      totalAlerts:         (json['total_alerts']          as num).toInt(),
+      totalAlertsResolved: (json['total_alerts_resolved'] as num).toInt(),
+      responseRate:        (json['response_rate']         as num).toDouble(),
+      consentRate:         0.0, // pas encore dans la fonction SQL
+      patientsSpark:       toSpark(json['spark_patients']),
+      visitsSpark:         toSpark(json['spark_visits']),
+      responsesSpark:      toSpark(json['spark_responses']),
+      alertsSpark:         toSpark(json['spark_alerts']),
+      alertsResolvedSpark: toSpark(json['spark_resolved']),
+      responseRateSpark:   toRateSpark(json['spark_visits'], json['spark_responses']),
     );
-  });
+  }
+}
+
+// ── Provider ──────────────────────────────────────────────────────────────────
+final dashboardKpiProvider = FutureProvider<DashboardKpi>((ref) async {
+  final hospitalId = ref.watch(authProvider).user?.hospitalId;
+  if (hospitalId == null) return DashboardKpi.empty;
+
+  final filters = ref.watch(filterProvider);
+  ref.watch(filterProvider.select((f) => f.searchQuery));
+
+  final result = await Supabase.instance.client.rpc(
+    'get_dashboard_kpi',
+    params: {
+      'p_hospital_id':  hospitalId,
+      'p_spark_points': _kSparkPoints,
+      if (filters.service?.isNotEmpty == true)     'p_service':     filters.service,
+      if (filters.type?.isNotEmpty == true)        'p_type':        filters.type,
+      if (filters.exploration?.isNotEmpty == true) 'p_exploration': filters.exploration,
+      if (filters.sortie?.isNotEmpty == true)      'p_sortie':      filters.sortie,
+      if (filters.periode != null) 'p_date_start': filters.periode!.start.toIso8601String(),
+      if (filters.periode != null) 'p_date_end':   filters.periode!.end.toIso8601String(),
+      if (filters.searchQuery.isNotEmpty) 'p_search': filters.searchQuery, // 👈 nouveau
+    },
+  );
+
+  return DashboardKpi.fromJson(result as Map<String, dynamic>);
 });

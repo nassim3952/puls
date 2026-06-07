@@ -53,9 +53,10 @@ Provider.family<AsyncValue<List<VerbatimFlatNode>>, String>(
               v.classe.trim().isEmpty) continue;
 
           result.add(VerbatimFlatNode(
-            classe: v.classe.replaceAll('_', ' ').trim(),
-            polarite: _normPol(v.polarite),
-            message: v.message.trim(),
+            classe:     v.classe.trim(),
+            sousClasse: v.sousClasse.trim(), // ← NOUVEAU
+            polarite:   _normPol(v.polarite),
+            message:    v.message.trim(),
           ));
         }
 
@@ -68,12 +69,14 @@ Provider.family<AsyncValue<List<VerbatimFlatNode>>, String>(
 /// Nœud plat représentant un verbatim analysé.
 /// Utilisé par [verbatimProvider] et [VerbatimBarChart].
 class VerbatimFlatNode {
-  final String classe;    // ex: "soins & technique"
-  final String polarite;  // toujours: 'Positive' | 'Négative' | 'Neutre'
+  final String classe;     // ex: "organisation" | "communication" …
+  final String sousClasse; // ex: "accueil" | "empathie" | "douleur" …
+  final String polarite;   // toujours: 'Positive' | 'Négative' | 'Neutre'
   final String message;
 
   const VerbatimFlatNode({
     required this.classe,
+    required this.sousClasse,
     required this.polarite,
     required this.message,
   });

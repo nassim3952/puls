@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/dashboard/presentation/widgets/kpi_help_dialog.dart';
 import '../color.dart';
 import '../text.dart';
 import '../../features/dashboard/presentation/provider/card_expansion_provider.dart';
 import '../../features/dashboard/presentation/provider/card_view_provider.dart';
+import '../utils/kpi_info.dart';
 
 class StatCard extends ConsumerWidget {
   final String title;
@@ -85,6 +87,25 @@ class StatCard extends ConsumerWidget {
                   children: [
                     if (headerWidget != null) ...[
                       headerWidget!,
+                      const SizedBox(width: 8),
+                    ],// Bouton aide KPI
+                    if (kpiInfoMap.containsKey(title)) ...[
+                      IconButton(
+                        icon: const Icon(
+                          Icons.help_outline_rounded,
+                          size: 18,
+                        ),
+                        color: AppColors.textSecondary,
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => KpiHelpDialog(kpiTitle: title),
+                          );
+                        },
+                        constraints: const BoxConstraints(),
+                        padding: EdgeInsets.zero,
+                        tooltip: 'À propos de ce KPI',
+                      ),
                       const SizedBox(width: 8),
                     ],
                     // Bouton pour switcher de vue

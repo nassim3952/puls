@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/core/provider/auth_provider.dart';
 import 'package:puls/core/provider/notification_provider.dart';
+import '../../features/dashboard/presentation/provider/dashboard_charts_provider.dart';
 import '../../features/historique/presentation/historique_screen.dart' hide historiqueFilterProvider;
 import '../models/notification_model.dart';
+import '../provider/dashboard_kpi_provider.dart';
+import '../provider/filter_controller.dart';
 import '../provider/historique_filter_controller.dart';
+import '../provider/patient_provider.dart';
 import 'export_pdf_button.dart';
 import 'logout_dialog.dart';
 
@@ -111,9 +115,13 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                   Expanded(
                     child: TextField(
                       controller: _searchCtrl,
-                      onChanged: (v) => ref
-                          .read(historiqueFilterProvider.notifier)
-                          .setSearch(v),
+                        onChanged: (v) {
+                          ref.read(filterProvider.notifier).updateSearch(v);
+                          ref.read(historiqueFilterProvider.notifier).setSearch(v);
+                          ref.invalidate(dashboardKpiProvider);        // 👈 ajoute ça
+                          ref.invalidate(filteredPatientsProvider);    // 👈 ajoute ça
+                          ref.invalidate(dashboardChartsProvider);
+                        },
                       style: const TextStyle(
                           fontSize: 13, color: AppColors.textPrimary),
                       decoration: InputDecoration(
@@ -128,12 +136,14 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                         suffixIcon: filters.searchQuery.isNotEmpty
                             ? IconButton(
                           icon: const Icon(Icons.close_rounded, size: 16),
-                          onPressed: () {
-                            _searchCtrl.clear();
-                            ref
-                                .read(historiqueFilterProvider.notifier)
-                                .setSearch('');
-                          },
+                            onPressed: () {
+                              _searchCtrl.clear();
+                              ref.read(filterProvider.notifier).updateSearch('');
+                              ref.read(historiqueFilterProvider.notifier).setSearch('');
+                              ref.invalidate(dashboardKpiProvider);        // 👈
+                              ref.invalidate(filteredPatientsProvider);    // 👈
+                              ref.invalidate(dashboardChartsProvider);
+                            },
                         )
                             : null,
                         filled: true,

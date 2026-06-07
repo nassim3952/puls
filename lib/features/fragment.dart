@@ -7,6 +7,7 @@ import 'package:puls/features/service/presentation/services_screen.dart';
 import '../core/color.dart';
 import '../core/provider/navigation_provider.dart';
 import '../core/shared_widget/side_bar.dart';
+import 'Team/Presentation/team_screen.dart';
 import 'alertsView/presentation/alerts_view.dart';
 import 'dashboard/presentation/dash_board_view.dart';
 import 'historique/presentation/historique_screen.dart';
@@ -34,6 +35,9 @@ class MainDashboardScreen extends ConsumerWidget {
         break;
       case 3:
         currentView = const ServicesScreen(); // La liste des services
+        break;
+      case 4:
+        currentView = const TeamScreen(); // La liste des services
         break;
       default:
         currentView = const DashboardView();

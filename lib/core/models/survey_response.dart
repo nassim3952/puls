@@ -44,9 +44,10 @@ class SurveyResponse {
     if (raw == null) return Verbatim.empty;
     if (raw is Map<String, dynamic>) {
       return Verbatim(
-        message: raw['message']?.toString() ?? '',
-        classe: raw['class']?.toString() ?? '',
-        polarite: raw['polarity']?.toString() ?? '',
+        message:    raw['message']?.toString()     ?? '',
+        classe:     raw['class']?.toString()        ?? '',
+        sousClasse: raw['sous_classe']?.toString()  ?? '', // ← NOUVEAU
+        polarite:   raw['polarity']?.toString()     ?? '',
       );
     }
     return Verbatim.empty;
@@ -67,11 +68,13 @@ class SurveyResponse {
 class Verbatim {
   final String message;
   final String classe;
+  final String sousClasse; // ex: "accueil" | "empathie" | "douleur" …
   final String polarite;
 
   const Verbatim({
     required this.message,
     required this.classe,
+    required this.sousClasse,
     required this.polarite,
   });
 
@@ -79,11 +82,12 @@ class Verbatim {
   factory Verbatim.fromAnswerItem(Map<String, dynamic> item) {
     final analysis = item['analysis'] as Map<String, dynamic>?;
     return Verbatim(
-      message: item['value']?.toString() ?? '',
-      classe: analysis?['class']?.toString() ?? '',
-      polarite: analysis?['polarity']?.toString() ?? '',
+      message:    item['value']?.toString()         ?? '',
+      classe:     analysis?['class']?.toString()     ?? '',
+      sousClasse: analysis?['sous_classe']?.toString() ?? '', // ← NOUVEAU
+      polarite:   analysis?['polarity']?.toString()  ?? '',
     );
   }
 
-  static const empty = Verbatim(message: '', classe: '', polarite: '');
+  static const empty = Verbatim(message: '', classe: '', sousClasse: '', polarite: '');
 }

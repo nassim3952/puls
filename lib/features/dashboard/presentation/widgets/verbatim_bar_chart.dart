@@ -1,14 +1,22 @@
 // lib/features/dashboard/presentation/widgets/verbatim_bar_chart.dart
 //
-// VUE 1 — Histogramme classes :
+// VUE 1 — Histogramme CLASSES :
 //   Barres horizontales empilées (Positive / Négative / Neutre), triées par total.
 //   Clic → Vue 2.
 //
-// VUE 2 — Drill-down polarités (HORIZONTAL) :
-//   Barres horizontales segmentées par polarité.
-//   Chaque segment = 1 verbatim. Clic → panel verbatim en bas.
+// VUE 2 — Drill-down SOUS-CLASSES :
+//   Barres horizontales empilées par sous-classe. Clic → Vue 3.
 //
-// Fix overflow : FractionallySizedBox + Flexible, plus de calcul manuel de largeur.
+// VUE 3 — Drill-down POLARITÉS (HORIZONTAL) :
+//   Barres horizontales segmentées par polarité.
+//   Chaque segment = 1 verbatim. Clic → panel verbatim flottant.
+//
+// MODIFICATION : Ajout du champ `sousClasse` dans VerbatimFlatNode
+//   → navigation 3 niveaux : Classe → Sous-classe → Polarités
+//
+// ─── IMPORTANT : mettre à jour VerbatimFlatNode dans verbatim_provider.dart ───
+//   Ajouter : final String sousClasse;
+//   Mapper depuis : answers['qX']['sous_classe'] ?? ''
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,29 +42,123 @@ Color _polColor(String pol) {
 Color _polBg(String pol) => _polColor(pol).withOpacity(0.9);
 Color _polTrack(String pol) => _polColor(pol).withOpacity(0.06);
 
+// ─── Mapping Classe → label affiché ──────────────────────────────────────────
+//
+// Les 4 grandes classes du PDF (valeurs renvoyées par l'IA / le script Python)
+// → labels courts pour l'affichage dans les barres.
+
+const _kClasseLabels = <String, String>{
+  'organisation':  'Organisation & Prestations',
+  'communication': 'Communication & Interaction',
+  'prise_en_charge': 'Prise en charge médicale',
+  'information':   'Information & Éducation',
+};
+
+String _classeLabel(String raw) =>
+    _kClasseLabels[raw.toLowerCase()] ?? raw;
+
+// ─── Mapping Sous-classe → label affiché ─────────────────────────────────────
+//
+// Toutes les sous-classes du PDF, regroupées par classe.
+// Valeurs normalisées (snake_case) envoyées par l'IA / le script.
+
+const _kSousClasseLabels = <String, String>{
+  // Classe 1 – Organisation
+  'accueil':                 'Accueil',
+  'attente':                 'Attente',
+  'flexibilite':             'Flexibilité',
+  'coordination_equipe':     'Coordination équipe',
+  'orientation':             'Orientation',
+  'facturation':             'Facturation',
+  'continuite_soins':        'Continuité des soins',
+  'materiel':                'Matériel',
+  'structure':               'Structure',
+  'proprete':                'Propreté',
+  'hygiene':                 'Hygiène',
+  'prevention_infectieux':   'Prévention risque infectieux',
+
+  // Classe 2 – Communication
+  'empathie':                'Empathie',
+  'ecoute_medecins':         'Écoute active des médecins',
+  'relation_soignant':       'Relation soignant-patient',
+  'reconfort_emotionnel':    'Réconfort émotionnel',
+  'indifference':            'Indifférence',
+  'implication_patient':     'Implication du patient',
+  'confiance_equipe':        'Confiance dans l\'équipe',
+  'traitement_equitable':    'Traitement équitable',
+  'dignite_respect':         'Dignité et respect',
+
+  // Classe 3 – Prise en charge
+  'douleur':                 'Douleur',
+  'soulagement':             'Soulagement & Efficacité',
+  'souffrance_inefficacite': 'Souffrance & Inefficacité',
+  'stress':                  'Stress',
+  'anxiete':                 'Anxiété',
+  'confort_emotionnel':      'Confort émotionnel',
+  'personnalisation_soins':  'Personnalisation des soins',
+  'soins':                   'Soins',
+  'geste_soignant':          'Geste soignant',
+  'securite_soins':          'Sécurité des soins',
+
+  // Classe 4 – Information
+  'explication':             'Explication',
+  'informations_traitement': 'Informations traitement',
+  'explication_deroulement': 'Explication déroulement',
+  'education_sante':         'Éducation santé',
+  'personnalisation_info':   'Personnalisation info',
+  'accompagnement_proches':  'Accompagnement des proches',
+  'continuite_information':  'Continuité information',
+  'suivi':                   'Suivi',
+};
+
+String _sousClasseLabel(String raw) =>
+    _kSousClasseLabels[raw.toLowerCase()] ?? raw;
+
 // ─── Modèles internes ─────────────────────────────────────────────────────────
 
-class _ClassGroup {
-  final String classe;
+/// Niveau 2 : groupe de verbatims pour une sous-classe donnée.
+class _SousClasseGroup {
+  final String sousClasse;
   final List<VerbatimFlatNode> nodes;
 
-  _ClassGroup({required this.classe, required this.nodes});
+  _SousClasseGroup({required this.sousClasse, required this.nodes});
 
   int get total => nodes.length;
-
   int countPol(String pol) => nodes.where((n) => n.polarite == pol).length;
-
   List<VerbatimFlatNode> byPol(String pol) =>
       nodes.where((n) => n.polarite == pol).toList();
 }
 
-List<_ClassGroup> _buildGroups(List<VerbatimFlatNode> nodes) {
+/// Niveau 1 : groupe de verbatims pour une classe donnée.
+class _ClasseGroup {
+  final String classe;
+  final List<VerbatimFlatNode> nodes;
+
+  _ClasseGroup({required this.classe, required this.nodes});
+
+  int get total => nodes.length;
+  int countPol(String pol) => nodes.where((n) => n.polarite == pol).length;
+
+  /// Sous-classes contenues dans cette classe, triées par total décroissant.
+  List<_SousClasseGroup> get sousClasses {
+    final map = <String, List<VerbatimFlatNode>>{};
+    for (final n in nodes) {
+      map.putIfAbsent(n.sousClasse, () => []).add(n);
+    }
+    return map.entries
+        .map((e) => _SousClasseGroup(sousClasse: e.key, nodes: e.value))
+        .toList()
+      ..sort((a, b) => b.total.compareTo(a.total));
+  }
+}
+
+List<_ClasseGroup> _buildClasseGroups(List<VerbatimFlatNode> nodes) {
   final map = <String, List<VerbatimFlatNode>>{};
   for (final n in nodes) {
     map.putIfAbsent(n.classe, () => []).add(n);
   }
   return map.entries
-      .map((e) => _ClassGroup(classe: e.key, nodes: e.value))
+      .map((e) => _ClasseGroup(classe: e.key, nodes: e.value))
       .toList()
     ..sort((a, b) => b.total.compareTo(a.total));
 }
@@ -73,10 +175,15 @@ class VerbatimBarChart extends ConsumerStatefulWidget {
 
 class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
     with SingleTickerProviderStateMixin {
-  _ClassGroup? _selected;
+
+  // Navigation : null = Vue 1, _selectedClasse set = Vue 2,
+  //              _selectedSousClasse set = Vue 3
+  _ClasseGroup?    _selectedClasse;
+  _SousClasseGroup? _selectedSousClasse;
+
   late final AnimationController _transCtrl;
-  late final Animation<double> _fadeAnim;
-  late final Animation<Offset> _slideAnim;
+  late final Animation<double>   _fadeAnim;
+  late final Animation<Offset>   _slideAnim;
 
   @override
   void initState() {
@@ -100,15 +207,53 @@ class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
     super.dispose();
   }
 
-  void _drillInto(_ClassGroup g) {
-    setState(() => _selected = g);
+  void _drillIntoClasse(_ClasseGroup g) {
+    setState(() {
+      _selectedClasse    = g;
+      _selectedSousClasse = null;
+    });
+    _transCtrl.forward(from: 0);
+  }
+
+  void _drillIntoSousClasse(_SousClasseGroup sg) {
+    setState(() => _selectedSousClasse = sg);
     _transCtrl.forward(from: 0);
   }
 
   void _drillBack() {
-    setState(() => _selected = null);
+    setState(() {
+      if (_selectedSousClasse != null) {
+        _selectedSousClasse = null; // Vue 3 → Vue 2
+      } else {
+        _selectedClasse = null;     // Vue 2 → Vue 1
+      }
+    });
     _transCtrl.forward(from: 0);
   }
+
+  // ── Titre du header selon le niveau actuel ────────────────────────────────
+
+  String get _questionTitle => switch (widget.questionKey) {
+    'q2' => 'Vécu du Parcours',
+    'q3' => 'Moments Critiques',
+    'q4' => 'Suggestions',
+    _    => widget.questionKey.toUpperCase(),
+  };
+
+  String get _headerTitle {
+    if (_selectedSousClasse != null) {
+      return _sousClasseLabel(_selectedSousClasse!.sousClasse).toUpperCase();
+    }
+    if (_selectedClasse != null) {
+      return _classeLabel(_selectedClasse!.classe).toUpperCase();
+    }
+    return _questionTitle;
+  }
+
+  // ── Fil d'Ariane (breadcrumb) ─────────────────────────────────────────────
+
+  bool get _showBack =>
+      _selectedClasse != null || _selectedSousClasse != null;
 
   @override
   Widget build(BuildContext context) {
@@ -128,22 +273,23 @@ class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
         if (nodes.isEmpty) {
           return const Center(
             child: Text('Aucune donnée',
-                style:
-                TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                style: TextStyle(
+                    color: AppColors.textSecondary, fontSize: 12)),
           );
         }
 
-        final groups = _buildGroups(nodes);
+        final groupes = _buildClasseGroups(nodes);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Header + légende ───────────────────────────────────────────
+            // ── Header ────────────────────────────────────────────────────
             _ChartHeader(
-              questionKey: widget.questionKey,
-              selected: _selected,
+              title:      _headerTitle,
+              showBack:   _showBack,
               totalNodes: nodes.length,
-              onBack: _drillBack,
+              breadcrumb: _buildBreadcrumb(),
+              onBack:     _drillBack,
             ),
             const SizedBox(height: 10),
             _Legend(),
@@ -155,12 +301,7 @@ class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
                 opacity: _fadeAnim,
                 child: SlideTransition(
                   position: _slideAnim,
-                  child: _selected == null
-                      ? _ClassView(
-                    groups: groups,
-                    onTap: _drillInto,
-                  )
-                      : _DrillView(group: _selected!),
+                  child: _buildBody(groupes),
                 ),
               ),
             ),
@@ -169,73 +310,115 @@ class _VerbatimBarChartState extends ConsumerState<VerbatimBarChart>
       },
     );
   }
+
+  /// Construit le fil d'Ariane selon le niveau actuel.
+  String? _buildBreadcrumb() {
+    if (_selectedSousClasse != null && _selectedClasse != null) {
+      return '${_classeLabel(_selectedClasse!.classe)} › ${_sousClasseLabel(_selectedSousClasse!.sousClasse)}';
+    }
+    if (_selectedClasse != null) {
+      return _classeLabel(_selectedClasse!.classe);
+    }
+    return null;
+  }
+
+  Widget _buildBody(List<_ClasseGroup> groupes) {
+    // Vue 3 — Polarités + verbatims
+    if (_selectedSousClasse != null) {
+      return _DrillView(group: _selectedSousClasse!);
+    }
+    // Vue 2 — Sous-classes d'une classe
+    if (_selectedClasse != null) {
+      return _SousClasseView(
+        sousClasses: _selectedClasse!.sousClasses,
+        onTap:       _drillIntoSousClasse,
+      );
+    }
+    // Vue 1 — Classes
+    return _ClasseView(
+      groupes: groupes,
+      onTap:   _drillIntoClasse,
+    );
+  }
 }
 
 // ─── Header ───────────────────────────────────────────────────────────────────
 
 class _ChartHeader extends StatelessWidget {
-  final String questionKey;
-  final _ClassGroup? selected;
-  final int totalNodes;
+  final String  title;
+  final bool    showBack;
+  final int     totalNodes;
+  final String? breadcrumb;
   final VoidCallback onBack;
 
   const _ChartHeader({
-    required this.questionKey,
-    required this.selected,
+    required this.title,
+    required this.showBack,
     required this.totalNodes,
     required this.onBack,
+    this.breadcrumb,
   });
-
-  String get _title => switch (questionKey) {
-    'q2' => 'Vécu du Parcours',
-    'q3' => 'Moments Critiques',
-    'q4' => 'Suggestions',
-    _ => questionKey.toUpperCase(),
-  };
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: selected != null
-              ? GestureDetector(
-            key: const ValueKey('back'),
-            onTap: onBack,
-            child: Container(
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlueLighter,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                size: 12,
-                color: AppColors.primaryBlue,
+        Row(
+          children: [
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 200),
+              child: showBack
+                  ? GestureDetector(
+                key: const ValueKey('back'),
+                onTap: onBack,
+                child: Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryBlueLighter,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 12,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+              )
+                  : const SizedBox.shrink(key: ValueKey('no-back')),
+            ),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                  letterSpacing: 0.4,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          )
-              : const SizedBox.shrink(key: ValueKey('no-back')),
+            Text(
+              '$totalNodes verbatims',
+              style: const TextStyle(
+                  fontSize: 11, color: AppColors.textSecondary),
+            ),
+          ],
         ),
-        Expanded(
-          child: Text(
-            selected == null ? _title : selected!.classe.toUpperCase(),
+        // Breadcrumb
+        if (breadcrumb != null) ...[
+          const SizedBox(height: 3),
+          Text(
+            breadcrumb!,
             style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-              letterSpacing: 0.4,
+              fontSize: 10,
+              color: AppColors.textSecondary,
             ),
             overflow: TextOverflow.ellipsis,
           ),
-        ),
-        Text(
-          '$totalNodes verbatims',
-          style:
-          const TextStyle(fontSize: 11, color: AppColors.textSecondary),
-        ),
+        ],
       ],
     );
   }
@@ -271,30 +454,31 @@ class _Legend extends StatelessWidget {
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// VUE 1 — Barres horizontales empilées par classe
+// VUE 1 — Barres horizontales empilées par CLASSE
 // ═════════════════════════════════════════════════════════════════════════════
 
-class _ClassView extends StatelessWidget {
-  final List<_ClassGroup> groups;
-  final void Function(_ClassGroup) onTap;
+class _ClasseView extends StatelessWidget {
+  final List<_ClasseGroup> groupes;
+  final void Function(_ClasseGroup) onTap;
 
-  const _ClassView({required this.groups, required this.onTap});
+  const _ClasseView({required this.groupes, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final maxVal = groups.fold(0, (m, g) => g.total > m ? g.total : m);
+    final maxVal = groupes.fold(0, (m, g) => g.total > m ? g.total : m);
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          for (int i = 0; i < groups.length; i++) ...[
+          for (int i = 0; i < groupes.length; i++) ...[
             _HorizontalStackedBar(
-              group: groups[i],
-              maxVal: maxVal,
+              label:     _classeLabel(groupes[i].classe),
+              nodes:     groupes[i].nodes,
+              maxVal:    maxVal,
               animDelay: Duration(milliseconds: i * 55),
-              onTap: () => onTap(groups[i]),
+              onTap:     () => onTap(groupes[i]),
             ),
-            if (i < groups.length - 1) const SizedBox(height: 8),
+            if (i < groupes.length - 1) const SizedBox(height: 8),
           ],
         ],
       ),
@@ -302,14 +486,52 @@ class _ClassView extends StatelessWidget {
   }
 }
 
+// ═════════════════════════════════════════════════════════════════════════════
+// VUE 2 — Barres horizontales empilées par SOUS-CLASSE
+// ═════════════════════════════════════════════════════════════════════════════
+
+class _SousClasseView extends StatelessWidget {
+  final List<_SousClasseGroup> sousClasses;
+  final void Function(_SousClasseGroup) onTap;
+
+  const _SousClasseView({required this.sousClasses, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final maxVal =
+    sousClasses.fold(0, (m, g) => g.total > m ? g.total : m);
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          for (int i = 0; i < sousClasses.length; i++) ...[
+            _HorizontalStackedBar(
+              label:     _sousClasseLabel(sousClasses[i].sousClasse),
+              nodes:     sousClasses[i].nodes,
+              maxVal:    maxVal,
+              animDelay: Duration(milliseconds: i * 55),
+              onTap:     () => onTap(sousClasses[i]),
+            ),
+            if (i < sousClasses.length - 1) const SizedBox(height: 8),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Barre horizontale empilée générique (Vue 1 & Vue 2) ─────────────────────
+
 class _HorizontalStackedBar extends StatefulWidget {
-  final _ClassGroup group;
+  final String label;
+  final List<VerbatimFlatNode> nodes;
   final int maxVal;
   final Duration animDelay;
   final VoidCallback onTap;
 
   const _HorizontalStackedBar({
-    required this.group,
+    required this.label,
+    required this.nodes,
     required this.maxVal,
     required this.animDelay,
     required this.onTap,
@@ -322,12 +544,16 @@ class _HorizontalStackedBar extends StatefulWidget {
 class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double> _anim;
+  late final Animation<double>   _anim;
   bool _hovered = false;
 
-  static const _labelWidth = 110.0;
+  static const _labelWidth = 130.0;
   static const _countWidth = 28.0;
-  static const _spacing = 8.0;
+  static const _spacing    = 8.0;
+
+  int get _total => widget.nodes.length;
+  int _countPol(String pol) =>
+      widget.nodes.where((n) => n.polarite == pol).length;
 
   @override
   void initState() {
@@ -348,13 +574,12 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
 
   @override
   Widget build(BuildContext context) {
-    final g = widget.group;
-    final ratio = widget.maxVal > 0 ? g.total / widget.maxVal : 0.0;
+    final ratio = widget.maxVal > 0 ? _total / widget.maxVal : 0.0;
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onExit:  (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
@@ -368,11 +593,11 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
           ),
           child: Row(
             children: [
-              // Étiquette classe
+              // Étiquette
               SizedBox(
                 width: _labelWidth,
                 child: Text(
-                  g.classe,
+                  widget.label,
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w500,
@@ -384,7 +609,7 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
               ),
               const SizedBox(width: _spacing),
 
-              // Barre empilée — FIX OVERFLOW : FractionallySizedBox + Flexible
+              // Barre empilée
               Flexible(
                 child: SizedBox(
                   height: 20,
@@ -395,32 +620,48 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
                       builder: (_, __) {
                         return LayoutBuilder(
                           builder: (context, constraints) {
-                            final totalWidth = constraints.maxWidth;
-                            final filledWidth = totalWidth * ratio * _anim.value;
+                            final totalWidth  = constraints.maxWidth;
+                            final filledWidth =
+                                totalWidth * ratio * _anim.value;
 
                             return Stack(
                               children: [
-                                // Fond vide
                                 Container(
                                   width: totalWidth,
-                                  color: AppColors.primaryBlueLighter.withValues(alpha: 0.5),
+                                  color: AppColors.primaryBlueLighter
+                                      .withValues(alpha: 0.5),
                                 ),
-                                // Partie remplie
                                 SizedBox(
                                   width: filledWidth,
                                   child: Row(
                                     children: _kPols.map((pol) {
-                                      final cnt = g.countPol(pol);
-                                      if (cnt == 0) return const SizedBox.shrink();
+                                      final cnt = _countPol(pol);
+                                      if (cnt == 0) {
+                                        return const SizedBox.shrink();
+                                      }
                                       return Expanded(
                                         flex: cnt,
                                         child: Tooltip(
-                                          message: '$cnt $pol${cnt > 1 ? 's' : ''}',
+                                          message:
+                                          '$cnt $pol${cnt > 1 ? 's' : ''}',
                                           preferBelow: false,
-                                          child: Container(color: _polColor(pol)),
+                                          child: Container(
+                                              color: _polColor(pol)),
                                         ),
                                       );
                                     }).toList(),
+                                  ),
+                                ),
+                                // Icône drill-down
+                                Positioned(
+                                  right: 4,
+                                  top: 0,
+                                  bottom: 0,
+                                  child: Icon(
+                                    Icons.chevron_right_rounded,
+                                    size: 14,
+                                    color: AppColors.textSecondary
+                                        .withOpacity(0.5),
                                   ),
                                 ),
                               ],
@@ -434,11 +675,11 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
               ),
               const SizedBox(width: _spacing),
 
-              // Total + %
+              // Total
               SizedBox(
                 width: _countWidth,
                 child: Text(
-                  '${g.total}',
+                  '$_total',
                   textAlign: TextAlign.right,
                   style: const TextStyle(
                     fontSize: 11,
@@ -456,11 +697,11 @@ class _HorizontalStackedBarState extends State<_HorizontalStackedBar>
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
-// VUE 2 — Drill-down : barres HORIZONTALES par polarité
+// VUE 3 — Drill-down : barres HORIZONTALES par polarité (verbatims individuels)
 // ═════════════════════════════════════════════════════════════════════════════
 
 class _DrillView extends StatefulWidget {
-  final _ClassGroup group;
+  final _SousClasseGroup group;
   const _DrillView({required this.group});
 
   @override
@@ -469,7 +710,7 @@ class _DrillView extends StatefulWidget {
 
 class _DrillViewState extends State<_DrillView> {
   VerbatimFlatNode? _activeVerbatim;
-  OverlayEntry? _overlayEntry;
+  OverlayEntry?     _overlayEntry;
   final Map<String, LayerLink> _layerLinks = {};
 
   @override
@@ -521,7 +762,9 @@ class _DrillViewState extends State<_DrillView> {
     final activePols =
     _kPols.where((p) => widget.group.countPol(p) > 0).toList();
     final maxVal = activePols.fold(
-        0, (m, p) => widget.group.countPol(p) > m ? widget.group.countPol(p) : m);
+        0,
+            (m, p) =>
+        widget.group.countPol(p) > m ? widget.group.countPol(p) : m);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -530,12 +773,13 @@ class _DrillViewState extends State<_DrillView> {
           CompositedTransformTarget(
             link: _layerLinks[activePols[i]]!,
             child: _HorizontalPolarityBar(
-              pol: activePols[i],
-              entries: widget.group.byPol(activePols[i]),
-              maxVal: maxVal,
-              animDelay: Duration(milliseconds: i * 80),
+              pol:           activePols[i],
+              entries:       widget.group.byPol(activePols[i]),
+              maxVal:        maxVal,
+              animDelay:     Duration(milliseconds: i * 80),
               activeVerbatim: _activeVerbatim,
-              onTapVerbatim: (node) => _onTapVerbatim(node, activePols[i]),
+              onTapVerbatim: (node) =>
+                  _onTapVerbatim(node, activePols[i]),
             ),
           ),
           if (i < activePols.length - 1) const SizedBox(height: 10),
@@ -565,17 +809,18 @@ class _HorizontalPolarityBar extends StatefulWidget {
   });
 
   @override
-  State<_HorizontalPolarityBar> createState() => _HorizontalPolarityBarState();
+  State<_HorizontalPolarityBar> createState() =>
+      _HorizontalPolarityBarState();
 }
 
 class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double> _anim;
+  late final Animation<double>   _anim;
 
   static const _labelWidth = 72.0;
   static const _countWidth = 28.0;
-  static const _spacing = 8.0;
+  static const _spacing    = 8.0;
 
   @override
   void initState() {
@@ -599,11 +844,10 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
     final count = widget.entries.length;
     final ratio = widget.maxVal > 0 ? count / widget.maxVal : 0.0;
     final color = _polColor(widget.pol);
-    final bg = _polBg(widget.pol);
+    final bg    = _polBg(widget.pol);
 
     return Row(
       children: [
-        // Label polarité
         SizedBox(
           width: _labelWidth,
           child: Text(
@@ -617,7 +861,6 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
         ),
         const SizedBox(width: _spacing),
 
-        // Barre segmentée — même fix FractionallySizedBox + Flexible
         Expanded(
           child: SizedBox(
             height: 28,
@@ -628,32 +871,35 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
                 builder: (_, __) {
                   return LayoutBuilder(
                     builder: (context, constraints) {
-                      final totalWidth = constraints.maxWidth;
-                      final filledWidth = totalWidth * ratio * _anim.value;
+                      final totalWidth  = constraints.maxWidth;
+                      final filledWidth =
+                          totalWidth * ratio * _anim.value;
 
                       return Stack(
                         children: [
-                          // Fond
                           Container(
                             width: totalWidth,
                             color: _polTrack(widget.pol),
                           ),
-                          // Segments cliquables
                           SizedBox(
                             width: filledWidth,
                             child: Row(
-                              children: List.generate(widget.entries.length, (i) {
-                                final entry = widget.entries[i];
-                                final isActive = widget.activeVerbatim == entry;
+                              children: List.generate(
+                                  widget.entries.length, (i) {
+                                final entry    = widget.entries[i];
+                                final isActive =
+                                    widget.activeVerbatim == entry;
                                 return Expanded(
                                   child: _TappableSegment(
-                                    color: color,
-                                    bgColor: bg,
-                                    isActive: isActive,
-                                    showSeparator: i < widget.entries.length - 1,
+                                    color:         color,
+                                    bgColor:       bg,
+                                    isActive:      isActive,
+                                    showSeparator:
+                                    i < widget.entries.length - 1,
                                     index: i,
                                     total: widget.entries.length,
-                                    onTap: () => widget.onTapVerbatim(entry),
+                                    onTap: () =>
+                                        widget.onTapVerbatim(entry),
                                   ),
                                 );
                               }),
@@ -670,7 +916,6 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
         ),
         const SizedBox(width: _spacing),
 
-        // Compteur
         SizedBox(
           width: _countWidth,
           child: Text(
@@ -693,10 +938,10 @@ class _HorizontalPolarityBarState extends State<_HorizontalPolarityBar>
 class _TappableSegment extends StatefulWidget {
   final Color color;
   final Color bgColor;
-  final bool isActive;
-  final bool showSeparator;
-  final int index;
-  final int total;
+  final bool  isActive;
+  final bool  showSeparator;
+  final int   index;
+  final int   total;
   final VoidCallback onTap;
 
   const _TappableSegment({
@@ -721,13 +966,13 @@ class _TappableSegmentState extends State<_TappableSegment> {
     final active = widget.isActive || _hovered;
 
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor:  SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
+      onExit:  (_) => setState(() => _hovered = false),
       child: GestureDetector(
         onTap: widget.onTap,
         child: Tooltip(
-          message: '${widget.index + 1} / ${widget.total}',
+          message:    '${widget.index + 1} / ${widget.total}',
           preferBelow: true,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 110),
@@ -744,8 +989,8 @@ class _TappableSegmentState extends State<_TappableSegment> {
               boxShadow: widget.isActive
                   ? [
                 BoxShadow(
-                  color: widget.color.withOpacity(0.45),
-                  blurRadius: 4,
+                  color:       widget.color.withOpacity(0.45),
+                  blurRadius:  4,
                   spreadRadius: 0,
                 )
               ]
@@ -762,8 +1007,8 @@ class _TappableSegmentState extends State<_TappableSegment> {
 
 class _VerbatimOverlay extends StatefulWidget {
   final VerbatimFlatNode node;
-  final LayerLink link;
-  final VoidCallback onClose;
+  final LayerLink        link;
+  final VoidCallback     onClose;
 
   const _VerbatimOverlay({
     required this.node,
@@ -778,18 +1023,18 @@ class _VerbatimOverlay extends StatefulWidget {
 class _VerbatimOverlayState extends State<_VerbatimOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
-  late final Animation<double> _fade;
-  late final Animation<Offset> _slide;
+  late final Animation<double>   _fade;
+  late final Animation<Offset>   _slide;
 
   @override
   void initState() {
     super.initState();
     _ctrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 180));
-    _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+    _fade  = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
     _slide = Tween<Offset>(
       begin: const Offset(0, 0.06),
-      end: Offset.zero,
+      end:   Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     _ctrl.forward();
   }
@@ -804,20 +1049,19 @@ class _VerbatimOverlayState extends State<_VerbatimOverlay>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Tap en dehors = ferme
         Positioned.fill(
           child: GestureDetector(
-            onTap: widget.onClose,
-            behavior: HitTestBehavior.translucent,
-            child: const SizedBox.expand(),
+            onTap:     widget.onClose,
+            behavior:  HitTestBehavior.translucent,
+            child:     const SizedBox.expand(),
           ),
         ),
         CompositedTransformFollower(
-          link: widget.link,
-          showWhenUnlinked: false,
-          offset: const Offset(0, -8), // 8px au-dessus de la barre
-          targetAnchor: Alignment.topLeft,
-          followerAnchor: Alignment.bottomLeft,
+          link:              widget.link,
+          showWhenUnlinked:  false,
+          offset:            const Offset(0, -8),
+          targetAnchor:      Alignment.topLeft,
+          followerAnchor:    Alignment.bottomLeft,
           child: FadeTransition(
             opacity: _fade,
             child: SlideTransition(
@@ -827,7 +1071,7 @@ class _VerbatimOverlayState extends State<_VerbatimOverlay>
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 320),
                   child: _VerbatimPanel(
-                    node: widget.node,
+                    node:    widget.node,
                     onClose: widget.onClose,
                   ),
                 ),
@@ -840,11 +1084,11 @@ class _VerbatimOverlayState extends State<_VerbatimOverlay>
   }
 }
 
-
+// ─── Panel verbatim ───────────────────────────────────────────────────────────
 
 class _VerbatimPanel extends StatelessWidget {
   final VerbatimFlatNode node;
-  final VoidCallback onClose;
+  final VoidCallback     onClose;
 
   const _VerbatimPanel({required this.node, required this.onClose});
 
@@ -856,26 +1100,26 @@ class _VerbatimPanel extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color:        AppColors.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: color.withOpacity(0.35), width: 1.2),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.12),
+            color:      Colors.black.withOpacity(0.12),
             blurRadius: 12,
-            offset: const Offset(0, 4),
+            offset:     const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize:        MainAxisSize.min,
         children: [
-          // Header
+          // Header : polarité + sous-classe + classe + bouton fermer
           Row(
             children: [
               Container(
-                width: 6,
+                width:  6,
                 height: 6,
                 decoration:
                 BoxDecoration(color: color, shape: BoxShape.circle),
@@ -889,18 +1133,37 @@ class _VerbatimPanel extends StatelessWidget {
                     color: color),
               ),
               const SizedBox(width: 8),
+              // Sous-classe
               Container(
                 padding:
                 const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color:        color.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  node.classe,
+                  _sousClasseLabel(node.sousClasse),
                   style: TextStyle(fontSize: 10, color: color),
                 ),
               ),
+              const SizedBox(width: 4),
+              // Classe (plus discret)
+              if (node.classe.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 5, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.textSecondary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    _classeLabel(node.classe),
+                    style: TextStyle(
+                        fontSize: 9,
+                        color: AppColors.textSecondary),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               const Spacer(),
               GestureDetector(
                 onTap: onClose,
@@ -910,13 +1173,13 @@ class _VerbatimPanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Message
+          // Message verbatim
           Text(
             node.message,
             style: const TextStyle(
               fontSize: 12,
-              color: AppColors.textPrimary,
-              height: 1.55,
+              color:    AppColors.textPrimary,
+              height:   1.55,
             ),
           ),
         ],

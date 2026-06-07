@@ -46,7 +46,7 @@ class SideBar extends ConsumerWidget {
                 context,
                 ref,
                 Icons.notifications_none_rounded,
-                "Alerte",
+                "Alertes",
                 1,
                 currentIndex,
                 isCollapsed,
@@ -67,6 +67,15 @@ class SideBar extends ConsumerWidget {
                 Icons.business_rounded,
                 "Services",
                 3,
+                currentIndex,
+                isCollapsed,
+              ),
+              _navItem(
+                context,
+                ref,
+                Icons.groups,
+                "Équipes",
+                4,
                 currentIndex,
                 isCollapsed,
               ),
@@ -93,7 +102,7 @@ class SideBar extends ConsumerWidget {
 
   Widget _buildLogo(WidgetRef ref, bool collapsed) {
     final authState = ref.watch(authProvider);
-    final hospitalName = authState.user?.hospitalName?? "HÔPITAL ABC";
+    final hospitalName = authState.user?.hospitalName ?? "HÔPITAL ABC";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -118,9 +127,13 @@ class SideBar extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                   Text(
+                  Text(
                     hospitalName.capitalize(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ],
               ),
@@ -130,7 +143,9 @@ class SideBar extends ConsumerWidget {
               alignment: collapsed ? Alignment.center : Alignment.centerRight,
               child: IconButton(
                 onPressed: () => ref.read(sidebarProvider.notifier).toggle(),
-                icon: collapsed ? const Icon(Icons.menu_sharp) : const Icon(Icons.menu_open_sharp),
+                icon: collapsed
+                    ? const Icon(Icons.menu_sharp)
+                    : const Icon(Icons.menu_open_sharp),
               ),
             ),
           ],
@@ -141,16 +156,16 @@ class SideBar extends ConsumerWidget {
 
   // ── DIALOGUE DE DÉCONNEXION REFACTORISÉ AU STYLE DE TON APP ────────────────
   Widget _navItem(
-      BuildContext context,
-      WidgetRef ref, // <-- On s'assure que le WidgetRef est bien déclaré ici
-      IconData icon,
-      String label,
-      int index,
-      int currentIndex,
-      bool collapsed, {
-        bool hasBadge = false,
-        bool isDestructive = false,
-      }) {
+    BuildContext context,
+    WidgetRef ref, // <-- On s'assure que le WidgetRef est bien déclaré ici
+    IconData icon,
+    String label,
+    int index,
+    int currentIndex,
+    bool collapsed, {
+    bool hasBadge = false,
+    bool isDestructive = false,
+  }) {
     final isActive = (index == 99) ? false : (currentIndex == index);
 
     final color = isActive
@@ -160,7 +175,10 @@ class SideBar extends ConsumerWidget {
     return InkWell(
       onTap: () {
         if (index == 99) {
-          showLogoutDialog(context, ref); // <-- On passe aussi ref au dialogue de déconnexion !
+          showLogoutDialog(
+            context,
+            ref,
+          ); // <-- On passe aussi ref au dialogue de déconnexion !
         } else {
           ref.read(navigationProvider.notifier).setIndex(index);
         }
@@ -189,7 +207,9 @@ class SideBar extends ConsumerWidget {
                         label,
                         style: TextStyle(
                           color: color,
-                          fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+                          fontWeight: isActive
+                              ? FontWeight.bold
+                              : FontWeight.w500,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -211,4 +231,5 @@ class SideBar extends ConsumerWidget {
         ),
       ),
     );
-  }}
+  }
+}

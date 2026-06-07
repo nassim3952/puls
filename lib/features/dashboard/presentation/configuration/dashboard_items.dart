@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:puls/core/color.dart';
-import 'package:puls/core/data/fake_data.dart';
-import 'package:puls/core/shared_widget/app_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/alert_section.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_pie_chart.dart';
 import 'package:puls/features/dashboard/presentation/widgets/q1_time_line.dart';
@@ -50,7 +47,7 @@ final dashboardItems = [
     title: "VQPS",
     fullName: "Vécu Qualitatif du Parcours de Soins",
     crossAxis: 12,
-    mainAxis: 6,
+    mainAxis: 8,
     isExpandable: true,
     child: VerbatimBarChart(questionKey: 'q2'),
     secondaryChild: QuestionSunburstSection(questionKey: 'q2'),
@@ -60,7 +57,7 @@ final dashboardItems = [
     title: "MCR",
     fullName: "Moments Critiques & Réputation de l'Établissement",
     crossAxis: 12,
-    mainAxis: 6,
+    mainAxis: 8,
     isExpandable: true,
     child: VerbatimBarChart(questionKey: 'q3'),
     secondaryChild: QuestionSunburstSection(questionKey: 'q3'),
@@ -70,7 +67,7 @@ final dashboardItems = [
     title: "IAR",
     fullName: "Indice d'Amélioration & de Réputation",
     crossAxis: 12,
-    mainAxis: 6,
+    mainAxis: 8,
     isExpandable: true,
     child: VerbatimBarChart(questionKey: 'q4'),
     secondaryChild: QuestionSunburstSection(questionKey: 'q4'),
