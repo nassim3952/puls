@@ -8,53 +8,49 @@ class AppColors {
     begin: Alignment.centerRight,
   );
 
-  static const infoText = Color(0xFF3B82F6);
+  static const infoText = Color(0xFF2A9E7C);
 
   // Surface & fond de page
-  static const Color surface        = Color(0xFFFCFEFF); // fond page — gris très léger, jamais blanc pur
-  static const Color divider        = Color(0xFFE9ECF0); // séparateurs visibles
+  static const Color surface        = Colors.white; // fond page — menthe désaturé, doux 0xFFFDFFFE
+  static const Color divider        = Color(0xFFD0E8E0); // séparateurs discrets
 
 
-  // Blues
-// Des bleus plus "calmes" et élégants
-  static const Color primaryBlue     = Color(0xFF0284C7); // Plus stable, moins "cyan"
-  static const Color primaryBlueDark    = Color(0xFF0369A1);
-  static const Color primaryBlueDarker  = Color(0xFF075985);
-  static const Color primaryBlueLight   = Color(0xFFBAE6FD);
-  static const Color primaryBlueLighter = Color(0xFFF0F9FF); // Un peu plus subtil
+  // Greens menthe désaturés — professionnels
+  static const Color primaryBlue        = Color(0xFF2A9E7C); // menthe sobre, lisible, médical
+  static const Color primaryBlueDark    = Color(0xFF228567);
+  static const Color primaryBlueDarker  = Color(0xFF1A6B52);
+  static const Color primaryBlueLight   = Color(0xFFB2DDD1); // menthe pastel doux
+  static const Color primaryBlueLighter = Color(0xFFEEF8F5); // fond quasi-blanc teinté
 
-// Un gris très léger pour le fond, c'est mieux pour les yeux
-  static const Color primaryBG          = Color(0xFFF2F7FA);
-  static const Color textFieldHover     = Color(0xFFE0F2FE);
+  static const Color primaryBG          = Color(0xFFF2FAF7);
+  static const Color textFieldHover     = Color(0xFFDDF0EA);
 
-// Status colors (plus lisibles)
-  static const Color primarySuccess = Color(0xFF4DD37D);
+  // Status colors
+  static const Color primarySuccess = Color(0xFF2A9E7C);
   static const Color primaryWarning = Color(0xFFD97706);
   static const Color primaryError   = Color(0xFFDC2626);
-  static const Color primaryNeutral = Color(0xFF64748B);
+  static const Color primaryNeutral = Color(0xFF5A8878);
 
-  // Bordure moins "sale" (plus discrète)
-  static const Color border         = Color(0xFFE2E8F0);
+  static const Color border         = Color(0xFFC8E2D9);
 
   static const Color white  = Colors.white;
   static const Color shadow = Colors.black;
 
-  // Texte (on vire le mélange de gris bleu et gris chaud pour un truc uniforme)
-  static const Color textPrimary   = Color(0xFF0F172A);
-  static const Color textMid       = Color(0xFF475569);
-  static const Color sideBarText   = Color(0xFF475569); // Uniformisé avec textMid
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color kTextSub      = Color(0xFF94A3B8);
+  // Texte — contrastes renforcés
+  static const Color textPrimary   = Color(0xFF0D1E1A); // quasi-noir teinté vert, excellent contraste
+  static const Color textMid       = Color(0xFF2E5247);
+  static const Color sideBarText   = Color(0xFF2E5247);
+  static const Color textSecondary = Color(0xFF4E7268);
+  static const Color kTextSub      = Color(0xFF85AFA4);
   static const Color black         = Color(0xFF000000);
 
+  static const blueFaint    = Color(0xFFEBF7F3); // fond menthe très léger
+  static const redFaint     = Color(0xFFFFF1F2);
+  static const orangeFaint  = Color(0xFFFFF7ED);
 
-  static const blueFaint    = Color(0xFFEFF6FF); // fond bleu très léger
-  static const redFaint     = Color(0xFFFFF1F2); // fond rouge très léger
-  static const orangeFaint  = Color(0xFFFFF7ED); // fond orange très léger
-
-  //Bordures niveau alerte — plus douces que les couleurs vives
-  static const urgentBorder  = Color(0xFFFCA5A5); // rouge poudré
-  static const warningBorder = Color(0xFFD4A96A); // brun doré, ni trop jaune ni trop orange
-  static const infoBorder    = Color(0xFFBAE6FD); // bleu clair existant
+  // Bordures niveau alerte
+  static const urgentBorder  = Color(0xFFFCA5A5);
+  static const warningBorder = Color(0xFFD4A96A);
+  static const infoBorder    = Color(0xFFB2DDD1);
 
 }

@@ -114,12 +114,21 @@ class SparklinePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     Offset toOffset(int i) {
-      final x = i * size.width / (data.length - 1);
-      final y = size.height -
-          ((data[i] - minVal) / (maxVal - minVal)) * size.height;
-      return Offset(x, y.clamp(0.0, size.height));
-    }
+      // Définir une marge de sécurité (épaisseur du trait + marge confortable)
+      const double paddingX = 4.0;
+      const double paddingY = 3.0;
 
+      // Ajuster la largeur et hauteur utiles
+      final usableWidth = size.width - (paddingX * 2);
+      final usableHeight = size.height - (paddingY * 2);
+
+      // Calculer X et Y dans l'espace utile, puis appliquer le décalage (padding)
+      final x = paddingX + (i * usableWidth / (data.length - 1));
+      final y = paddingY + (usableHeight -
+          ((data[i] - minVal) / (maxVal - minVal)) * usableHeight);
+
+      return Offset(x, y.clamp(paddingY, size.height - paddingY));
+    }
     // Courbe de Bézier complète
     Path buildFullPath() {
       final path = Path();

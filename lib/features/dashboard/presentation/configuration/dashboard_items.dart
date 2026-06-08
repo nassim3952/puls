@@ -78,7 +78,7 @@ final dashboardItems = [
     title: "Alert",
     fullName: "Alert",
     crossAxis: 12,
-    mainAxis: 6,
+    mainAxis: 8,
     child: AlertSection(),
   ),
 

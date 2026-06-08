@@ -6,12 +6,14 @@ import 'package:puls/features/Auth/presentation/auth_screen.dart';
 import 'package:puls/features/fragment.dart';
 
 import '../../features/Auth/presentation/onboarding_screen.dart';
+import '../../features/Misc/CheckEmailScreen.dart';
 
 // ── Noms des routes ───────────────────────────────────────────────────────────
 class AppRoutes {
   static const auth = '/auth';
   static const onboarding = '/onboarding';
   static const dashboard = '/dashboard';
+  static const checkEmail = '/check-email';
 }
 
 // ── Router ────────────────────────────────────────────────────────────────────
@@ -35,7 +37,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // ⚠️ FIX : needsEmailConfirmation reste sur /auth pour afficher le dialog
       // Le router ne doit pas interférer — l'écran gère lui-même l'affichage
       if (status == AuthStatus.needsEmailConfirmation) {
-        return isOnAuthPage ? null : AppRoutes.auth;
+        return state.matchedLocation == AppRoutes.checkEmail ? null : AppRoutes.checkEmail;
       }
 
       // Non connecté ou erreur → toujours vers /auth
@@ -67,6 +69,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.dashboard,
         builder: (context, state) => const MainDashboardScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.checkEmail,
+        builder: (context, state) => const CheckEmailScreen(),
       ),
     ],
   );

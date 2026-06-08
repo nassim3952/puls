@@ -105,15 +105,12 @@ class _ExportPdfButtonState extends ConsumerState<ExportPdfButton> {
           borderRadius: BorderRadius.circular(10),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            height: 36,
+            height: 38,
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
-              color: _loading
-                  ? AppColors.primaryBlue.withOpacity(0.08)
-                  : AppColors.primaryBlueLighter.withOpacity(0.5),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                color: AppColors.primaryBlue.withOpacity(0.25),
+                color: AppColors.border,
               ),
             ),
             child: Row(

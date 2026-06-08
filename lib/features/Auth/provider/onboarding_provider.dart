@@ -31,10 +31,6 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
   OnboardingNotifier(this._ref) : super(const OnboardingState());
 
-  /// Workflow complet :
-  /// 1. Créer l'hôpital en BDD
-  /// 2. Récupérer l'uuid auth de l'utilisateur connecté
-  /// 3. Créer le profil user en BDD lié à cet hôpital
   Future<void> createHospitalAndOwner({
     required String hospitalName,
     String? whatsappPhone,
@@ -85,6 +81,8 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
       final hospitalId = hospitalRes['id'] as String;
 
+      print('✅ Hospital créé : $hospitalId'); // ← ici
+
       // ── Étape 2 : Créer le profil user (owner) lié à l'hôpital ──────────
       final userPayload = {
         'id': uid,
@@ -95,6 +93,20 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         if (session.user.email != null) 'email': session.user.email,
       };
 
+      print('👤 uid: $uid');           // ← ici
+      print('🏥 hospital_id: $hospitalId');
+      print('📦 payload: $userPayload');
+      await supabase.auth.refreshSession();
+
+      final freshSession = supabase.auth.currentSession;
+      print('🔑 Role: ${freshSession?.user.role}');
+      print('🔑 Email confirmed: ${freshSession?.user.emailConfirmedAt}');
+      print('🔑 Token expires at: ${freshSession?.expiresAt}');
+      final token = freshSession?.accessToken ?? '';
+// Split en morceaux de 200 chars pour pas que Flutter tronque
+      for (var i = 0; i < token.length; i += 200) {
+        print(token.substring(i, i + 200 > token.length ? token.length : i + 200));
+      }
       final userRes = await supabase
           .from('users')
           .insert(userPayload)
@@ -106,6 +118,10 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
       state = state.copyWith(status: OnboardingStatus.success);
     } on PostgrestException catch (e) {
+      print('❌ code: ${e.code}');
+      print('❌ message: ${e.message}');
+      print('❌ details: ${e.details}');
+      print('❌ hint: ${e.hint}');
       // Code 23505 = unique constraint violation (nom hôpital déjà utilisé)
       if (e.code == '23505') {
         state = state.copyWith(

@@ -109,17 +109,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
         name:     _nameController.text.trim(),
         fonction: _fonctionController.text.trim(),
       );
-      // Si pas d'erreur = email de confirmation envoyé
-      if (!mounted) return;
-      final state = ref.read(authProvider);
-      if (state.status != AuthStatus.error) {
-        _showSnack(
-          'Un email de confirmation a été envoyé. Vérifiez votre boîte mail.',
-          isError: false,
-        );
-        _toggleMode(); // retour sur login
-      }
     }
+
   }
 
   // ── Mot de passe oublié ────────────────────────────────────────────────────
@@ -321,9 +312,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                     child: const Text(
                                       'Mot de passe oublié ?',
                                       style: TextStyle(
-                                        color: AppColors.primaryBlue,
+                                        color: AppColors.kTextSub,
                                         fontSize: 13,
-                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ),
@@ -338,8 +328,9 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                         ? 'Pas encore de compte ? Créer un compte'
                                         : 'Déjà un compte ? Se connecter',
                                     style: const TextStyle(
-                                      color: AppColors.kTextSub,
+                                      color: AppColors.primaryBlue,
                                       fontSize: 13,
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),

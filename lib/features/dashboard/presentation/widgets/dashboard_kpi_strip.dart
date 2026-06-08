@@ -80,7 +80,7 @@ class _StripContent extends StatelessWidget {
       _KpiCard(
         label: 'Alertes traitées',
         value: '${kpi.totalAlertsResolved}',
-        color: AppColors.primarySuccess,
+        color: AppColors.primaryBlue,
         spark: kpi.alertsResolvedSpark,
       ),
       _KpiCard(
