@@ -16,6 +16,8 @@ import '../../../core/models/survey_response.dart';
 import '../../../core/provider/filter_controller.dart';
 import '../../../core/provider/service_stats_provider.dart';
 import '../../../core/shared_widget/custom_sparkline.dart';
+import '../../alertsView/presentation/widgets/adaptativesheet.dart';
+import '../../alertsView/presentation/widgets/sheet_base.dart';
 import '../../dashboard/model/domain/filtred_state.dart';
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -936,27 +938,25 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
   // ─── MENU PATIENT ──────────────────────────────────────────────────────────
   void _showPatientMenu(PatientModel patient) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _PatientMenuSheet(
-        patient: patient,
-        onViewPatient: () {
-          Navigator.pop(context);
-          _goToPatientDetail(patient);
-        },
-        onCreateAlert: () {
-          Navigator.pop(context);
-          // La logique sera implémentée plus tard
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Création d\'alerte - À implémenter')),
-          );
-        },
+    showAdaptiveSheet(
+      context,
+      child: SheetBase(
+        child: _PatientMenuSheet(
+          patient: patient,
+          onViewPatient: () {
+            Navigator.pop(context);
+            _goToPatientDetail(patient);
+          },
+          onCreateAlert: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Création d\'alerte - À implémenter')),
+            );
+          },
+        ),
       ),
     );
   }
-
   void _goToPatientDetail(PatientModel patient) {
     // Set le patient sélectionné et navigate vers l'historique
     ref.read(selectedPatientProvider.notifier).setPatient(patient.id);
@@ -1435,107 +1435,101 @@ class _PatientMenuSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final latestVisit = patient.latestVisit;
 
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Header
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${patient.firstName} ${patient.lastName}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'IPP: ${patient.ipp}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(height: 1),
+        // Verbatims si disponibles
+        if (latestVisit?.survey != null) ...[
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  '${patient.firstName} ${patient.lastName}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
+                const Text(
+                  'Verbatims',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: AppColors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  'IPP: ${patient.ipp}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
+                const SizedBox(height: 12),
+                _VerbatimTile(
+                  title: 'Parcours',
+                  verbatim: latestVisit!.survey!.raconteParcours,
+                ),
+                const SizedBox(height: 8),
+                _VerbatimTile(
+                  title: 'Moment marquant',
+                  verbatim: latestVisit.survey!.momentMarquant,
+                ),
+                const SizedBox(height: 8),
+                _VerbatimTile(
+                  title: 'Suggestions',
+                  verbatim: latestVisit.survey!.suggestionsAmelioration,
                 ),
               ],
             ),
           ),
           const Divider(height: 1),
-          // Verbatims si disponibles
-          if (latestVisit?.survey != null) ...[
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Verbatims',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  _VerbatimTile(
-                    title: 'Parcours',
-                    verbatim: latestVisit!.survey!.raconteParcours,
-                  ),
-                  const SizedBox(height: 8),
-                  _VerbatimTile(
-                    title: 'Moment marquant',
-                    verbatim: latestVisit.survey!.momentMarquant,
-                  ),
-                  const SizedBox(height: 8),
-                  _VerbatimTile(
-                    title: 'Suggestions',
-                    verbatim: latestVisit.survey!.suggestionsAmelioration,
-                  ),
-                ],
-              ),
-            ),
-            const Divider(height: 1),
-          ],
-          // Actions
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: onViewPatient,
-                  icon: const Icon(Icons.person_outline_rounded),
-                  label: const Text('Voir le patient en détail'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: onCreateAlert,
-                  icon: const Icon(Icons.warning_amber_rounded),
-                  label: const Text('Générer une alerte'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.primaryError,
-                    side: const BorderSide(color: AppColors.primaryError),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
-      ),
+        // Actions
+        Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton.icon(
+                onPressed: onViewPatient,
+                icon: const Icon(Icons.person_outline_rounded),
+                label: const Text('Voir le patient en détail'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryBlue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: onCreateAlert,
+                icon: const Icon(Icons.warning_amber_rounded),
+                label: const Text('Générer une alerte'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryError,
+                  side: const BorderSide(color: AppColors.primaryError),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

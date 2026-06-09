@@ -5,6 +5,9 @@ import 'package:puls/core/models/team_member_model.dart';
 import 'package:puls/core/provider/auth_provider.dart';
 import 'package:puls/core/provider/team_provider.dart';
 
+import '../../alertsView/presentation/widgets/adaptativesheet.dart';
+import '../../alertsView/presentation/widgets/sheet_base.dart';
+
 class TeamScreen extends ConsumerWidget {
   const TeamScreen({super.key});
 
@@ -87,14 +90,11 @@ class TeamScreen extends ConsumerWidget {
 
   // ── Sheet invitation ───────────────────────────────────────────────────────
   void _showInviteSheet(BuildContext context, WidgetRef ref) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => _InviteSheet(ref: ref),
+    showAdaptiveSheet(
+      context,
+      child: SheetBase(child: _InviteSheet(ref: ref)),
     );
   }
-
   // ── Confirmation suppression ───────────────────────────────────────────────
   void _confirmRemove(BuildContext context, WidgetRef ref, TeamMemberModel member) {
     showDialog(
@@ -320,96 +320,88 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-          24, 24, 24, MediaQuery.of(context).viewInsets.bottom + 24),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Handle
-          Center(
-            child: Container(width: 40, height: 4,
-                decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2))),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Handle
+        Center(
+          child: Container(width: 40, height: 4,
+              decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2))),
+        ),
+        const SizedBox(height: 20),
+
+        const Text('Inviter un membre', style: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary)),
+        const SizedBox(height: 4),
+        const Text('Un email d\'invitation sera envoyé automatiquement.',
+            style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+        const SizedBox(height: 20),
+
+        // Champs
+        _Field(controller: _emailCtrl,    hint: 'Email *',    icon: Icons.email_outlined),
+        const SizedBox(height: 12),
+        _Field(controller: _nameCtrl,     hint: 'Nom *',      icon: Icons.person_outline_rounded),
+        const SizedBox(height: 12),
+        _Field(controller: _fonctionCtrl, hint: 'Fonction *', icon: Icons.work_outline_rounded),
+        const SizedBox(height: 12),
+
+        // Sélecteur de rôle
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(height: 20),
-
-          const Text('Inviter un membre', style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary)),
-          const SizedBox(height: 4),
-          const Text('Un email d\'invitation sera envoyé automatiquement.',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-          const SizedBox(height: 20),
-
-          // Champs
-          _Field(controller: _emailCtrl,    hint: 'Email *',    icon: Icons.email_outlined),
-          const SizedBox(height: 12),
-          _Field(controller: _nameCtrl,     hint: 'Nom *',      icon: Icons.person_outline_rounded),
-          const SizedBox(height: 12),
-          _Field(controller: _fonctionCtrl, hint: 'Fonction *', icon: Icons.work_outline_rounded),
-          const SizedBox(height: 12),
-
-          // Sélecteur de rôle
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.border),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _role,
-                isExpanded: true,
-                style: const TextStyle(
-                    color: AppColors.textPrimary, fontSize: 14),
-                onChanged: (v) => setState(() => _role = v!),
-                items: const [
-                  DropdownMenuItem(value: 'user',
-                      child: Text('Utilisateur')),
-                  DropdownMenuItem(value: 'admin',
-                      child: Text('Administrateur')),
-                ],
-              ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _role,
+              isExpanded: true,
+              style: const TextStyle(
+                  color: AppColors.textPrimary, fontSize: 14),
+              onChanged: (v) => setState(() => _role = v!),
+              items: const [
+                DropdownMenuItem(value: 'user',
+                    child: Text('Utilisateur')),
+                DropdownMenuItem(value: 'admin',
+                    child: Text('Administrateur')),
+              ],
             ),
           ),
+        ),
 
-          if (_error != null) ...[
-            const SizedBox(height: 12),
-            Text(_error!, style: const TextStyle(
-                color: AppColors.primaryError, fontSize: 12)),
-          ],
-
-          const SizedBox(height: 20),
-
-          // Bouton
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: _loading ? null : _invite,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primaryBlue,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-              child: _loading
-                  ? const SizedBox(width: 20, height: 20,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2))
-                  : const Text('Envoyer l\'invitation',
-                  style: TextStyle(fontSize: 15,
-                      fontWeight: FontWeight.w600)),
-            ),
-          ),
+        if (_error != null) ...[
+          const SizedBox(height: 12),
+          Text(_error!, style: const TextStyle(
+              color: AppColors.primaryError, fontSize: 12)),
         ],
-      ),
+
+        const SizedBox(height: 20),
+
+        // Bouton
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: _loading ? null : _invite,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.primaryBlue,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+            ),
+            child: _loading
+                ? const SizedBox(width: 20, height: 20,
+                child: CircularProgressIndicator(
+                    color: Colors.white, strokeWidth: 2))
+                : const Text('Envoyer l\'invitation',
+                style: TextStyle(fontSize: 15,
+                    fontWeight: FontWeight.w600)),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:puls/features/alertsView/presentation/widgets/section_title.dart
 import 'package:puls/features/alertsView/presentation/widgets/sheet_base.dart';
 import 'package:puls/features/alertsView/presentation/widgets/whatsapp_sheet.dart';
 
+import 'adaptativesheet.dart';
 import 'alert_view.dart';
 import 'detail_berbatime_card.dart';
 import 'info_row.dart';
@@ -99,12 +100,12 @@ class DetailSheet extends StatelessWidget {
           SectionTitle('Verbatim patient'),
           // On affiche raconteParcours (q2) et suggestionsAmelioration (q4)
           if (alert
-                  .source
-                  .latestVisit
-                  ?.survey
-                  ?.raconteParcours
-                  .message
-                  .isNotEmpty ??
+              .source
+              .latestVisit
+              ?.survey
+              ?.raconteParcours
+              .message
+              .isNotEmpty ??
               false) ...[
             VerbatimCard(
               icon: Icons.thumb_up_outlined,
@@ -112,18 +113,18 @@ class DetailSheet extends StatelessWidget {
               bg: AppColors.primaryBlueLighter,
               label: 'Point positif',
               message:
-                  alert.source.latestVisit!.survey!.raconteParcours.message,
+              alert.source.latestVisit!.survey!.raconteParcours.message,
               classe: alert.source.latestVisit!.survey!.raconteParcours.classe,
             ),
             const SizedBox(height: 10),
           ],
           if (alert
-                  .source
-                  .latestVisit
-                  ?.survey
-                  ?.suggestionsAmelioration
-                  .message
-                  .isNotEmpty ??
+              .source
+              .latestVisit
+              ?.survey
+              ?.suggestionsAmelioration
+              .message
+              .isNotEmpty ??
               false) ...[
             VerbatimCard(
               icon: Icons.build_outlined,
@@ -159,11 +160,10 @@ class DetailSheet extends StatelessWidget {
                   outlined: true,
                   onTap: () {
                     Navigator.pop(context); // ferme DetailSheet
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => WhatsappSheet(alert: alert),
+                    // ← NOUVEAU : utilise showAdaptiveSheet
+                    showAdaptiveSheet(
+                      context,
+                      child: WhatsappSheet(alert: alert),
                     );
                   },
                 ),
@@ -175,11 +175,10 @@ class DetailSheet extends StatelessWidget {
                   icon: Icons.assignment_outlined,
                   onTap: () {
                     Navigator.pop(context); // ferme DetailSheet
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => PlanSheet(alert: alert),
+                    // ← NOUVEAU : utilise showAdaptiveSheet
+                    showAdaptiveSheet(
+                      context,
+                      child: PlanSheet(alert: alert),
                     );
                   },
                 ),

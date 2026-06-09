@@ -4,6 +4,7 @@ import 'package:puls/core/color.dart';
 import 'package:puls/core/models/patient.dart';
 import 'package:puls/core/provider/alert_provider.dart';
 import 'package:puls/core/shared_widget/segmented_bar.dart';
+import 'package:puls/features/alertsView/presentation/widgets/adaptativesheet.dart';
 import 'package:puls/features/alertsView/presentation/widgets/alert_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/alert_view.dart';
 import 'package:puls/features/alertsView/presentation/widgets/detail_sheet.dart';
@@ -11,6 +12,7 @@ import 'package:puls/features/alertsView/presentation/widgets/empty_state.dart';
 import 'package:puls/features/alertsView/presentation/widgets/patient_groupe_shell.dart';
 import 'package:puls/features/alertsView/presentation/widgets/plan_action_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/plan_sheet.dart';
+import 'package:puls/features/alertsView/presentation/widgets/sheet_base.dart';
 import 'package:puls/features/alertsView/presentation/widgets/validated_card.dart';
 import 'package:puls/features/alertsView/presentation/widgets/whatsapp_sheet.dart';
 import 'package:puls/core/shared_widget/build_header.dart';
@@ -310,29 +312,23 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen>
   }
   // ── Bottom Sheets ─────────────────────────────────────────────────────────
   void _showWhatsappSheet(BuildContext context, AlertView alert) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => WhatsappSheet(alert: alert),
+    showAdaptiveSheet(
+      context,
+      child: WhatsappSheet(alert: alert), // ← pas de SheetBase ici
     );
   }
 
   void _showDetailSheet(BuildContext context, AlertView alert) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => DetailSheet(alert: alert),
+    showAdaptiveSheet(
+      context,
+      child: DetailSheet(alert: alert), // ← pas de SheetBase ici
     );
   }
 
   void _showPlanSheet(BuildContext context, AlertView alert) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => PlanSheet(alert: alert),
+    showAdaptiveSheet(
+      context,
+      child: PlanSheet(alert: alert), // ← pas de SheetBase ici
     );
   }
-}
+  }
