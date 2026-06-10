@@ -1,5 +1,3 @@
-
-
 // ── Liste filtrée → dashboard, alertes ───────────────────────────────────────
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/provider/historique_filter_controller.dart';
@@ -13,6 +11,9 @@ final filteredPatientsProvider = FutureProvider<List<PatientModel>>((ref) {
   final service = ref.watch(patientServiceProvider);
   final filters = ref.watch(filterProvider);
 
+  // Pas de search ici — la recherche se fait 100% en local dans historiqueListProvider.
+  // Envoyer search à Supabase déclenchait un re-fetch à chaque keystroke,
+  // ce qui freezait le whenData et vidait les résultats mid-saisie.
   return service.fetchFilteredPatients(
     service:     filters.service,
     type:        filters.type,
@@ -20,13 +21,10 @@ final filteredPatientsProvider = FutureProvider<List<PatientModel>>((ref) {
     sortie:      filters.sortie,
     dateStart:   filters.periode?.start,
     dateEnd:     filters.periode?.end,
-    search:      filters.searchQuery.isEmpty ? null : filters.searchQuery,
   );
 });
 
 // ── Liste historique : filtrée + triée + filtre alerte ───────────────────────
-// Lit filteredPatientsProvider (déjà fetché) et applique les filtres locaux
-// spécifiques à l'écran historique (alertFilter, sort, recherche verbatim).
 final historiqueListProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
   final patientsAsync = ref.watch(filteredPatientsProvider);
   final filters = ref.watch(historiqueFilterProvider);
@@ -35,21 +33,31 @@ final historiqueListProvider = Provider<AsyncValue<List<PatientModel>>>((ref) {
     var result = List<PatientModel>.from(patients);
 
     // ── Recherche ──────────────────────────────────────────────────────────
-    final q = filters.searchQuery.trim().toLowerCase();
-    if (q.isNotEmpty) {
+    // Split en tokens : "rania ben" → ["rania", "ben"]
+    // Chaque token doit matcher → résiste à l'espace et à l'ordre des mots.
+    final tokens = filters.searchQuery
+        .toLowerCase()
+        .split(RegExp(r'\s+'))
+        .where((t) => t.isNotEmpty)
+        .toList();
+
+    if (tokens.isNotEmpty) {
       result = result.where((p) {
         if (filters.searchMode == SearchMode.patient) {
-          // Recherche par nom / prénom / IPP
-          return p.firstName.toLowerCase().contains(q) ||
-              p.lastName.toLowerCase().contains(q) ||
-              p.ipp.toLowerCase().contains(q);
+          final fullName = '${p.firstName} ${p.lastName}'.toLowerCase();
+          final ipp = p.ipp.toLowerCase();
+          return tokens.every((t) => fullName.contains(t) || ipp.contains(t));
         } else {
-          // Recherche dans les verbatims
-          final s = p.latestVisit?.survey;
-          if (s == null) return false;
-          return s.raconteParcours.message.toLowerCase().contains(q) ||
-              s.momentMarquant.message.toLowerCase().contains(q) ||
-              s.suggestionsAmelioration.message.toLowerCase().contains(q);
+          // Recherche dans les verbatims de TOUTES les visites
+          return p.visits.any((v) {
+            final s = v.survey;
+            if (s == null) return false;
+            final corpus = '${s.raconteParcours.message} '
+                '${s.momentMarquant.message} '
+                '${s.suggestionsAmelioration.message}'
+                .toLowerCase();
+            return tokens.every((t) => corpus.contains(t));
+          });
         }
       }).toList();
     }

@@ -81,8 +81,6 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
 
       final hospitalId = hospitalRes['id'] as String;
 
-      print('✅ Hospital créé : $hospitalId'); // ← ici
-
       // ── Étape 2 : Créer le profil user (owner) lié à l'hôpital ──────────
       final userPayload = {
         'id': uid,
@@ -93,35 +91,20 @@ class OnboardingNotifier extends StateNotifier<OnboardingState> {
         if (session.user.email != null) 'email': session.user.email,
       };
 
-      print('👤 uid: $uid');           // ← ici
-      print('🏥 hospital_id: $hospitalId');
-      print('📦 payload: $userPayload');
-      await supabase.auth.refreshSession();
+      await supabase.from('users').insert(userPayload);
 
-      final freshSession = supabase.auth.currentSession;
-      print('🔑 Role: ${freshSession?.user.role}');
-      print('🔑 Email confirmed: ${freshSession?.user.emailConfirmedAt}');
-      print('🔑 Token expires at: ${freshSession?.expiresAt}');
-      final token = freshSession?.accessToken ?? '';
-// Split en morceaux de 200 chars pour pas que Flutter tronque
-      for (var i = 0; i < token.length; i += 200) {
-        print(token.substring(i, i + 200 > token.length ? token.length : i + 200));
-      }
+      // ── Étape 3 : Fetch profil complet avec join hospitals ────────────────
+      // (nécessaire pour avoir hospitalName dans le state dès le dashboard)
       final userRes = await supabase
           .from('users')
-          .insert(userPayload)
-          .select()
+          .select('*, hospitals(name)')
+          .eq('id', uid)
           .single();
 
-      // ── Étape 3 : Mettre à jour l'état auth avec le profil complet ───────
       _ref.read(authProvider.notifier).setUser(UserModel.fromMap(userRes));
 
       state = state.copyWith(status: OnboardingStatus.success);
     } on PostgrestException catch (e) {
-      print('❌ code: ${e.code}');
-      print('❌ message: ${e.message}');
-      print('❌ details: ${e.details}');
-      print('❌ hint: ${e.hint}');
       // Code 23505 = unique constraint violation (nom hôpital déjà utilisé)
       if (e.code == '23505') {
         state = state.copyWith(

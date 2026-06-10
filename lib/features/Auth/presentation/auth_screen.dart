@@ -10,7 +10,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/shared_widget/action_button.dart';
 
 class AuthScreen extends ConsumerStatefulWidget {
-  const AuthScreen({super.key});
+  final String? otpError;
+  const AuthScreen({super.key, this.otpError});
 
   @override
   ConsumerState<AuthScreen> createState() => _AuthScreenState();
@@ -40,15 +41,29 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
       duration: const Duration(milliseconds: 700),
     )..forward();
 
-    // Écoute les changements d'état auth SANS ref.read après await
-    // — évite le crash "widget unmounted"
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ── Écoute les erreurs Supabase (OTP expiré, lien invalide, etc.) ──
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        if (!mounted) return;
+        // pas d'action ici, géré par authProvider
+      }).onError((error) {
+        if (!mounted) return;
+        if (error is AuthException) {
+          final msg = switch (error.statusCode) {
+            'otp_expired' => 'Lien expiré. Veuillez vous reconnecter.',
+            'access_denied' => 'Accès refusé.',
+            _ => 'Lien invalide. Veuillez réessayer.',
+          };
+          _showSnack(msg, isError: true);
+        }
+      });
+
+      // ── Écoute les changements d'état auth ──
       ref.listenManual(authProvider, (previous, next) {
         if (!mounted) return;
         if (next.status == AuthStatus.error && next.errorMessage != null) {
           _showSnack(next.errorMessage!, isError: true);
         }
-        // Mot de passe incorrect : effacer uniquement le champ password
         if (next.status == AuthStatus.wrongPassword &&
             next.errorMessage != null) {
           _passwordController.clear();
@@ -56,9 +71,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
         }
       });
     });
-  }
-
-  @override
+  }  @override
   void dispose() {
     _animController.dispose();
     _nameController.dispose();

@@ -53,7 +53,8 @@ class AlertView {
 
   String get time => DateFormat('dd/MM/yyyy').format(visit.date);
 
-  String get phone => source.ipp;
+  // ← CORRIGÉ : utilise le vrai numéro de téléphone du patient
+  String? get phone => source.phone;
 
   String get condition => '${visit.visitType} · ${visit.service}';
 

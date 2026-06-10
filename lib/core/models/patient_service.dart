@@ -105,11 +105,31 @@ class PatientService {
           firstName: r['first_name']?.toString() ?? '',
           lastName: r['last_name']?.toString() ?? '',
           sex: r['sex']?.toString() ?? '',
+          phone: _formatPhoneForWhatsApp(r['phone']?.toString()),
           visits: [visit],
         );
       }
     }
 
     return map.values.toList();
+  }
+
+  /// Formate le numéro de téléphone pour WaSender
+  /// Ajoute le + devant si manquant
+  /// Exemple : "213797244980" → "+213797244980"
+  String? _formatPhoneForWhatsApp(String? phone) {
+    if (phone == null || phone.isEmpty) return null;
+
+    // Retire les espaces et caractères spéciaux
+    final cleaned = phone.replaceAll(RegExp(r'[^\d+]'), '');
+
+    if (cleaned.isEmpty) return null;
+
+    // Si ça commence pas par +, ajoute-le
+    if (!cleaned.startsWith('+')) {
+      return '+$cleaned';
+    }
+
+    return cleaned;
   }
 }

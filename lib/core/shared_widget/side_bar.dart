@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:puls/features/dashboard/presentation/provider/q1_pie_chart_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../color.dart';
 import '../provider/auth_provider.dart';
 import '../provider/navigation_provider.dart';
@@ -78,6 +79,16 @@ class SideBar extends ConsumerWidget {
                 4,
                 currentIndex,
                 isCollapsed,
+              ),
+              _navItem(
+                context,
+                ref,
+                Icons.analytics_outlined,
+                "Verbatim",
+                5,
+                currentIndex,
+                isCollapsed,
+                externalUrl: 'https://fans-demo.breedgital.com/pisam/',
               ),
 
               const Spacer(),
@@ -165,6 +176,7 @@ class SideBar extends ConsumerWidget {
     bool collapsed, {
     bool hasBadge = false,
     bool isDestructive = false,
+        String? externalUrl,
   }) {
     final isActive = (index == 99) ? false : (currentIndex == index);
 
@@ -173,16 +185,19 @@ class SideBar extends ConsumerWidget {
         : (isDestructive ? AppColors.primaryError : AppColors.sideBarText);
 
     return InkWell(
-      onTap: () {
-        if (index == 99) {
-          showLogoutDialog(
-            context,
-            ref,
-          ); // <-- On passe aussi ref au dialogue de déconnexion !
-        } else {
-          ref.read(navigationProvider.notifier).setIndex(index);
-        }
-      },
+        onTap: () async {
+          if (index == 99) {
+            showLogoutDialog(context, ref);
+          } else if (externalUrl != null) {
+            // 👇 Ouvre le lien externe
+            final uri = Uri.parse(externalUrl);
+            if (await canLaunchUrl(uri)) {
+              await launchUrl(uri, webOnlyWindowName: '_blank'); // '_blank' = nouvel onglet
+            }
+          } else {
+            ref.read(navigationProvider.notifier).setIndex(index);
+          }
+        },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),

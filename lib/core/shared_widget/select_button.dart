@@ -29,10 +29,10 @@ class FilterSelectButton extends StatelessWidget {
                 width: value != null ? 1.5 : 1,
               ),
             ),
-            child: DropdownButton<String>(
+            child: DropdownButton<String?>(
               hint: Text(label, style: const TextStyle(
                   fontSize: 13, color: AppColors.textSecondary)),
-              value: value,
+              value: (value == null || value!.isEmpty) ? null : value,
               isDense: true,
               icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 18,
                   color: AppColors.primaryBlue),
@@ -40,8 +40,7 @@ class FilterSelectButton extends StatelessWidget {
                   fontSize: 13, color: AppColors.textPrimary),
               onChanged: onSelected,
               items: [
-                DropdownMenuItem<String>(
-                    value: '', child: Text('Tous — $label')),
+                DropdownMenuItem<String?>(value: '', child: Text('Tous — $label')),
                 ...options.map((s) =>
                     DropdownMenuItem<String>(value: s, child: Text(s))),
               ],

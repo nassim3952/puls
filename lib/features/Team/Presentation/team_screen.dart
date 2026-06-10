@@ -294,12 +294,7 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
   }
 
   Future<void> _invite() async {
-    if (_emailCtrl.text.isEmpty || _nameCtrl.text.isEmpty ||
-        _fonctionCtrl.text.isEmpty) {
-      setState(() => _error = 'Tous les champs sont requis.');
-      return;
-    }
-
+    // ... validation ...
     setState(() { _loading = true; _error = null; });
 
     try {
@@ -309,15 +304,22 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
         fonction: _fonctionCtrl.text.trim(),
         role:     _role,
       );
-      if (mounted) Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+        // ✅ Afficher confirmation dans le parent
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Invitation envoyée à ${_emailCtrl.text.trim()} ✓'),
+            backgroundColor: AppColors.primarySuccess,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
     } catch (e) {
-      setState(() {
-        _error   = 'Erreur : $e';
-        _loading = false;
-      });
+      setState(() { _error = 'Erreur : $e'; _loading = false; });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(

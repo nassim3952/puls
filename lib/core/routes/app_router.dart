@@ -7,10 +7,14 @@ import 'package:puls/features/fragment.dart';
 
 import '../../features/Auth/presentation/onboarding_screen.dart';
 import '../../features/Misc/CheckEmailScreen.dart';
+import '../../features/Misc/not_found_screen.dart'; // ← à ajuster selon ton arborescence
+
+// ── Variable globale pour stocker l'erreur OTP avant runApp ──────────────────
+String? pendingOtpError;
 
 // ── Noms des routes ───────────────────────────────────────────────────────────
 class AppRoutes {
-  static const auth = '/auth';
+  static const auth      = '/auth';
   static const onboarding = '/onboarding';
   static const dashboard = '/dashboard';
   static const checkEmail = '/check-email';
@@ -23,44 +27,49 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: AppRoutes.auth,
     refreshListenable: _AuthStateListenable(ref),
+
+    // ── Page 404 ──────────────────────────────────────────────────────────────
+    errorBuilder: (context, state) => const NotFoundScreen(),
+
     redirect: (context, state) {
-      final status = authState.status;
+      final status         = authState.status;
       final hasUserProfile = authState.user != null;
-      final isOnAuthPage = state.matchedLocation == AppRoutes.auth;
+      final isOnAuthPage   = state.matchedLocation == AppRoutes.auth;
       final isOnOnboarding = state.matchedLocation == AppRoutes.onboarding;
 
-      // Encore en initialisation ou chargement → pas de redirect
       if (status == AuthStatus.initial || status == AuthStatus.loading) {
         return null;
       }
 
-      // ⚠️ FIX : needsEmailConfirmation reste sur /auth pour afficher le dialog
-      // Le router ne doit pas interférer — l'écran gère lui-même l'affichage
       if (status == AuthStatus.needsEmailConfirmation) {
-        return state.matchedLocation == AppRoutes.checkEmail ? null : AppRoutes.checkEmail;
+        return state.matchedLocation == AppRoutes.checkEmail
+            ? null
+            : AppRoutes.checkEmail;
       }
 
-      // Non connecté ou erreur → toujours vers /auth
       if (status == AuthStatus.unauthenticated || status == AuthStatus.error) {
         return isOnAuthPage ? null : AppRoutes.auth;
       }
 
-      // Connecté mais pas de profil BDD → bloqué sur /onboarding
       if (status == AuthStatus.authenticated && !hasUserProfile) {
         return isOnOnboarding ? null : AppRoutes.onboarding;
       }
 
-      // Connecté avec profil → pas besoin d'être sur /auth ou /onboarding
       if (status == AuthStatus.authenticated && hasUserProfile) {
         if (isOnAuthPage || isOnOnboarding) return AppRoutes.dashboard;
       }
 
       return null;
     },
+
     routes: [
       GoRoute(
         path: AppRoutes.auth,
-        builder: (context, state) => const AuthScreen(),
+        builder: (context, state) {
+          final otpError = pendingOtpError;
+          pendingOtpError = null;
+          return AuthScreen(otpError: otpError);
+        },
       ),
       GoRoute(
         path: AppRoutes.onboarding,

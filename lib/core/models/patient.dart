@@ -6,6 +6,7 @@ class PatientModel {
   final String lastName;
   final String sex;
   final String ipp;
+  final String? phone;
   final List<VisitModel> visits;
 
   const PatientModel({
@@ -14,6 +15,7 @@ class PatientModel {
     required this.lastName,
     required this.sex,
     required this.ipp,
+    this.phone,
     required this.visits,
   });
 
@@ -33,6 +35,7 @@ class PatientModel {
       lastName: json['last_name']?.toString() ?? 'Inconnu',
       sex: json['sex']?.toString() ?? 'N/A',
       ipp: json['ipp']?.toString() ?? '',
+      phone: json['phone']?.toString(),
       visits: visits,
     );
   }
@@ -43,6 +46,7 @@ class PatientModel {
     String? lastName,
     String? sex,
     String? ipp,
+    Object? phone = _sentinel,
     List<VisitModel>? visits,
   }) {
     return PatientModel(
@@ -51,6 +55,7 @@ class PatientModel {
       lastName: lastName ?? this.lastName,
       sex: sex ?? this.sex,
       ipp: ipp ?? this.ipp,
+      phone: phone == _sentinel ? this.phone : phone as String?,
       visits: visits ?? this.visits,
     );
   }
@@ -61,6 +66,8 @@ class PatientModel {
     return copyWith(visits: [updatedVisit, ...visits.skip(1)]);
   }
 }
+
+const Object _sentinel = Object();
 
 List<dynamic> _toList(dynamic value) {
   if (value == null) return [];

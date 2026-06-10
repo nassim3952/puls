@@ -27,9 +27,9 @@ class AppColors {
 
   // Status colors
   static const Color primarySuccess = Color(0xFF2A9E7C);
-  static const Color primaryWarning = Color(0xFFD97706);
-  static const Color primaryError   = Color(0xFFDC2626);
-  static const Color primaryNeutral = Color(0xFF5A8878);
+  static const Color primaryWarning = Color(0xFFE48C26);
+  static const Color primaryError   = Color(0xFFFA4B4B);
+  static const Color primaryNeutral = Color(0xFF788A83);
 
   static const Color border         = Color(0xFFC8E2D9);
 

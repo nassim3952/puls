@@ -115,7 +115,11 @@ class DashboardHeader extends ConsumerWidget {
         value: currentDureeValue,
         options: dureeOptions,
         onSelected: (val) {
-          if (val == 'Personnalisé') {
+          if (val == null) {          // ← ajoute ces 3 lignes au début
+            notifier.updatePeriode(null);
+            return;
+          }
+          if (val == 'Personnalisé') { // ... reste inchangé
             _showCustomDatePicker(context, notifier);
           } else {
             final now = DateTime.now();
