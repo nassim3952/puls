@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:puls/core/routes/app_router.dart';
 import 'package:flutter_riverpod/legacy.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,22 +25,26 @@ class AuthState {
   final AuthStatus status;
   final UserModel? user;
   final String? errorMessage;
+  final bool isInvitedUser; // ← true si première connexion via invitation
 
   const AuthState({
     this.status = AuthStatus.initial,
     this.user,
     this.errorMessage,
+    this.isInvitedUser = false,
   });
 
   AuthState copyWith({
     AuthStatus? status,
     UserModel? user,
     String? errorMessage,
+    bool? isInvitedUser,
   }) {
     return AuthState(
       status: status ?? this.status,
       user: user ?? this.user,
       errorMessage: errorMessage ?? this.errorMessage,
+      isInvitedUser: isInvitedUser ?? this.isInvitedUser,
     );
   }
 }
@@ -74,6 +79,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _loadUserFromDb(String uid) async {
+
     try {
       final data = await _supabase
           .from('users')
@@ -81,13 +87,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
           .eq('id', uid)
           .maybeSingle();
 
+      // ── Détecter si l'invité doit définir son mot de passe ──────────────
+      final needsPasswordSetup = data?['needs_password_setup'] as bool? ?? false;
+      print('🟣 needs_password_setup: $needsPasswordSetup | data: ${data?['needs_password_setup']}');
       if (data != null) {
         state = state.copyWith(
           status: AuthStatus.authenticated,
           user: UserModel.fromMap(data),
+          isInvitedUser: needsPasswordSetup,
         );
       } else {
-        // Auth OK mais pas encore de profil BDD (juste après inscription)
         state = state.copyWith(status: AuthStatus.authenticated);
       }
     } catch (e) {
@@ -199,6 +208,34 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(
         status: AuthStatus.error,
         errorMessage: 'Une erreur inattendue est survenue.',
+      );
+    }
+  }
+
+  // ── Définir mot de passe (post-invitation) ───────────────────────────────
+  Future<void> updatePassword(String newPassword) async {
+    state = state.copyWith(status: AuthStatus.loading);
+    try {
+      await _supabase.auth.updateUser(UserAttributes(password: newPassword));
+      // Marquer le mot de passe comme défini en BDD
+      final uid = _supabase.auth.currentUser?.id;
+      if (uid != null) {
+        await _supabase
+            .from('users')
+            .update({'needs_password_setup': false})
+            .eq('id', uid);
+        await _loadUserFromDb(uid);
+      }
+      state = state.copyWith(isInvitedUser: false);
+    } on AuthException catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: _translateAuthError(e.message),
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: AuthStatus.error,
+        errorMessage: 'Erreur inattendue : $e',
       );
     }
   }

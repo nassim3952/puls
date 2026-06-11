@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:puls/core/color.dart';
 import 'package:puls/features/Auth/presentation/widgets/soft_blob.dart';
 
+import 'home_button.dart';
+
 class NotFoundScreen extends StatefulWidget {
   const NotFoundScreen({super.key});
 
@@ -112,7 +114,7 @@ class _NotFoundScreenState extends State<NotFoundScreen>
                             style: TextStyle(
                               fontSize: 72,
                               fontWeight: FontWeight.w900,
-                              color: Colors.white, // masqué par ShaderMask
+                              color: AppColors.white, // masqué par ShaderMask
                               height: 1,
                               letterSpacing: -2,
                             ),
@@ -145,7 +147,7 @@ class _NotFoundScreenState extends State<NotFoundScreen>
                         const SizedBox(height: 32),
 
                         // ── Bouton retour accueil ────────────────────────
-                        _HomeButton(),
+                        HomeButton(),
 
                         const SizedBox(height: 40),
 
@@ -171,59 +173,3 @@ class _NotFoundScreenState extends State<NotFoundScreen>
   }
 }
 
-// ── Bouton "Retour à l'accueil" avec gradient ─────────────────────────────────
-class _HomeButton extends StatefulWidget {
-  @override
-  State<_HomeButton> createState() => _HomeButtonState();
-}
-
-class _HomeButtonState extends State<_HomeButton> {
-  bool _hovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hovered = true),
-      onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedScale(
-        scale: _hovered ? 1.02 : 1.0,
-        duration: const Duration(milliseconds: 150),
-        child: GestureDetector(
-          onTap: () => context.go('/dashboard'),
-          child: Container(
-            width: double.infinity,
-            constraints: const BoxConstraints(maxWidth: 280),
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              borderRadius: BorderRadius.circular(14),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primaryBlue.withOpacity(0.30),
-                  blurRadius: 18,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.home_rounded, color: Colors.white, size: 18),
-                SizedBox(width: 8),
-                Text(
-                  'Retour à l\'accueil',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.2,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

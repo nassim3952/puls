@@ -99,7 +99,7 @@ class _KpiHelpDialogState extends State<KpiHelpDialog> {
             const SizedBox(height: 14),
 
             // Équipe
-            _SectionLabel(label: 'Équipe'),
+            _SectionLabel(label: 'Équipes'),
             const SizedBox(height: 6),
             Row(
               children: [

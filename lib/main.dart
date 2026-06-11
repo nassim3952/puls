@@ -17,15 +17,38 @@ Future<void> main() async {
     anonKey: 'sb_publishable_3Kj_37TEdRIf0yIQoOoniA_6fGv_oXA',
   );
 
-  // ── Intercepte les erreurs Supabase dans l'URL (Flutter Web) ──
+  // ── Intercepte les tokens/erreurs Supabase dans l'URL (Flutter Web) ──
   if (kIsWeb) {
-    final uri = Uri.parse(html.window.location.href);
-    final fragmentUri = Uri.parse(uri.fragment);
-    final errorCode = fragmentUri.queryParameters['error_code'];
+    final fullUrl = html.window.location.href;
+    // Supabase génère parfois une URL avec deux "#" :
+    // http://localhost:3000/#/onboarding#access_token=...
+    // On prend tout ce qui est après le DERNIER "#"
+    final lastHash = fullUrl.lastIndexOf('#');
+    final rawFragment = lastHash >= 0 ? fullUrl.substring(lastHash + 1) : '';
+    final params = Uri.parse('?$rawFragment').queryParameters;
+
+    final errorCode   = params['error_code'];
+    final accessToken = params['access_token'];
+    final refreshToken = params['refresh_token'];
+    final type        = params['type']; // 'invite', 'recovery', etc.
 
     if (errorCode != null) {
-      pendingOtpError = errorCode; // ← stocke avant runApp
+      // Erreur OTP existante
+      pendingOtpError = errorCode;
       html.window.history.replaceState(null, '', '/#/auth');
+
+    } else if (accessToken != null && type == 'invite') {
+      // ── Lien d'invitation : établir la session manuellement ──
+      try {
+        await Supabase.instance.client.auth.setSession(
+          refreshToken ?? '',
+          accessToken: accessToken,
+        );
+        pendingInvite = true;
+      } catch (e) {
+        print('setSession error: $e');
+      }
+      html.window.history.replaceState(null, '', '/#/onboarding');
     }
   }
 
