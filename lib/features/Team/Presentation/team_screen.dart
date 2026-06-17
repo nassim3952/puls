@@ -52,7 +52,7 @@ class TeamScreen extends ConsumerWidget {
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColors.primaryBlue,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                   ),
               ],
@@ -392,7 +392,7 @@ class _InviteSheetState extends ConsumerState<_InviteSheet> {
               backgroundColor: AppColors.primaryBlue,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(8)),
             ),
             child: _loading
                 ? const SizedBox(width: 20, height: 20,

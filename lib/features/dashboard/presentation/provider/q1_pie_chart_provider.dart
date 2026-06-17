@@ -16,15 +16,16 @@ final q1PieChartProvider = Provider<AsyncValue<List<ChartDataPie>>>((ref) {
 
   return ref.watch(dashboardChartsProvider).whenData((charts) =>
       charts.q1Distribution
-          .where((item) {
-        final chipLabel = item.label.toUpperCase();
-        return selectedLabels.isEmpty || selectedLabels.contains(chipLabel);
+          .map((item) {
+        final upperLabel = item.label.toUpperCase();
+        final isActive = selectedLabels.isEmpty || selectedLabels.contains(upperLabel);
+        return ChartDataPie(
+          label: upperLabel,
+          value: item.pct,
+          // Grisé si désactivé, couleur normale si actif
+          color: isActive ? item.color : Colors.grey.withOpacity(0.25),
+        );
       })
-          .map((item) => ChartDataPie(
-        label: item.label.toUpperCase(),
-        value: item.pct,
-        color: item.color,
-      ))
           .toList(),
   );
 });

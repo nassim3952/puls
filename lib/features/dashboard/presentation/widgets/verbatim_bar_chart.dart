@@ -35,7 +35,7 @@ Color _polColor(String pol) {
     case 'Négative':
       return AppColors.primaryError;
     default:
-      return AppColors.primaryNeutral;
+      return AppColors.blue;
   }
 }
 

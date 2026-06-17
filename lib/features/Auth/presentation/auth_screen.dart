@@ -333,21 +333,21 @@ class _AuthScreenState extends ConsumerState<AuthScreen>
                                 ),
 
                               // Toggle login ↔ inscription
-                              Center(
-                                child: TextButton(
-                                  onPressed: _toggleMode,
-                                  child: Text(
-                                    _isLogin
-                                        ? 'Pas encore de compte ? Créer un compte'
-                                        : 'Déjà un compte ? Se connecter',
-                                    style: const TextStyle(
-                                      color: AppColors.primaryBlue,
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              // Center(
+                              //   child: TextButton(
+                              //     onPressed: _toggleMode,
+                              //     child: Text(
+                              //       _isLogin
+                              //           ? 'Pas encore de compte ? Créer un compte'
+                              //           : 'Déjà un compte ? Se connecter',
+                              //       style: const TextStyle(
+                              //         color: AppColors.primaryBlue,
+                              //         fontSize: 13,
+                              //         fontWeight: FontWeight.w600,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ),

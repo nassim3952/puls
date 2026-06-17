@@ -10,6 +10,8 @@ class AppColors {
 
   static const infoText = Color(0xFF2A9E7C);
 
+  static const Color blue = Color(0xFF005487);
+
   // Surface & fond de page
   static const Color surface        = Colors.white; // fond page — menthe désaturé, doux 0xFFFDFFFE
   static const Color divider        = Color(0xFFD0E8E0); // séparateurs discrets

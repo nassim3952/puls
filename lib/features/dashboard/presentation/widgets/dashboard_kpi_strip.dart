@@ -6,6 +6,7 @@ import 'package:puls/core/color.dart';
 import 'package:puls/core/shared_widget/custom_sparkline.dart';
 
 import '../../../../core/provider/dashboard_kpi_provider.dart';
+import '../../../../core/provider/filter_controller.dart';
 
 class DashboardKpiStrip extends ConsumerWidget {
   const DashboardKpiStrip({super.key});
@@ -13,36 +14,23 @@ class DashboardKpiStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final kpiAsync = ref.watch(dashboardKpiProvider);
+    // En mode "Tout" (aucune période sélectionnée), il n'y a pas de période
+    // précédente à comparer : on masque les badges de variation.
+    final hasPeriode = ref.watch(filterProvider.select((f) => f.periode != null));
     return kpiAsync.when(
       loading: () => const _StripSkeleton(),
       error: (e, _) => const SizedBox.shrink(),
-      data: (kpi) => _StripContent(kpi: kpi),
+      data: (kpi) => _StripContent(kpi: kpi, showVariation: hasPeriode),
     );
   }
-}
-
-// ─── Variation ────────────────────────────────────────────────────────────────
-
-/// Calcule la variation % entre la moyenne de la première moitié
-/// et la moyenne de la deuxième moitié de la sparkline.
-double? _computeVariation(List<double> data) {
-  if (data.length < 2) return null;
-  final mid = data.length ~/ 2;
-  final first = data.sublist(0, mid);
-  final second = data.sublist(mid);
-
-  final avgFirst = first.reduce((a, b) => a + b) / first.length;
-  final avgSecond = second.reduce((a, b) => a + b) / second.length;
-
-  if (avgFirst == 0) return null;
-  return ((avgSecond - avgFirst) / avgFirst) * 100;
 }
 
 // ─── Contenu ──────────────────────────────────────────────────────────────────
 
 class _StripContent extends StatelessWidget {
   final DashboardKpi kpi;
-  const _StripContent({required this.kpi});
+  final bool showVariation;
+  const _StripContent({required this.kpi, required this.showVariation});
 
   String _pct(double v) => '${(v * 100).toStringAsFixed(1)} %';
 
@@ -54,18 +42,21 @@ class _StripContent extends StatelessWidget {
         value: '${kpi.totalPatients}',
         color: AppColors.primaryBlue,
         spark: kpi.patientsSpark,
+        variation: showVariation ? kpi.variationPatients : null,
       ),
       _KpiCard(
         label: 'Visites',
         value: '${kpi.totalVisits}',
         color: AppColors.primaryBlue,
         spark: kpi.visitsSpark,
+        variation: showVariation ? kpi.variationVisits : null,
       ),
       _KpiCard(
         label: 'Réponses',
         value: '${kpi.totalResponses}',
         color: AppColors.primaryBlue,
         spark: kpi.responsesSpark,
+        variation: showVariation ? kpi.variationResponses : null,
       ),
     ];
 
@@ -75,6 +66,7 @@ class _StripContent extends StatelessWidget {
         value: '${kpi.totalAlerts}',
         color: AppColors.primaryError,
         spark: kpi.alertsSpark,
+        variation: showVariation ? kpi.variationAlerts : null,
         invertVariation: true, // hausse d'alertes = mauvais signe
       ),
       _KpiCard(
@@ -82,12 +74,14 @@ class _StripContent extends StatelessWidget {
         value: '${kpi.totalAlertsResolved}',
         color: AppColors.primaryBlue,
         spark: kpi.alertsResolvedSpark,
+        variation: showVariation ? kpi.variationAlertsResolved : null,
       ),
       _KpiCard(
         label: 'Taux de réponse',
         value: _pct(kpi.responseRate),
         color: AppColors.primaryBlue,
         spark: kpi.responseRateSpark,
+        variation: showVariation ? kpi.variationResponseRate : null,
       ),
     ];
 
@@ -122,6 +116,10 @@ class _KpiCard extends StatelessWidget {
   final Color color;
   final List<double> spark;
 
+  /// Variation déjà calculée côté SQL (% vs période précédente).
+  /// `null` si rien à afficher (mode "Tout" ou pas de donnée de comparaison).
+  final double? variation;
+
   /// Si true, une hausse est considérée négative (ex: alertes)
   final bool invertVariation;
 
@@ -130,27 +128,19 @@ class _KpiCard extends StatelessWidget {
     required this.value,
     required this.color,
     required this.spark,
+    this.variation,
     this.invertVariation = false,
   });
 
-  List<double> _trimTrailingZeros(List<double> data) {
-    int end = data.length;
-    while (end > 1 && data[end - 1] == 0.0) end--;
-    return data.sublist(0, end);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final trimmed = _trimTrailingZeros(spark);
-    final variation = _computeVariation(trimmed);
-
     // Couleur de la variation : vert si positive (sauf si invertVariation)
     Color? variationColor;
     String? variationLabel;
     IconData? variationIcon;
 
     if (variation != null) {
-      final isPositive = variation >= 0;
+      final isPositive = variation! >= 0;
       final isGood = invertVariation ? !isPositive : isPositive;
       variationColor = isGood
           ? const Color(0xFF16A34A)
@@ -158,8 +148,11 @@ class _KpiCard extends StatelessWidget {
       variationIcon = isPositive
           ? Icons.arrow_drop_up_rounded
           : Icons.arrow_drop_down_rounded;
-      variationLabel =
-      '${isPositive ? '+' : ''}${variation.toStringAsFixed(1)}%';
+      const _kCap = 999.0;
+      final capped = variation!.abs() > _kCap;
+      final display = capped ? _kCap : variation!.abs();
+      final sign = variation! >= 0 ? '+' : '-';
+      variationLabel = '$sign${display.toStringAsFixed(capped ? 0 : 1)}%${capped ? '+' : ''}';
     }
 
     return Container(
@@ -244,11 +237,11 @@ class _KpiCard extends StatelessWidget {
 
             // ── Droite : sparkline (prend tout l'espace restant) ─────
             Expanded(
-              child: trimmed.length >= 2
+              child: spark.length >= 2
                   ? SizedBox(
                 height: 44,
                 child: AnimatedSparkline(
-                  data: trimmed,
+                  data: spark,
                   color: color,
                 ),
               )

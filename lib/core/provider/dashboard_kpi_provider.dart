@@ -21,6 +21,15 @@ class DashboardKpi {
   final List<double> alertsResolvedSpark;
   final List<double> responseRateSpark;
 
+  /// Variations en % vs la période précédente (même durée, juste avant).
+  /// `null` si rien à comparer (ex: mode "Tout", ou période précédente vide).
+  final double? variationPatients;
+  final double? variationVisits;
+  final double? variationResponses;
+  final double? variationAlerts;
+  final double? variationAlertsResolved;
+  final double? variationResponseRate;
+
   const DashboardKpi({
     required this.totalPatients,
     required this.totalVisits,
@@ -35,6 +44,12 @@ class DashboardKpi {
     required this.alertsSpark,
     required this.alertsResolvedSpark,
     required this.responseRateSpark,
+    this.variationPatients,
+    this.variationVisits,
+    this.variationResponses,
+    this.variationAlerts,
+    this.variationAlertsResolved,
+    this.variationResponseRate,
   });
 
   static const empty = DashboardKpi(
@@ -75,6 +90,11 @@ class DashboardKpi {
       return rates.map((v) => (v / maxVal) * 5).toList();
     }
 
+    double? toVariation(dynamic raw) {
+      if (raw == null) return null;
+      return (raw as num).toDouble();
+    }
+
     return DashboardKpi(
       totalPatients:       (json['total_patients']        as num).toInt(),
       totalVisits:         (json['total_visits']          as num).toInt(),
@@ -89,6 +109,12 @@ class DashboardKpi {
       alertsSpark:         toSpark(json['spark_alerts']),
       alertsResolvedSpark: toSpark(json['spark_resolved']),
       responseRateSpark:   toRateSpark(json['spark_visits'], json['spark_responses']),
+      variationPatients:        toVariation(json['variation_patients']),
+      variationVisits:          toVariation(json['variation_visits']),
+      variationResponses:       toVariation(json['variation_responses']),
+      variationAlerts:          toVariation(json['variation_alerts']),
+      variationAlertsResolved:  toVariation(json['variation_alerts_resolved']),
+      variationResponseRate:    toVariation(json['variation_response_rate']),
     );
   }
 }

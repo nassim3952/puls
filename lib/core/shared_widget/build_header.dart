@@ -9,6 +9,7 @@ import '../color.dart';
 // Import de tes nouveaux fichiers de gestion d'état
 import '../provider/filter_controller.dart';
 import 'build_reset_button.dart';
+import 'custom_date_picker.dart';
 
 class DashboardHeader extends ConsumerWidget {
   final bool showResultChip;
@@ -120,7 +121,7 @@ class DashboardHeader extends ConsumerWidget {
             return;
           }
           if (val == 'Personnalisé') { // ... reste inchangé
-            _showCustomDatePicker(context, notifier);
+            showCustomDatePicker(context, notifier);
           } else {
             final now = DateTime.now();
             final today = DateTime(now.year, now.month, now.day);
@@ -200,53 +201,3 @@ class DashboardHeader extends ConsumerWidget {
   }
 }
 
-void _showCustomDatePicker(
-    BuildContext context,
-    DashboardFilterNotifier notifier,
-    ) {
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      backgroundColor: AppColors.surface,
-      title: const Text("Sélectionner une période"),
-      content: SizedBox(
-        height: 350,
-        width: 300,
-        child: SfDateRangePicker(
-          headerStyle: const DateRangePickerHeaderStyle(
-            backgroundColor: AppColors.surface,
-          ),
-          backgroundColor: AppColors.surface,
-          selectionColor: AppColors.primaryBlue,
-          endRangeSelectionColor: AppColors.primaryBlue,
-          startRangeSelectionColor: AppColors.primaryBlue,
-          rangeSelectionColor: AppColors.primaryBlue.withOpacity(0.2),
-          todayHighlightColor: AppColors.primaryBlue,
-          selectionMode: DateRangePickerSelectionMode.range,
-          onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-            if (args.value is PickerDateRange) {
-              final range = args.value as PickerDateRange;
-              if (range.startDate != null && range.endDate != null) {
-                notifier.updatePeriode(
-                  DateTimeRange(
-                    start: range.startDate!,
-                    end: range.endDate!,
-                  ),
-                );
-              }
-            }
-          },
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text(
-            "Valider",
-            style: TextStyle(color: AppColors.primaryBlue),
-          ),
-        ),
-      ],
-    ),
-  );
-}

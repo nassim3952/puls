@@ -32,7 +32,7 @@ class SideBar extends ConsumerWidget {
             children: [
               const SizedBox(height: 10),
               _buildLogo(ref, isCollapsed),
-              const SizedBox(height: 50),
+              const SizedBox(height: 33),
 
               _navItem(
                 context,
@@ -83,9 +83,18 @@ class SideBar extends ConsumerWidget {
               _navItem(
                 context,
                 ref,
+                Icons.send_rounded,
+                "Enquête ",
+                5,
+                currentIndex,
+                isCollapsed,
+              ),
+              _navItem(
+                context,
+                ref,
                 Icons.analytics_outlined,
                 "Verbatim",
-                5,
+                6,
                 currentIndex,
                 isCollapsed,
                 externalUrl: 'https://fans-demo.breedgital.com/pisam/',

@@ -9,9 +9,9 @@ import '../widgets/filter_chip.dart';
 import '../../../../core/shared_widget/q0_score_gauge.dart';
 import '../widgets/q0_spline_chart.dart';
 import '../widgets/q5_dougnut_chart.dart';
+import '../widgets/verbatim_feed_section.dart';
 
 final dashboardItems = [
-
   DashboardItem(
     title: "ISGPP",
     fullName: "Indice de Satisfaction Globale du Parcours Patient",
@@ -34,12 +34,21 @@ final dashboardItems = [
     fullName: "Efficacité Médicale Perçue",
     crossAxis: 12,
     mainAxis: 5,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Align(alignment: AlignmentGeometry.center, child: Q1PieChart()),
-        Expanded(child: Q1MultiSplineChart()),
-      ],
+    child: LayoutBuilder(
+      builder: (context, constraints) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Align(
+            alignment: Alignment.center,
+            child: SizedBox(
+              width: constraints.maxHeight.clamp(80.0, 140.0),
+              height: constraints.maxHeight.clamp(80.0, 140.0),
+              child: Q1PieChart(),
+            ),
+          ),
+          Expanded(child: Q1MultiSplineChart()),
+        ],
+      ),
     ),
   ),
 
@@ -73,13 +82,11 @@ final dashboardItems = [
     secondaryChild: QuestionSunburstSection(questionKey: 'q4'),
   ),
 
-
   DashboardItem(
-    title: "Alert",
-    fullName: "Alert",
+    title: "Voix Patients",
+    fullName: "Verbatims des patients",
     crossAxis: 12,
     mainAxis: 8,
-    child: AlertSection(),
+    child: VerbatimFeedSection(),
   ),
-
 ];

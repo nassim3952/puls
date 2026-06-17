@@ -15,6 +15,7 @@ import '../../../core/models/service_stats_model.dart';
 import '../../../core/models/survey_response.dart';
 import '../../../core/provider/filter_controller.dart';
 import '../../../core/provider/service_stats_provider.dart';
+import '../../../core/shared_widget/custom_date_picker.dart';
 import '../../../core/shared_widget/custom_sparkline.dart';
 import '../../alertsView/presentation/widgets/adaptativesheet.dart';
 import '../../alertsView/presentation/widgets/sheet_base.dart';
@@ -185,7 +186,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                 color: AppColors.primaryBlue),
             onChanged: (val) {
               if (val == 'Personnalisé') {
-                _showCustomDatePicker(context, notifier);
+                showCustomDatePicker(context, notifier);
               } else {
                 final now = DateTime.now();
                 final today = DateTime(now.year, now.month, now.day);
@@ -389,56 +390,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     );
   }
 
-  void _showCustomDatePicker(
-      BuildContext context,
-      DashboardFilterNotifier notifier,
-      ) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.surface,
-        title: const Text("Sélectionner une période"),
-        content: SizedBox(
-          height: 350,
-          width: 300,
-          child: SfDateRangePicker(
-            headerStyle: const DateRangePickerHeaderStyle(
-              backgroundColor: AppColors.surface,
-            ),
-            backgroundColor: AppColors.surface,
-            selectionColor: AppColors.primaryBlue,
-            endRangeSelectionColor: AppColors.primaryBlue,
-            startRangeSelectionColor: AppColors.primaryBlue,
-            rangeSelectionColor: AppColors.primaryBlue.withOpacity(0.2),
-            todayHighlightColor: AppColors.primaryBlue,
-            selectionMode: DateRangePickerSelectionMode.range,
-            onSelectionChanged: (DateRangePickerSelectionChangedArgs args) {
-              if (args.value is PickerDateRange) {
-                final range = args.value as PickerDateRange;
-                if (range.startDate != null && range.endDate != null) {
-                  notifier.updatePeriode(
-                    DateTimeRange(
-                      start: range.startDate!,
-                      end: range.endDate!,
-                    ),
-                  );
-                }
-              }
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text(
-              "Valider",
-              style: TextStyle(color: AppColors.primaryBlue),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   // ─── TABLEAU ───────────────────────────────────────────────────────────────
   Widget _buildTableView(List<ServiceStats> stats, ServiceFilterState filters) {
@@ -1407,7 +1358,7 @@ class _VisitSummary extends StatelessWidget {
                 '${visit.survey!.qualitePriseEnCharge}/5',
                 style: const TextStyle(
                   fontSize: 9,
-                  color: Colors.white,
+                  color: AppColors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -1511,7 +1462,7 @@ class _PatientMenuSheet extends StatelessWidget {
                 label: const Text('Voir le patient en détail'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:puls/core/shared_widget/app_bar.dart';
 import 'package:puls/features/service/presentation/services_screen.dart';
+import 'package:puls/features/survey/presentation/survey_screen.dart';
 
 // Importe tes nouvelles vues ici
 import '../core/color.dart';
@@ -39,6 +40,10 @@ class MainDashboardScreen extends ConsumerWidget {
       case 4:
         currentView = const TeamScreen(); // La liste des services
         break;
+      case 5:
+        currentView = const SurveyScreen(); // La liste des services
+        break;
+
       default:
         currentView = const DashboardView();
     }

@@ -17,6 +17,7 @@ import '../../../core/provider/historique_filter_controller.dart';
 import '../../../core/provider/patient_provider.dart';
 import '../../../core/shared_widget/custom_sparkline.dart';
 import '../../../core/shared_widget/empty_state.dart';
+import '../../../core/shared_widget/filter_tab.dart';
 
 // ---------------------------------------------------------------------------
 // ENUMS — re-exportés pour patient_provider.dart
@@ -129,46 +130,15 @@ class _HistoriqueScreenState extends ConsumerState<HistoriqueScreen>
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 14),
       child: Row(
         children: [
-          // Recherche
-          _SearchBar(
-            controller: _searchController,
-            mode: filters.searchMode,
-            onChanged: (v) =>
-                ref.read(historiqueFilterProvider.notifier).setSearch(v),
-            onModeChanged: (m) =>
-                ref.read(historiqueFilterProvider.notifier).setSearchMode(m),
-          ),
-          const SizedBox(width: 10),
+
+          Spacer(),
           // Filtre alerte
-          _AlertTabFilter(
+          TabFilter(
             current: filters.alertFilter,
             onChanged: (v) =>
                 ref.read(historiqueFilterProvider.notifier).setAlert(v),
           ),
-          const Spacer(),
-          // Compteur patients
-          Consumer(builder: (ctx, r, _) {
-            final async = r.watch(historiqueListProvider);
-            return async.maybeWhen(
-              data: (list) => _CountBadge(count: list.length),
-              orElse: () => const SizedBox.shrink(),
-            );
-          }),
-          if (filters != const HistoriqueFilterState()) ...[
-            const SizedBox(width: 10),
-            TextButton.icon(
-              onPressed: () {
-                _searchController.clear();
-                ref.read(historiqueFilterProvider.notifier).reset();
-              },
-              icon: const Icon(Icons.refresh_rounded, size: 15),
-              label: const Text('Réinitialiser'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.primaryBlue,
-                textStyle: const TextStyle(fontSize: 12),
-              ),
-            ),
-          ],
+
         ],
       ),
     );
@@ -240,7 +210,7 @@ class _PatientList extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF8F9FB),
+              color: AppColors.white,
               borderRadius:
               const BorderRadius.vertical(top: Radius.circular(14)),
               border: Border(
@@ -315,7 +285,7 @@ class _PatientListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = patient;
-    final initials = '${p.firstName[0]}${p.lastName[0]}';
+    final initials = '${p.firstName.isNotEmpty ? p.firstName[0] : '?'}${p.lastName.isNotEmpty ? p.lastName[0] : '?'}';
     final fmt = DateFormat('dd/MM/yy', 'fr_FR');
     final hasAlert = p.latestVisit?.hasAlert ?? false;
     final visitCount = p.visits.length;
@@ -462,7 +432,7 @@ class _PatientDetailPane extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = patient;
-    final initials = '${p.firstName[0]}${p.lastName[0]}';
+    final initials = '${p.firstName.isNotEmpty ? p.firstName[0] : '?'}${p.lastName.isNotEmpty ? p.lastName[0] : '?'}';
     final hasActiveAlert =
     p.visits.any((v) => v.hasAlert && !v.alertResolved);
 
@@ -1768,167 +1738,7 @@ class _CountBadge extends StatelessWidget {
   }
 }
 
-// ─── Barre de recherche ───────────────────────────────────────────────────
-class _SearchBar extends StatelessWidget {
-  final TextEditingController controller;
-  final SearchMode mode;
-  final void Function(String) onChanged;
-  final void Function(SearchMode) onModeChanged;
 
-  const _SearchBar({
-    required this.controller,
-    required this.mode,
-    required this.onChanged,
-    required this.onModeChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 320,
-      height: 38,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Row(
-        children: [
-          // Toggle mode
-          GestureDetector(
-            onTap: () => onModeChanged(
-              mode == SearchMode.patient
-                  ? SearchMode.keyword
-                  : SearchMode.patient,
-            ),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              height: double.infinity,
-              decoration: BoxDecoration(
-                color: AppColors.primaryBlueLighter,
-                borderRadius: const BorderRadius.horizontal(
-                    left: Radius.circular(9)),
-                border:
-                Border(right: BorderSide(color: AppColors.divider)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    mode == SearchMode.patient
-                        ? Icons.person_outline_rounded
-                        : Icons.text_fields_rounded,
-                    size: 13,
-                    color: AppColors.primaryBlue,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    mode == SearchMode.patient ? 'Patient' : 'Verbatim',
-                    style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.primaryBlue,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Champ texte
-          Expanded(
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              style: const TextStyle(
-                  fontSize: 12, color: AppColors.textPrimary),
-              decoration: InputDecoration(
-                hintText: mode == SearchMode.patient
-                    ? 'Nom, prénom, IPP…'
-                    : 'Mot-clé dans les verbatims…',
-                hintStyle: const TextStyle(
-                    fontSize: 12, color: AppColors.kTextSub),
-                border: InputBorder.none,
-                contentPadding:
-                const EdgeInsets.symmetric(horizontal: 10),
-                isDense: true,
-                suffixIcon: controller.text.isNotEmpty
-                    ? IconButton(
-                  icon: const Icon(Icons.clear_rounded, size: 14),
-                  color: AppColors.kTextSub,
-                  onPressed: () {
-                    controller.clear();
-                    onChanged('');
-                  },
-                  splashRadius: 14,
-                )
-                    : null,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Filtre onglets alerte ────────────────────────────────────────────────
-class _AlertTabFilter extends StatelessWidget {
-  final String current;
-  final void Function(String) onChanged;
-
-  const _AlertTabFilter(
-      {required this.current, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    const tabs = [
-      ('all', 'Tous'),
-      ('alert', 'Alertes'),
-      ('ok', 'Sans alerte'),
-    ];
-
-    return Container(
-      height: 38,
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.divider),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: tabs.map((tab) {
-          final isActive = current == tab.$1;
-          return GestureDetector(
-            onTap: () => onChanged(tab.$1),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              height: double.infinity,
-              decoration: BoxDecoration(
-                color: isActive
-                    ? AppColors.primaryBlue
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(9),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                tab.$2,
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: isActive
-                      ? FontWeight.w600
-                      : FontWeight.w400,
-                  color: isActive
-                      ? Colors.white
-                      : AppColors.textSecondary,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-}
 
 // ─── Placeholders ─────────────────────────────────────────────────────────
 class _EmptyDetailPlaceholder extends StatelessWidget {
