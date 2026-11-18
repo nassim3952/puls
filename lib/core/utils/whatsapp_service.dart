@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WhatsappService {
@@ -7,59 +5,52 @@ class WhatsappService {
 
   WhatsappService(this._supabase);
 
-  /// Envoie un message WhatsApp via l'Edge Function
+  /// Envoie un message WhatsApp via l'Edge Function `send-whatsapp`.
   ///
   /// [phone] - Numéro de téléphone au format international (+212...)
   /// [message] - Contenu du message
+  ///
+  /// `functions.invoke` ajoute automatiquement l'apikey et le jeton de
+  /// l'utilisateur connecté : la fonction déployée sur le VPS refuse les
+  /// appels anonymes (401 « connexion requise »).
   ///
   /// Retourne le messageId si succès, throw une exception si erreur
   Future<String> sendMessage({
     required String phone,
     required String message,
   }) async {
+    if (_supabase.auth.currentSession == null) {
+      throw WhatsappSendException(message: 'Connexion requise');
+    }
+
     try {
-      // Récupère le project ref depuis la configuration Supabase
-      final projectRef = _extractProjectRef();
-
-      final url = Uri.parse(
-        'https://$projectRef.supabase.co/functions/v1/send-whatsapp',
+      final response = await _supabase.functions.invoke(
+        'send-whatsapp',
+        body: {'phone': phone, 'message': message},
       );
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'phone': phone,
-          'message': message,
-        }),
-      );
-
-      // Parse la réponse
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-
-      if (response.statusCode == 200 && data['success'] == true) {
-        return data['messageId'] as String? ?? 'unknown';
-      } else {
-        throw WhatsappSendException(
-          message: data['error'] as String? ?? 'Erreur inconnue',
-        );
+      final data = response.data;
+      if (data is Map && data['success'] == true) {
+        return data['messageId']?.toString() ?? 'unknown';
       }
+      throw WhatsappSendException(message: _errorFrom(data));
+    } on FunctionException catch (e) {
+      throw WhatsappSendException(message: _errorFrom(e.details));
+    } on WhatsappSendException {
+      rethrow;
     } catch (e) {
-      if (e is WhatsappSendException) rethrow;
-      throw WhatsappSendException(
-        message: 'Erreur: ${e.toString()}',
-      );
+      throw WhatsappSendException(message: 'Erreur: $e');
     }
   }
 
-  /// Extrait le project ref depuis la configuration Supabase
-  /// Ex: "yyohrbyjwemiqfpplmtj"
-  String _extractProjectRef() {
-    // Hardcode le project ref directement
-    return 'yyohrbyjwemiqfpplmtj';
-  }}
+  static String _errorFrom(dynamic data) {
+    if (data is Map) {
+      final err = data['error'] ?? data['message'];
+      if (err != null) return err.toString();
+    }
+    return 'Erreur inconnue';
+  }
+}
 
 class WhatsappSendException implements Exception {
   final String message;

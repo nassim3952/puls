@@ -8,13 +8,14 @@ import 'dart:html' as html;
 
 import 'core/provider/realtime_provider.dart';
 import 'core/routes/app_router.dart';
+import 'core/supabase_config.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('fr_FR', null);
   await Supabase.initialize(
-    url: 'https://yyohrbyjwemiqfpplmtj.supabase.co',
-    anonKey: 'sb_publishable_3Kj_37TEdRIf0yIQoOoniA_6fGv_oXA',
+    url: SupabaseConfig.url,
+    anonKey: SupabaseConfig.anonKey,
   );
 
   // ── Intercepte les tokens/erreurs Supabase dans l'URL (Flutter Web) ──

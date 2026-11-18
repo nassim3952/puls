@@ -5,6 +5,7 @@ import 'package:puls/features/survey/presentation/provider/pending_survey_provid
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/provider/auth_provider.dart';
+import '../../../../core/supabase_config.dart';
 
 // ─── Form state ───────────────────────────────────────────────────────────────
 
@@ -124,7 +125,7 @@ const Object _s = Object(); // sentinel
 // ─── Notifier ─────────────────────────────────────────────────────────────────
 
 class SendSurveyNotifier extends Notifier<SendSurveyFormState> {
-  static const String _supabaseUrl = 'https://yyohrbyjwemiqfpplmtj.supabase.co';
+  static const String _supabaseUrl = SupabaseConfig.url;
 
   @override
   SendSurveyFormState build() => SendSurveyFormState(visitDate: DateTime.now());
